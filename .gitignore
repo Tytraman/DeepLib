@@ -1,4 +1,5 @@
 .cache/
 Source/.cache/
+Source/compile_commands.json
 Build/
 
