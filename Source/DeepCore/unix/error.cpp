@@ -1,10 +1,8 @@
 #include "../error.hpp"
 #include <cerrno>
 
-namespace deep
-{
-    uint64 core_convert_error_code(native_error error_code)
-    {
+namespace deep {
+    uint64 core_convert_error_code(native_error error_code) {
         switch (error_code)
         {
             default:

@@ -7,9 +7,9 @@
 
 namespace deep
 {
-    const_path_str core_get_current_working_directory(ctx &context)
+    const char *core_get_current_working_directory(ctx &context)
     {
-        static path_char cwd[4096];
+        static char *cwd[4096];
 
         if (getcwd(cwd, sizeof(cwd)) == nullptr)
         {
@@ -23,7 +23,7 @@ namespace deep
         return cwd;
     }
 
-    fd core_open_file(ctx &context, const path_str filename, fs::file_mode mode,
+    fd core_open_file(ctx &context, const char *filename, fs::file_mode mode,
                       fs::file_access access, fs::file_share share)
     {
         (void) share;
@@ -93,7 +93,7 @@ namespace deep
         {
             context.result = core_convert_error_code(errno);
 
-            return -1;
+            return invalid_fd;
         }
 
         context.result = error::NoError;
@@ -101,7 +101,7 @@ namespace deep
         return file_descriptor;
     }
 
-    bool core_delete_file(ctx &context, const path_str filename)
+    bool core_delete_file(ctx &context, const char *filename)
     {
         if (unlink(filename) != 0)
         {

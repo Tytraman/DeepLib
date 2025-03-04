@@ -157,10 +157,10 @@ namespace deep
 
 // Défini des macros selon le système d'exploitation sur
 // lequel la librairie est compilée.
-#if !defined(DEEP_WIN32) && !defined(DEEP_UNIX) && !defined(DEEP_LINUX)
+#if !defined(DEEP_WINDOWS) && !defined(DEEP_UNIX) && !defined(DEEP_LINUX)
 
 #if defined(WIN32) || defined(_WIN32)
-#define DEEP_WIN32 1
+#define DEEP_WINDOWS 1
 #endif // windows
 
 #if defined(unix) || defined(__unix) || defined(__unix__)
@@ -208,12 +208,17 @@ namespace deep
 
 namespace deep
 {
-    using native_error             = native_error_d;
-    using fd                       = fd_d;
+
+    using native_error = native_error_d;
+    using fd           = fd_d;
+#if defined(DEEP_WINDOWS)
+    static const fd invalid_fd = invalid_fd_d;
+#else
     static constexpr fd invalid_fd = invalid_fd_d;
-    using path_char                = path_char_d;
-    using path_str                 = path_str_d;
-    using const_path_str           = const_path_str_d;
+#endif
+    using path_char      = path_char_d;
+    using path_str       = path_str_d;
+    using const_path_str = const_path_str_d;
 } // namespace deep
 
 #endif

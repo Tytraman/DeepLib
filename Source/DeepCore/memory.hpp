@@ -16,14 +16,14 @@ namespace deep
         static constexpr uint8 ProtExec  = 0x04;
 
       public:
-        DEEP_CORE_API static void *alloc(ctx &context, usize size,
-                                         uint8 protection);
-        DEEP_CORE_API static bool dealloc(ctx &context, void *address,
-                                          usize size);
+        static void *alloc(ctx &context, usize size);
+        static void *realloc(ctx &context, void *address, usize size);
+        static bool dealloc(ctx &context, void *address);
     };
 
-    extern void *core_alloc(ctx &context, usize size, uint8 protection);
-    extern bool core_dealloc(ctx &context, void *address, usize size);
+    extern void *core_alloc(ctx &context, usize size);
+    extern void *core_realloc(ctx &context, void *address, usize size);
+    extern bool core_dealloc(ctx &context, void *address);
 } // namespace deep
 
 #endif

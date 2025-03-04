@@ -39,6 +39,12 @@ namespace deep
         static constexpr uint64 ReadOnlyFilesystem           = 27;
         static constexpr uint64 TextFileBusy                 = 28;
         static constexpr uint64 OperationWouldBlock          = 29;
+        static constexpr uint64 InvalidFunction              = 30;
+        static constexpr uint64 NoSuchFile                   = 31;
+        static constexpr uint64 NoSuchDirectory              = 32;
+        static constexpr uint64 AccessDenied                 = 33;
+        static constexpr uint64 BadAccess                    = 34;
+        static constexpr uint64 BadData                      = 35;
     } // namespace error
 } // namespace deep
 

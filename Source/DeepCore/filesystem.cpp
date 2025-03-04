@@ -1,16 +1,15 @@
 #include "filesystem.hpp"
 #include "error.hpp"
 #include "types.hpp"
-#include <unistd.h>
 
 namespace deep
 {
-    const_path_str fs::get_current_working_directory(ctx &context)
+    const char *fs::get_current_working_directory(ctx &context)
     {
         return core_get_current_working_directory(context);
     }
 
-    fd fs::open_file(ctx &context, const path_str filename, file_mode mode,
+    fd fs::open_file(ctx &context, const char *filename, file_mode mode,
                      file_access access, file_share share)
     {
         if (filename == nullptr)
@@ -35,7 +34,7 @@ namespace deep
         return core_open_file(context, filename, mode, access, share);
     }
 
-    bool delete_file(ctx &context, const path_str filename)
+    bool fs::delete_file(ctx &context, const char *filename)
     {
         if (filename == nullptr)
         {

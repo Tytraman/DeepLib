@@ -1,10 +1,8 @@
 cmake_minimum_required(VERSION 3.15.7)
 
 add_library(DeepCore SHARED
-    core.cpp
     filesystem.cpp
-    memory.cpp
-)
+    memory.cpp)
 add_library(Deep::Core ALIAS DeepCore)
 
 target_include_directories(DeepCore PUBLIC
@@ -28,6 +26,12 @@ if(UNIX)
         "${CMAKE_CURRENT_SOURCE_DIR}/unix/filesystem.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/unix/error.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/unix/memory.cpp"
+    )
+elseif(WIN32)
+    target_sources(DeepCore PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/windows/filesystem.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/windows/error.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/windows/memory.cpp"
     )
 endif()
 

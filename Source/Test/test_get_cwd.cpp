@@ -9,12 +9,10 @@ int main(int argc, char *argv[])
 
     const char *cwd = deep::fs::get_current_working_directory(context);
 
-    if (cwd != nullptr)
+    if (cwd == nullptr)
     {
-        printf("cwd: %s\n", cwd);
-
-        return 0;
+        return 1;
     }
 
-    return 1;
+    return 0;
 }

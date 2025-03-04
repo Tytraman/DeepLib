@@ -10,6 +10,8 @@ enable_testing()
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
 add_subdirectory(DeepCore)
 
 # Crée une cible nommée 'DeepLib'.
@@ -60,29 +62,14 @@ endif()
 # TODO: trouver un moyen de réduire le nombre de lignes à écrire pour ajouter un test
 
 # Faire un test nécessite un exécutable avec une fonction `main`.
-add_executable(TestSystem
-  Test/test_system.cpp)
-target_include_directories(TestSystem PRIVATE
-    "${DEEP_CORE_INCLUDE_DIRS}"
-    "${CMAKE_CURRENT_SOURCE_DIR}")
-target_link_libraries(TestSystem PRIVATE
-    Deep::Core    # Comme le test utilise une fonction de cette librairie, il ne faut pas oublier de l'inclure.
-    #Deep::Lib    # Le test n'utilise pas directement DeepLib, donc pas nécessaire de l'inclure.
-)
-target_compile_options(TestSystem PRIVATE
-    ${FSANITIZE_ADDR}
-)
-target_link_options(TestSystem PRIVATE
-    ${FSANITIZE_ADDR}
-)
-
 add_executable(TestGetCWD
     Test/test_get_cwd.cpp)
 target_include_directories(TestGetCWD PRIVATE
     "${DEEP_CORE_INCLUDE_DIRS}"
     "${CMAKE_CURRENT_SOURCE_DIR}")
 target_link_libraries(TestGetCWD PRIVATE
-    Deep::Core)
+    Deep::Core # Comme le test utilise une fonction de cette librairie, il ne faut pas oublier de l'inclure.
+)
 target_compile_options(TestGetCWD PRIVATE
     ${FSANITIZE_ADDR}
 )
@@ -104,8 +91,6 @@ target_link_options(TestAllocMem PRIVATE
     ${FSANITIZE_ADDR}
 )
 
-# Crée un test nommé 'DeepCore.TestSystem' qui va exécuter la cible 'TestSystem'.
-add_test(NAME DeepCore.TestSystem COMMAND TestSystem)
 add_test(NAME DeepCore.TestGetCWD COMMAND TestGetCWD)
 add_test(NAME DeepCore.TestAllocMem COMMAND TestAllocMem)
 
