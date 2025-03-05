@@ -21,9 +21,9 @@ namespace deep
         static bool dealloc(ctx &context, void *address);
     };
 
-    extern void *core_alloc(ctx &context, usize size);
-    extern void *core_realloc(ctx &context, void *address, usize size);
-    extern bool core_dealloc(ctx &context, void *address);
+    extern void *core_alloc(uint64 *result, usize size);
+    extern void *core_realloc(uint64 *result, void *address, usize size);
+    extern bool core_dealloc(uint64 *result, void *address);
 } // namespace deep
 
 #endif

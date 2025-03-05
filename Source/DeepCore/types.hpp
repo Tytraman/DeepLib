@@ -92,7 +92,7 @@ namespace deep
 
     template <typename Type>
     inline constexpr bool is_trivially_destructible =
-        __is_trivially_destructible(Type);
+            __is_trivially_destructible(Type);
 
     template <uint64_d>
     struct mk_signed;
@@ -128,6 +128,36 @@ namespace deep
      */
     template <typename Type>
     using make_signed = typename mk_signed<sizeof(Type)>::type;
+
+    template <typename Type>
+    struct rm_ref_s
+    {
+        using type  = Type;
+        using ctype = const Type;
+    };
+
+    template <typename Type>
+    struct rm_ref_s<Type &>
+    {
+        using type  = Type;
+        using ctype = const Type;
+    };
+
+    template <typename Type>
+    struct rm_ref_s<Type &&>
+    {
+        using type  = Type;
+        using ctype = const Type;
+    };
+
+    template <class Type>
+    using rm_ref = typename rm_ref_s<Type>::type;
+
+    template <typename Type>
+    constexpr rm_ref<Type> &&rvalue_cast(Type &&value) noexcept
+    {
+        return static_cast<rm_ref<Type> &&>(value);
+    }
 
     using int8   = int8_d;
     using uint8  = uint8_d;
@@ -185,10 +215,10 @@ namespace deep
 #ifndef fd_d
 #if defined(DEEP_WINDOWS)
 #include <Windows.h>
-#define fd_d         HANDLE
+#define fd_d HANDLE
 #define invalid_fd_d INVALID_HANDLE_VALUE
 #elif defined(DEEP_UNIX)
-#define fd_d         int
+#define fd_d int
 #define invalid_fd_d -1
 #endif
 #endif
@@ -196,12 +226,12 @@ namespace deep
 #ifndef path_str_d
 #if defined(DEEP_WINDOWS)
 #include <Windows.h>
-#define path_char_d      WCHAR
-#define path_str_d       LPWSTR
+#define path_char_d WCHAR
+#define path_str_d LPWSTR
 #define const_path_str_d LPCWSTR
 #elif defined(DEEP_UNIX)
-#define path_char_d      char
-#define path_str_d       char *
+#define path_char_d char
+#define path_str_d char *
 #define const_path_str_d const char *
 #endif
 #endif

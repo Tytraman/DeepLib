@@ -16,11 +16,13 @@ add_subdirectory(DeepCore)
 
 # Crée une cible nommée 'DeepLib'.
 add_library(DeepLib SHARED
-    deep.cpp)
+    deep.cpp
+)
 add_library(Deep::Lib ALIAS DeepLib)
 
 target_link_libraries(DeepLib PRIVATE
-    Deep::Core)
+    Deep::Core
+)
 
 # Défini la propriété VERSION de la cible 'DeepLib'.
 set_target_properties(DeepLib PROPERTIES
@@ -57,6 +59,14 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     )
 endif()
 
+# Récupère la liste des définitions du fichier 'deep.cpp'.
+get_source_file_property(defs deep.cpp COMPILE_DEFINITIONS)
+# Ajoute à la liste de définitions, les valeurs de la version du projet.
+list(APPEND defs "DEEP_LIB_VERSION=\"${DeepLibProject_VERSION}\"")
+# Met à jour les définitions pour le fichier 'deep.cpp'.
+set_source_files_properties(deep.cpp PROPERTIES
+    COMPILE_DEFINITIONS "${defs}")
+
 # =====[ Liste des tests ]=====
 
 # TODO: trouver un moyen de réduire le nombre de lignes à écrire pour ajouter un test
@@ -91,8 +101,24 @@ target_link_options(TestAllocMem PRIVATE
     ${FSANITIZE_ADDR}
 )
 
+add_executable(TestList
+    Test/test_list.cpp)
+target_include_directories(TestList PRIVATE
+    "${DEEP_CORE_INCLUDE_DIRS}"
+    "${CMAKE_CURRENT_SOURCE_DIR}")
+target_link_libraries(TestList PRIVATE
+    Deep::Core
+    Deep::Lib)
+target_compile_options(TestList PRIVATE
+    ${FSANITIZE_ADDR}
+)
+target_link_options(TestList PRIVATE
+    ${FSANITIZE_ADDR}
+)
+
 add_test(NAME DeepCore.TestGetCWD COMMAND TestGetCWD)
 add_test(NAME DeepCore.TestAllocMem COMMAND TestAllocMem)
+add_test(NAME DeepLib.TestList COMMAND TestList)
 
 
 # Crée un lien symbolique vers 'compile_commands.json' généré dans le dossier de Build.
@@ -112,3 +138,5 @@ file(CREATE_LINK
 add_custom_target(ShowConfig COMMAND ${CMAKE_COMMAND} -E echo "Current config: $<CONFIG>")
 
 add_custom_target(ShowFSanitizeAddr COMMAND ${CMAKE_COMMAND} -E echo "FSANITIZE_ADDR: ${FSANITIZE_ADDR}")
+
+add_custom_target(ShowProjectVersion COMMAND ${CMAKE_COMMAND} -E echo "DEEP_LIB_VERSION: ${DeepLibProject_VERSION}")

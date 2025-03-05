@@ -1,25 +1,29 @@
 #include "../filesystem.hpp"
 #include "../error.hpp"
+#include "../memory.hpp"
 #include <Windows.h>
 
 namespace deep
 {
     const char *core_get_current_working_directory(ctx &context)
     {
-        static char cwd[8192];
-        WCHAR buffer[4096];
+        constexpr DWORD cwd_len    = 8192;
+        constexpr DWORD buffer_len = cwd_len / 2;
+
+        static char cwd[cwd_len];
+        WCHAR buffer[buffer_len];
 
         // Détermine la taille nécessaire au buffer pour récupérer le chemin.
         DWORD buf_len = GetCurrentDirectoryW(0, nullptr);
 
-        if (buf_len > 4096)
+        if (buf_len > buffer_len)
         {
             context.result = error::OutOfRange;
 
             return nullptr;
         }
 
-        buf_len = GetCurrentDirectoryW(4096, buffer);
+        buf_len = GetCurrentDirectoryW(buffer_len, buffer);
 
         if (buf_len == 0)
         {
@@ -56,29 +60,30 @@ namespace deep
 
     fd core_open_file(ctx &context, const char *filename, fs::file_mode mode, fs::file_access access, fs::file_share share)
     {
-        DWORD mode_flags = 0;
+        DWORD mode_flags   = 0;
         DWORD access_flags = 0;
-        DWORD share_flags = 0;
+        DWORD share_flags  = 0;
 
         fd file_descriptor;
 
-        WCHAR buffer[4096];
-
         // Détermine la taille nécessaire pour stocker la conversion.
-        int bytes = MultiByteToWideChar(CP_UTF8, 0, filename, -1, nullptr, 0);
+        // Retourne le nombre de caractères que cela va produire.
+        int characters_number = MultiByteToWideChar(CP_UTF8, 0, filename, -1, nullptr, 0);
 
-        if (bytes > sizeof(buffer) / sizeof(WCHAR))
+        WCHAR *buffer = static_cast<WCHAR *>(mem::alloc(context, characters_number * sizeof(*buffer)));
+
+        if (buffer == nullptr)
         {
-            context.result = error::OutOfRange;
-
-            return invalid_fd;
+            return false;
         }
 
         // D'après la documentation officielle la fonction ajoute un caractère null à la fin puisque le paramètre pour la taille est de '-1'.
-        bytes = MultiByteToWideChar(CP_UTF8, 0, filename, -1, buffer, sizeof(buffer) / sizeof(WCHAR));
+        characters_number = MultiByteToWideChar(CP_UTF8, 0, filename, -1, buffer, characters_number);
 
-        if (bytes == 0)
+        if (characters_number == 0)
         {
+            mem::dealloc(context, buffer);
+
             context.result = core_convert_error_code(GetLastError());
 
             return invalid_fd;
@@ -172,6 +177,8 @@ namespace deep
 
         file_descriptor = CreateFileW(buffer, access_flags, share_flags, nullptr, mode_flags, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_POSIX_SEMANTICS, nullptr);
 
+        mem::dealloc(context, buffer);
+
         if (file_descriptor == invalid_fd)
         {
             context.result = core_convert_error_code(GetLastError());
@@ -186,29 +193,36 @@ namespace deep
 
     bool core_delete_file(ctx &context, const char *filename)
     {
-        WCHAR buffer[4096];
+        BOOL ret;
 
         // Détermine la taille nécessaire pour stocker la conversion.
-        int bytes = MultiByteToWideChar(CP_UTF8, 0, filename, -1, nullptr, 0);
+        // Retourne le nombre de caractères que cela va produire.
+        int characters_number = MultiByteToWideChar(CP_UTF8, 0, filename, -1, nullptr, 0);
 
-        if (bytes > sizeof(buffer) / sizeof(WCHAR))
+        WCHAR *buffer = static_cast<WCHAR *>(mem::alloc(context, characters_number * sizeof(*buffer)));
+
+        if (buffer == nullptr)
         {
-            context.result = error::OutOfRange;
-
             return false;
         }
 
         // D'après la documentation officielle la fonction ajoute un caractère null à la fin puisque le paramètre pour la taille est de '-1'.
-        bytes = MultiByteToWideChar(CP_UTF8, 0, filename, -1, buffer, sizeof(buffer) / sizeof(WCHAR));
+        characters_number = MultiByteToWideChar(CP_UTF8, 0, filename, -1, buffer, characters_number);
 
-        if (bytes == 0)
+        if (characters_number == 0)
         {
+            mem::dealloc(context, buffer);
+
             context.result = core_convert_error_code(GetLastError());
 
             return false;
         }
 
-        if (DeleteFileW(buffer) == 0)
+        ret = DeleteFileW(buffer);
+
+        mem::dealloc(context, buffer);
+
+        if (ret == 0)
         {
             context.result = core_convert_error_code(GetLastError());
 
