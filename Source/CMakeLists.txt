@@ -69,57 +69,70 @@ set_source_files_properties(deep.cpp PROPERTIES
 
 # =====[ Liste des tests ]=====
 
-# TODO: trouver un moyen de réduire le nombre de lignes à écrire pour ajouter un test
+function(deep_create_test test_name)
+    # La variable ARGN est pré-définie par CMake et contient la liste des tous les arguments qui n'ont pas de noms.
+    # target_name est un argument possédant un nom : 'target_name', il n'est donc pas présent dans la liste ARGN.
 
-# Faire un test nécessite un exécutable avec une fonction `main`.
-add_executable(TestGetCWD
-    Test/test_get_cwd.cpp)
-target_include_directories(TestGetCWD PRIVATE
-    "${DEEP_CORE_INCLUDE_DIRS}"
-    "${CMAKE_CURRENT_SOURCE_DIR}")
-target_link_libraries(TestGetCWD PRIVATE
-    Deep::Core # Comme le test utilise une fonction de cette librairie, il ne faut pas oublier de l'inclure.
-)
-target_compile_options(TestGetCWD PRIVATE
-    ${FSANITIZE_ADDR}
-)
-target_link_options(TestGetCWD PRIVATE
-    ${FSANITIZE_ADDR}
-)
+    set(prefix ARG)
+    set(no_values LINK_DEEP_CORE LINK_DEEP_LIB)
+    set(single_values SINGLE)
+    set(multi_values SOURCES)
 
-add_executable(TestAllocMem
-    Test/test_alloc_mem.cpp)
-target_include_directories(TestAllocMem PRIVATE
-    "${DEEP_CORE_INCLUDE_DIRS}"
-    "${CMAKE_CURRENT_SOURCE_DIR}")
-target_link_libraries(TestAllocMem PRIVATE
-    Deep::Core)
-target_compile_options(TestAllocMem PRIVATE
-    ${FSANITIZE_ADDR}
-)
-target_link_options(TestAllocMem PRIVATE
-    ${FSANITIZE_ADDR}
-)
+    set(src)
+    set(libs)
 
-add_executable(TestList
-    Test/test_list.cpp)
-target_include_directories(TestList PRIVATE
-    "${DEEP_CORE_INCLUDE_DIRS}"
-    "${CMAKE_CURRENT_SOURCE_DIR}")
-target_link_libraries(TestList PRIVATE
-    Deep::Core
-    Deep::Lib)
-target_compile_options(TestList PRIVATE
-    ${FSANITIZE_ADDR}
-)
-target_link_options(TestList PRIVATE
-    ${FSANITIZE_ADDR}
-)
+    cmake_parse_arguments(
+        ${prefix}
+        "${no_values}" "${single_values}" "${multi_values}"
+        ${ARGN}
+    )
 
-add_test(NAME DeepCore.TestGetCWD COMMAND TestGetCWD)
-add_test(NAME DeepCore.TestAllocMem COMMAND TestAllocMem)
-add_test(NAME DeepLib.TestList COMMAND TestList)
+    string(PREPEND test_name "Test")
 
+    # Ajoute automatiquement le dossier "Test" dans le chemin du fichier source,
+    # permettant d'éviter de l'écrire à chaque appel de 'deep_create_test'.
+    foreach(arg IN LISTS ${prefix}_SOURCES)
+        string(PREPEND arg "Test/")
+        list(APPEND src ${arg})
+    endforeach()
+
+    # Link le test avec les différentes librairies si spécifié.
+    if(${prefix}_LINK_DEEP_CORE)
+        list(APPEND libs Deep::Core)
+    endif()
+
+    if(${prefix}_LINK_DEEP_LIB)
+        list(APPEND libs Deep::Lib)
+    endif()
+
+    # Crée un exécutable pour le test.
+    add_executable(${test_name} ${src})
+
+    target_include_directories(${test_name} PRIVATE
+        "${DEEP_CORE_INCLUDE_DIRS}"
+        "${CMAKE_CURRENT_SOURCE_DIR}")
+
+    target_link_libraries(${test_name} PRIVATE
+        ${libs})
+
+    target_compile_options(${test_name} PRIVATE
+        ${FSANITIZE_ADDR})
+
+    target_link_options(${test_name} PRIVATE
+        ${FSANITIZE_ADDR})
+
+    add_test(NAME "Deep.${test_name}"
+            COMMAND ${test_name})
+endfunction() # deep_create_test
+
+deep_create_test(GetCWD LINK_DEEP_CORE
+    SOURCES test_get_cwd.cpp)
+
+deep_create_test(AllocMem LINK_DEEP_CORE
+    SOURCES test_alloc_mem.cpp)
+
+deep_create_test(List LINK_DEEP_CORE
+    SOURCES test_list.cpp)
 
 # Crée un lien symbolique vers 'compile_commands.json' généré dans le dossier de Build.
 file(CREATE_LINK
