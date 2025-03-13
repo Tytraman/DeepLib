@@ -5,7 +5,7 @@
 
 namespace deep
 {
-    const char *core_get_current_working_directory(ctx &context)
+    const char *core_get_current_working_directory(uint64 *result)
     {
         constexpr DWORD cwd_len    = 8192;
         constexpr DWORD buffer_len = cwd_len / 2;
@@ -18,7 +18,7 @@ namespace deep
 
         if (buf_len > buffer_len)
         {
-            context.result = error::OutOfRange;
+            *result = error::OutOfRange;
 
             return nullptr;
         }
@@ -27,7 +27,7 @@ namespace deep
 
         if (buf_len == 0)
         {
-            context.result = core_convert_error_code(GetLastError());
+            *result = core_convert_error_code(GetLastError());
 
             return nullptr;
         }
@@ -37,7 +37,7 @@ namespace deep
 
         if (bytes >= sizeof(cwd))
         {
-            context.result = error::OutOfRange;
+            *result = error::OutOfRange;
 
             return nullptr;
         }
@@ -46,19 +46,19 @@ namespace deep
 
         if (bytes == 0)
         {
-            context.result = core_convert_error_code(GetLastError());
+            *result = core_convert_error_code(GetLastError());
 
             return nullptr;
         }
 
         cwd[bytes] = '\0';
 
-        context.result = error::NoError;
+        *result = error::NoError;
 
         return cwd;
     }
 
-    fd core_open_file(ctx &context, const char *filename, fs::file_mode mode, fs::file_access access, fs::file_share share)
+    fd core_open_file(uint64 *result, const char *filename, fs::file_mode mode, fs::file_access access, fs::file_share share)
     {
         DWORD mode_flags   = 0;
         DWORD access_flags = 0;
@@ -70,7 +70,7 @@ namespace deep
         // Retourne le nombre de caractères que cela va produire.
         int characters_number = MultiByteToWideChar(CP_UTF8, 0, filename, -1, nullptr, 0);
 
-        WCHAR *buffer = static_cast<WCHAR *>(mem::alloc(context, characters_number * sizeof(*buffer)));
+        WCHAR *buffer = static_cast<WCHAR *>(core_alloc(result, characters_number * sizeof(*buffer)));
 
         if (buffer == nullptr)
         {
@@ -82,9 +82,9 @@ namespace deep
 
         if (characters_number == 0)
         {
-            mem::dealloc(context, buffer);
+            core_dealloc(result, buffer);
 
-            context.result = core_convert_error_code(GetLastError());
+            *result = core_convert_error_code(GetLastError());
 
             return invalid_fd;
         }
@@ -177,21 +177,21 @@ namespace deep
 
         file_descriptor = CreateFileW(buffer, access_flags, share_flags, nullptr, mode_flags, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_POSIX_SEMANTICS, nullptr);
 
-        mem::dealloc(context, buffer);
+        core_dealloc(result, buffer);
 
         if (file_descriptor == invalid_fd)
         {
-            context.result = core_convert_error_code(GetLastError());
+            *result = core_convert_error_code(GetLastError());
 
             return invalid_fd;
         }
 
-        context.result = error::NoError;
+        *result = error::NoError;
 
         return file_descriptor;
     }
 
-    bool core_delete_file(ctx &context, const char *filename)
+    bool core_delete_file(uint64 *result, const char *filename)
     {
         BOOL ret;
 
@@ -199,7 +199,7 @@ namespace deep
         // Retourne le nombre de caractères que cela va produire.
         int characters_number = MultiByteToWideChar(CP_UTF8, 0, filename, -1, nullptr, 0);
 
-        WCHAR *buffer = static_cast<WCHAR *>(mem::alloc(context, characters_number * sizeof(*buffer)));
+        WCHAR *buffer = static_cast<WCHAR *>(core_alloc(result, characters_number * sizeof(*buffer)));
 
         if (buffer == nullptr)
         {
@@ -211,25 +211,25 @@ namespace deep
 
         if (characters_number == 0)
         {
-            mem::dealloc(context, buffer);
+            core_dealloc(result, buffer);
 
-            context.result = core_convert_error_code(GetLastError());
+            *result = core_convert_error_code(GetLastError());
 
             return false;
         }
 
         ret = DeleteFileW(buffer);
 
-        mem::dealloc(context, buffer);
+        core_dealloc(result, buffer);
 
         if (ret == 0)
         {
-            context.result = core_convert_error_code(GetLastError());
+            *result = core_convert_error_code(GetLastError());
 
             return false;
         }
 
-        context.result = error::NoError;
+        *result = error::NoError;
 
         return true;
     }

@@ -104,20 +104,20 @@ namespace deep
         /**
          * @brief Retourne le chemin de travail actuel.
          */
-        static const char *get_current_working_directory(ctx &context);
+        static const char *get_current_working_directory();
 
         /**
          * @brief Ouvre un fichier.
          */
-        static fd open_file(ctx &context, const char *filename, file_mode mode,
+        static fd open_file(const char *filename, file_mode mode,
                             file_access access, file_share share);
 
-        static bool delete_file(ctx &context, const char *filename);
+        static bool delete_file(const char *filename);
     };
 
-    extern const char *core_get_current_working_directory(ctx &context);
-    extern fd core_open_file(ctx &context, const char *filename, fs::file_mode mode, fs::file_access access, fs::file_share share);
-    extern bool core_delete_file(ctx &context, const char *filename);
+    extern const char *core_get_current_working_directory(uint64 *result);
+    extern fd core_open_file(uint64 *result, const char *filename, fs::file_mode mode, fs::file_access access, fs::file_share share);
+    extern bool core_delete_file(uint64 *result, const char *filename);
 
 } // namespace deep
 

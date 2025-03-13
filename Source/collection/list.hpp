@@ -223,20 +223,13 @@ namespace deep
     template <typename Type>
     bool list<Type>::reserve(usize number_of_elements)
     {
-        ctx *context = core::get_current_context();
-
-        if (context == nullptr)
-        {
-            return false;
-        }
-
         if (number_of_elements == m_number_of_elements)
         {
             return true;
         }
 
         size_t new_capacity = (number_of_elements / m_capacity_step + 1) * m_capacity_step;
-        void *ptr           = mem::realloc(*context, m_data, new_capacity * sizeof(Type));
+        void *ptr           = mem::realloc(m_data, new_capacity * sizeof(Type));
 
         if (ptr == nullptr)
         {
@@ -267,16 +260,9 @@ namespace deep
     template <typename Type>
     bool list<Type>::free()
     {
-        ctx *context = core::get_current_context();
-
-        if (context == nullptr)
-        {
-            return false;
-        }
-
         if (m_data != nullptr)
         {
-            mem::dealloc(*context, m_data);
+            mem::dealloc(m_data);
 
             m_data = nullptr;
         }
@@ -308,13 +294,6 @@ namespace deep
     template <typename Type>
     bool list<Type>::grow_if_needed()
     {
-        ctx *context = core::get_current_context();
-
-        if (context == nullptr)
-        {
-            return false;
-        }
-
         // Si le nombre d'éléments présents dans la liste est supérieur à la capacité,
         // on augmente celle-ci du pas attribué.
         if (m_number_of_elements >= m_capacity)
@@ -325,7 +304,7 @@ namespace deep
 
             new_capacity = mul * m_capacity_step;
 
-            ptr = mem::realloc(*context, m_data, new_capacity * sizeof(Type));
+            ptr = mem::realloc(m_data, new_capacity * sizeof(Type));
 
             if (ptr == nullptr)
             {

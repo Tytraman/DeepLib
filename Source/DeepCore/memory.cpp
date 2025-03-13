@@ -1,19 +1,20 @@
 #include "memory.hpp"
+#include "core.hpp"
 
 namespace deep
 {
-    void *mem::alloc(ctx &context, usize size)
+    void *mem::alloc(usize size)
     {
-        return core_alloc(&context.result, size);
+        return core_alloc(&core::g_current_context->result, size);
     }
 
-    void *mem::realloc(ctx &context, void *address, usize size)
+    void *mem::realloc(void *address, usize size)
     {
-        return core_realloc(&context.result, address, size);
+        return core_realloc(&core::g_current_context->result, address, size);
     }
 
-    bool mem::dealloc(ctx &context, void *address)
+    bool mem::dealloc(void *address)
     {
-        return core_dealloc(&context.result, address);
+        return core_dealloc(&core::g_current_context->result, address);
     }
 } // namespace deep

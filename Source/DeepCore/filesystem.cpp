@@ -1,20 +1,21 @@
 #include "filesystem.hpp"
+#include "core.hpp"
 #include "error.hpp"
 #include "types.hpp"
 
 namespace deep
 {
-    const char *fs::get_current_working_directory(ctx &context)
+    const char *fs::get_current_working_directory()
     {
-        return core_get_current_working_directory(context);
+        return core_get_current_working_directory(&core::g_current_context->result);
     }
 
-    fd fs::open_file(ctx &context, const char *filename, file_mode mode,
+    fd fs::open_file(const char *filename, file_mode mode,
                      file_access access, file_share share)
     {
         if (filename == nullptr)
         {
-            context.result = error::EmptyStr;
+            core::g_current_context->result = error::EmptyStr;
 
             return invalid_fd;
         }
@@ -26,22 +27,22 @@ namespace deep
             to_utype(share) < to_utype(fs::file_share::Delete) ||
             to_utype(share) > to_utype(fs::file_share::ReadWrite))
         {
-            context.result = error::InvalidEnumValue;
+            core::g_current_context->result = error::InvalidEnumValue;
 
             return invalid_fd;
         }
 
-        return core_open_file(context, filename, mode, access, share);
+        return core_open_file(&core::g_current_context->result, filename, mode, access, share);
     }
 
-    bool fs::delete_file(ctx &context, const char *filename)
+    bool fs::delete_file(const char *filename)
     {
         if (filename == nullptr)
         {
-            context.result = error::EmptyStr;
+            core::g_current_context->result = error::EmptyStr;
         }
 
-        return core_delete_file(context, filename);
+        return core_delete_file(&core::g_current_context->result, filename);
     }
 
 } // namespace deep

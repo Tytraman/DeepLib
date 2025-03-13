@@ -1,11 +1,11 @@
 #include "collection/list.hpp"
-#include "context.hpp"
+#include "core.hpp"
 
 int main(int argc, char *argv[])
 {
-    deep::ctx *context = deep::core::create_context();
+    deep::ctx context;
 
-    if (context == nullptr)
+    if (!deep::core::create_context(context))
     {
         return 1;
     }

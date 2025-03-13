@@ -1,13 +1,16 @@
-#include "context.hpp"
+#include "core.hpp"
 #include "filesystem.hpp"
-
-#include <stdio.h>
 
 int main(int argc, char *argv[])
 {
     deep::ctx context;
 
-    const char *cwd = deep::fs::get_current_working_directory(context);
+    if (!deep::core::create_context(context))
+    {
+        return 1;
+    }
+
+    const char *cwd = deep::fs::get_current_working_directory();
 
     if (cwd == nullptr)
     {
