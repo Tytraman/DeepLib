@@ -17,12 +17,18 @@ add_subdirectory(DeepCore)
 # Crée une cible nommée 'DeepLib'.
 add_library(DeepLib SHARED
     deep.cpp
+    memory/ref_counted.cpp
 )
 add_library(Deep::Lib ALIAS DeepLib)
 
 target_link_libraries(DeepLib PRIVATE
-    Deep::Core
-)
+    Deep::Core)
+
+get_target_property(deep_core_bin_dir DeepCore BINARY_DIR)
+
+target_include_directories(DeepLib PRIVATE
+    "${CMAKE_CURRENT_BINARY_DIR}"
+    "${deep_core_bin_dir}")
 
 # Défini la propriété VERSION de la cible 'DeepLib'.
 set_target_properties(DeepLib PROPERTIES
@@ -67,6 +73,11 @@ list(APPEND defs "DEEP_LIB_VERSION=\"${DeepLibProject_VERSION}\"")
 set_source_files_properties(deep.cpp PROPERTIES
     COMPILE_DEFINITIONS "${defs}")
 
+include(GenerateExportHeader)
+generate_export_header(DeepLib
+    EXPORT_FILE_NAME deep_lib_export.h
+    EXPORT_MACRO_NAME DEEP_LIB_API)
+
 # =====[ Liste des tests ]=====
 
 function(deep_create_test test_name)
@@ -110,7 +121,8 @@ function(deep_create_test test_name)
 
     target_include_directories(${test_name} PRIVATE
         "${DEEP_CORE_INCLUDE_DIRS}"
-        "${CMAKE_CURRENT_SOURCE_DIR}")
+        "${CMAKE_CURRENT_SOURCE_DIR}"
+        "${CMAKE_CURRENT_BINARY_DIR}")
 
     target_link_libraries(${test_name} PRIVATE
         ${libs})
@@ -133,6 +145,9 @@ deep_create_test(AllocMem LINK_DEEP_CORE
 
 deep_create_test(List LINK_DEEP_CORE
     SOURCES test_list.cpp)
+
+deep_create_test(RefCounted LINK_DEEP_CORE LINK_DEEP_LIB
+    SOURCES test_ref_counted.cpp)
 
 # Crée un lien symbolique vers 'compile_commands.json' généré dans le dossier de Build.
 file(CREATE_LINK

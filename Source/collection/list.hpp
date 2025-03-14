@@ -229,7 +229,9 @@ namespace deep
         }
 
         size_t new_capacity = (number_of_elements / m_capacity_step + 1) * m_capacity_step;
-        void *ptr           = mem::realloc(m_data, new_capacity * sizeof(Type));
+
+        // TODO: utiliser mem::realloc plutôt que core::mem::realloc
+        void *ptr = core::mem::realloc(m_data, new_capacity * sizeof(Type));
 
         if (ptr == nullptr)
         {
@@ -262,7 +264,8 @@ namespace deep
     {
         if (m_data != nullptr)
         {
-            mem::dealloc(m_data);
+            // TODO: utiliser mem::dealloc plutôt que core::mem::dealloc
+            core::mem::dealloc(m_data);
 
             m_data = nullptr;
         }
@@ -304,7 +307,8 @@ namespace deep
 
             new_capacity = mul * m_capacity_step;
 
-            ptr = mem::realloc(m_data, new_capacity * sizeof(Type));
+            // TODO: utiliser mem::realloc plutôt que core::mem::realloc
+            ptr = core::mem::realloc(m_data, new_capacity * sizeof(Type));
 
             if (ptr == nullptr)
             {

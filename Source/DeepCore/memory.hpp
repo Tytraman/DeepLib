@@ -7,19 +7,22 @@
 
 namespace deep
 {
-    class DEEP_CORE_API mem
+    namespace core
     {
-      public:
-        static constexpr uint8 ProtNone  = 0x00;
-        static constexpr uint8 ProtRead  = 0x01;
-        static constexpr uint8 ProtWrite = 0x02;
-        static constexpr uint8 ProtExec  = 0x04;
+        class DEEP_CORE_API mem
+        {
+          public:
+            static constexpr uint8 ProtNone  = 0x00;
+            static constexpr uint8 ProtRead  = 0x01;
+            static constexpr uint8 ProtWrite = 0x02;
+            static constexpr uint8 ProtExec  = 0x04;
 
-      public:
-        static void *alloc(usize size);
-        static void *realloc(void *address, usize size);
-        static bool dealloc(void *address);
-    };
+          public:
+            static void *alloc(usize size);
+            static void *realloc(void *address, usize size);
+            static bool dealloc(void *address);
+        };
+    } // namespace core
 
     extern void *core_alloc(uint64 *result, usize size);
     extern void *core_realloc(uint64 *result, void *address, usize size);

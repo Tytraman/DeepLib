@@ -4,3 +4,6 @@ Source/.cache/
 Source/compile_commands.json
 Build/
 
+*.srctrlbm
+*.srctrldb
+*.srctrlprj

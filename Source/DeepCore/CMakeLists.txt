@@ -6,7 +6,7 @@ add_library(DeepCore SHARED
     core.cpp)
 add_library(Deep::Core ALIAS DeepCore)
 
-target_include_directories(DeepCore PUBLIC
+target_include_directories(DeepCore PRIVATE
     "${CMAKE_CURRENT_BINARY_DIR}")
 
 set_target_properties(DeepCore PROPERTIES

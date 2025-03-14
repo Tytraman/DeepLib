@@ -8,14 +8,29 @@ Pour cela la librairie devra dépendre d'un module nommé 'DeepCore' qui s'occup
 # Nécessités
 
 La librairie doit être écrite tout en répondant à ces nécessités :
+
+## Modifiable
+
 - Tous les types primitifs doivent être redéfinissables.
 - Certaines fonctions primitives doivent pouvoir être modifiées grâce aux macros.
-- La librairie doit être cross-plateforme *(au moins Linux et Windows)*.
+
+## Cross-platform
+
+- La librairie doit être cross-platform *(au moins Linux et Windows)*.
 - Tout code dépendant d'un système d'exploitation doit passer par un utilitaire dédié, aucun code en dur ne doit être fait *(utilisation de DeepCore)*.
+
+## Gestion de la mémoire
+
+- L'allocation de mémoire doit suivre des stratégies qui permettent d'éviter des fuites de mémoire.
+
+## Documentation
+
 - Toute structure de données, fonction ou type doit être documenté.
+- Tous les concepts utilisés doivent être décris.
 
 # Interdictions
 
 Certaines restrictions sont mises en place pour avoir un code plus propre, modulaire et plus maintenable :
+
 - **Aucune** variable globale / statique, excepté le contexte global interne à la librairie.
 

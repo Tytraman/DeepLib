@@ -5,7 +5,7 @@ int main(int argc, char *argv[])
 {
     deep::ctx context;
 
-    if (!deep::core::create_context(context))
+    if (!deep::core::core::create_context(context))
     {
         return 1;
     }
