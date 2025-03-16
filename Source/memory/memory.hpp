@@ -30,8 +30,8 @@ namespace deep
     template <typename Type, typename... Args>
     inline Type *mem::alloc_type(Args &&...args)
     {
-        // TODO: utiliser mem::alloc plutôt que core::mem::alloc
-        Type *obj = (Type *) core::mem::alloc(sizeof(Type));
+        // TODO: utiliser mem::alloc plutôt que core_mem::alloc
+        Type *obj = (Type *) core_mem::alloc(sizeof(Type));
 
         if (obj == nullptr)
         {
@@ -52,8 +52,8 @@ namespace deep
             ptr->~Type();
         }
 
-        // TODO: utiliser mem::dealloc plutôt que core::mem::dealloc
-        return core::mem::dealloc(ptr);
+        // TODO: utiliser mem::dealloc plutôt que core_mem::dealloc
+        return core_mem::dealloc(ptr);
     }
 } // namespace deep
 

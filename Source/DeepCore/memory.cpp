@@ -3,21 +3,18 @@
 
 namespace deep
 {
-    namespace core
+    void *core_mem::alloc(usize size)
     {
-        void *mem::alloc(usize size)
-        {
-            return core_alloc(&core::g_current_context->result, size);
-        }
+        return core_alloc(core::g_internal_context, size);
+    }
 
-        void *mem::realloc(void *address, usize size)
-        {
-            return core_realloc(&core::g_current_context->result, address, size);
-        }
+    void *core_mem::realloc(void *address, usize size)
+    {
+        return core_realloc(core::g_internal_context, address, size);
+    }
 
-        bool mem::dealloc(void *address)
-        {
-            return core_dealloc(&core::g_current_context->result, address);
-        }
-    } // namespace core
+    bool core_mem::dealloc(void *address)
+    {
+        return core_dealloc(core::g_internal_context, address);
+    }
 } // namespace deep

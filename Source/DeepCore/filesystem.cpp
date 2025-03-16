@@ -5,46 +5,45 @@
 
 namespace deep
 {
-    namespace core
+    const char *core_fs::get_current_working_directory()
     {
-        const char *fs::get_current_working_directory()
+        return core_get_current_working_directory(core::g_internal_context);
+    }
+
+    fd core_fs::open_file(const char *filename, file_mode mode,
+                          file_access access, file_share share)
+    {
+        if (filename == nullptr)
         {
-            return core_get_current_working_directory(&core::g_current_context->result);
+            core::set_internal_context_result(error::EmptyStr);
+
+            return invalid_fd;
         }
 
-        fd fs::open_file(const char *filename, file_mode mode,
-                         file_access access, file_share share)
+        if (to_utype(mode) < to_utype(core_fs::file_mode::Append) ||
+            to_utype(mode) > to_utype(core_fs::file_mode::Truncate) ||
+            to_utype(access) < to_utype(core_fs::file_access::Read) ||
+            to_utype(access) > to_utype(core_fs::file_access::ReadWrite) ||
+            to_utype(share) < to_utype(core_fs::file_share::Delete) ||
+            to_utype(share) > to_utype(core_fs::file_share::ReadWrite))
         {
-            if (filename == nullptr)
-            {
-                core::g_current_context->result = error::EmptyStr;
+            core::set_internal_context_result(error::InvalidEnumValue);
 
-                return invalid_fd;
-            }
-
-            if (to_utype(mode) < to_utype(fs::file_mode::Append) ||
-                to_utype(mode) > to_utype(fs::file_mode::Truncate) ||
-                to_utype(access) < to_utype(fs::file_access::Read) ||
-                to_utype(access) > to_utype(fs::file_access::ReadWrite) ||
-                to_utype(share) < to_utype(fs::file_share::Delete) ||
-                to_utype(share) > to_utype(fs::file_share::ReadWrite))
-            {
-                core::g_current_context->result = error::InvalidEnumValue;
-
-                return invalid_fd;
-            }
-
-            return core_open_file(&core::g_current_context->result, filename, mode, access, share);
+            return invalid_fd;
         }
 
-        bool fs::delete_file(const char *filename)
-        {
-            if (filename == nullptr)
-            {
-                core::g_current_context->result = error::EmptyStr;
-            }
+        return core_open_file(core::set_current_internal_context, filename, mode, access, share);
+    }
 
-            return core_delete_file(&core::g_current_context->result, filename);
+    bool core_fs::delete_file(const char *filename)
+    {
+        if (filename == nullptr)
+        {
+            core::set_internal_context_result(error::EmptyStr);
+
+            return false;
         }
-    } // namespace core
+
+        return core_delete_file(core::set_current_internal_context, filename);
+    }
 } // namespace deep

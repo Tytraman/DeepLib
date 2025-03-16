@@ -1,46 +1,39 @@
-#ifndef DEEP_CORE_CORE_HPP
-#define DEEP_CORE_CORE_HPP
+#ifndef DEEP_CORE_HPP
+#define DEEP_CORE_HPP
 
-#include "context.hpp"
+#include "deep_core_export.h"
 #include "filesystem.hpp"
 #include "memory.hpp"
+#include "types.hpp"
 
 namespace deep
 {
-    namespace core
+    class DEEP_CORE_API core
     {
-        class DEEP_CORE_API core
-        {
-          public:
-            static bool create_context(ctx &context);
-            static bool destroy_context(ctx &context);
+      public:
+        static void *create_internal_context();
+        static bool destroy_internal_context();
+        static void set_current_internal_context(void *internal_context);
 
-            static void set_current_context(ctx &context);
-            static ctx &get_current_context();
-            static ctx *get_current_context_ptr();
+        static uint64 get_internal_context_result();
+        static void set_internal_context_result(uint64 result);
 
-          private:
-            static ctx *g_current_context;
+      private:
+        static void *g_internal_context;
 
-            friend mem;
-            friend fs;
-        };
+        friend core_mem;
+        friend core_fs;
+    };
 
-        inline void core::set_current_context(ctx &context)
-        {
-            g_current_context = &context;
-        }
+    extern void *core_create_internal_context();
+    extern bool core_destroy_internal_context(void *internal_context);
+    extern uint64 core_get_internal_context_result(void *internal_context);
+    extern void core_set_internal_context_result(void *internal_context, uint64 result);
 
-        inline ctx &core::get_current_context()
-        {
-            return *g_current_context;
-        }
-
-        inline ctx *core::get_current_context_ptr()
-        {
-            return g_current_context;
-        }
-    } // namespace core
+    inline void core::set_current_internal_context(void *internal_context)
+    {
+        g_internal_context = internal_context;
+    }
 
 } // namespace deep
 

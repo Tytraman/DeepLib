@@ -1,10 +1,18 @@
 #include "../memory.hpp"
 #include "../error.hpp"
+#include "internal_data.hpp"
 
 #include <Windows.h>
 
 namespace deep
 {
+    void *core_alloc(void *internal_context, usize size)
+    {
+        internal_data_win32 *internal_data = static_cast<internal_data_win32 *>(internal_context);
+
+        return core_alloc(&internal_data->result, size);
+    }
+
     void *core_alloc(uint64 *result, usize size)
     {
         LPVOID addr;
@@ -26,18 +34,22 @@ namespace deep
             return nullptr;
         }
 
+        *result = error::NoError;
+
         return addr;
     }
 
-    void *core_realloc(uint64 *result, void *address, usize size)
+    void *core_realloc(void *internal_context, void *address, usize size)
     {
+        internal_data_win32 *internal_data = static_cast<internal_data_win32 *>(internal_context);
+
         LPVOID addr;
 
         HANDLE process_heap = GetProcessHeap();
 
         if (process_heap == nullptr)
         {
-            *result = core_convert_error_code(GetLastError());
+            internal_data->result = core_convert_error_code(GetLastError());
 
             return nullptr;
         }
@@ -60,20 +72,22 @@ namespace deep
         return addr;
     }
 
-    bool core_dealloc(uint64 *result, void *address)
+    bool core_dealloc(void *internal_context, void *address)
     {
+        internal_data_win32 *internal_data = static_cast<internal_data_win32 *>(internal_context);
+
         HANDLE process_heap = GetProcessHeap();
 
         if (process_heap == nullptr)
         {
-            *result = core_convert_error_code(GetLastError());
+            internal_data->result = core_convert_error_code(GetLastError());
 
             return nullptr;
         }
 
         if (HeapFree(process_heap, 0, address) == 0)
         {
-            *result = core_convert_error_code(GetLastError());
+            internal_data->result = core_convert_error_code(GetLastError());
 
             return false;
         }

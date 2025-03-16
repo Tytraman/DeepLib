@@ -1,10 +1,10 @@
 #ifndef DEEP_LIB_LIST_HPP
 #define DEEP_LIB_LIST_HPP
 
-#include "DeepCore/core.hpp"
 #include "DeepCore/memory.hpp"
 #include "DeepCore/types.hpp"
 #include "collection.hpp"
+#include "lib.hpp"
 
 #include <string.h>
 
@@ -230,8 +230,8 @@ namespace deep
 
         size_t new_capacity = (number_of_elements / m_capacity_step + 1) * m_capacity_step;
 
-        // TODO: utiliser mem::realloc plutôt que core::mem::realloc
-        void *ptr = core::mem::realloc(m_data, new_capacity * sizeof(Type));
+        // TODO: utiliser mem::realloc plutôt que core_mem::realloc
+        void *ptr = core_mem::realloc(m_data, new_capacity * sizeof(Type));
 
         if (ptr == nullptr)
         {
@@ -264,8 +264,8 @@ namespace deep
     {
         if (m_data != nullptr)
         {
-            // TODO: utiliser mem::dealloc plutôt que core::mem::dealloc
-            core::mem::dealloc(m_data);
+            // TODO: utiliser mem::dealloc plutôt que core_mem::dealloc
+            core_mem::dealloc(m_data);
 
             m_data = nullptr;
         }
@@ -307,8 +307,8 @@ namespace deep
 
             new_capacity = mul * m_capacity_step;
 
-            // TODO: utiliser mem::realloc plutôt que core::mem::realloc
-            ptr = core::mem::realloc(m_data, new_capacity * sizeof(Type));
+            // TODO: utiliser mem::realloc plutôt que core_mem::realloc
+            ptr = core_mem::realloc(m_data, new_capacity * sizeof(Type));
 
             if (ptr == nullptr)
             {

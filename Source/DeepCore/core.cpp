@@ -1,35 +1,26 @@
 #include "core.hpp"
-#include "error.hpp"
-#include "memory.hpp"
 
 namespace deep
 {
-    namespace core
+    void *core::g_internal_context = nullptr;
+
+    void *core::create_internal_context()
     {
-        ctx *core::g_current_context = nullptr;
+        return core_create_internal_context();
+    }
 
-        bool core::create_context(ctx &context)
-        {
-            // TODO: initialiser les données interne du contexte
+    bool core::destroy_internal_context()
+    {
+        return core_destroy_internal_context(g_internal_context);
+    }
 
-            if (g_current_context == nullptr)
-            {
-                g_current_context = &context;
-            }
+    uint64 core::get_internal_context_result()
+    {
+        return core_get_internal_context_result(g_internal_context);
+    }
 
-            context.result = error::NoError;
-
-            return true;
-        }
-
-        bool core::destroy_context(ctx &context)
-        {
-            // TODO: libérer les données interne du contexte
-
-            context.result = error::NoError;
-
-            return true;
-        }
-    } // namespace core
-
+    void core::set_internal_context_result(uint64 result)
+    {
+        core_set_internal_context_result(g_internal_context, result);
+    }
 } // namespace deep

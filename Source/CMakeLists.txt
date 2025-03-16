@@ -16,7 +16,7 @@ add_subdirectory(DeepCore)
 
 # Crée une cible nommée 'DeepLib'.
 add_library(DeepLib SHARED
-    deep.cpp
+    lib.cpp
     memory/ref_counted.cpp
 )
 add_library(Deep::Lib ALIAS DeepLib)
@@ -66,11 +66,11 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 endif()
 
 # Récupère la liste des définitions du fichier 'deep.cpp'.
-get_source_file_property(defs deep.cpp COMPILE_DEFINITIONS)
+get_source_file_property(defs lib.cpp COMPILE_DEFINITIONS)
 # Ajoute à la liste de définitions, les valeurs de la version du projet.
 list(APPEND defs "DEEP_LIB_VERSION=\"${DeepLibProject_VERSION}\"")
 # Met à jour les définitions pour le fichier 'deep.cpp'.
-set_source_files_properties(deep.cpp PROPERTIES
+set_source_files_properties(lib.cpp PROPERTIES
     COMPILE_DEFINITIONS "${defs}")
 
 include(GenerateExportHeader)
@@ -137,13 +137,13 @@ function(deep_create_test test_name)
             COMMAND ${test_name})
 endfunction() # deep_create_test
 
-deep_create_test(GetCWD LINK_DEEP_CORE
+deep_create_test(GetCWD LINK_DEEP_CORE LINK_DEEP_LIB
     SOURCES test_get_cwd.cpp)
 
-deep_create_test(AllocMem LINK_DEEP_CORE
+deep_create_test(AllocMem LINK_DEEP_CORE LINK_DEEP_LIB
     SOURCES test_alloc_mem.cpp)
 
-deep_create_test(List LINK_DEEP_CORE
+deep_create_test(List LINK_DEEP_CORE LINK_DEEP_LIB
     SOURCES test_list.cpp)
 
 deep_create_test(RefCounted LINK_DEEP_CORE LINK_DEEP_LIB

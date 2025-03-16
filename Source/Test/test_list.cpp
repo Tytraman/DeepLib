@@ -1,11 +1,11 @@
 #include "collection/list.hpp"
-#include "core.hpp"
+#include "lib.hpp"
 
 int main(int argc, char *argv[])
 {
     deep::ctx context;
 
-    if (!deep::core::core::create_context(context))
+    if (!deep::lib::create_context(context))
     {
         return 1;
     }
@@ -38,6 +38,11 @@ int main(int argc, char *argv[])
     }
 
     if (test_list[2] != 307)
+    {
+        return 1;
+    }
+
+    if (!deep::lib::destroy_context())
     {
         return 1;
     }

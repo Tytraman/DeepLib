@@ -1,8 +1,9 @@
-#ifndef DEEP_CORE_CONTEXT_HPP
-#define DEEP_CORE_CONTEXT_HPP
+#ifndef DEEP_LIB_CONTEXT_HPP
+#define DEEP_LIB_CONTEXT_HPP
 
-#include "deep_core_export.h"
-#include "types.hpp"
+#include "DeepCore/types.hpp"
+#include "deep_lib_export.h"
+#include "memory/memory_manager.hpp"
 
 namespace deep
 {
@@ -12,18 +13,14 @@ namespace deep
      * d'exploitation supporté par la librairie.
      *
      */
-    struct DEEP_CORE_API ctx
+    struct DEEP_LIB_API ctx
     {
         /**
          * @brief Pointeur vers une zone de données contenant les données
          * internes propres au système d'exploitation.
          */
         void *internal_data;
-        /**
-         * @brief Contient le code résultant de chaque procédure de la
-         * librairie.
-         */
-        uint64 result;
+        memory_manager *mem;
     };
 } // namespace deep
 

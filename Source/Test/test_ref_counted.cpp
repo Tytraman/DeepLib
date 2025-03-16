@@ -1,4 +1,4 @@
-#include "core.hpp"
+#include "lib.hpp"
 #include "memory/memory.hpp"
 #include "memory/ref_counted.hpp"
 
@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 {
     deep::ctx context;
 
-    if (!deep::core::core::create_context(context))
+    if (!deep::lib::create_context(context))
     {
         return 1;
     }
@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    if (!deep::core::core::destroy_context(context))
+    if (!deep::lib::destroy_context())
     {
         return 1;
     }
