@@ -1,9 +1,11 @@
 #ifndef DEEP_LIB_LIST_HPP
 #define DEEP_LIB_LIST_HPP
 
-#include "DeepCore/memory.hpp"
 #include "DeepCore/types.hpp"
-#include "collection.hpp"
+#include "memory/memory.hpp"
+#include "memory/mem_ptr.hpp"
+#include "collection/collection.hpp"
+#include "context.hpp"
 #include "lib.hpp"
 
 #include <string.h>
@@ -14,7 +16,7 @@ namespace deep
     class list : public collection<Type>
     {
       public:
-        list(uint32 capacity_step = 10);
+        list(ctx *context, uint32 capacity_step = 10);
         ~list();
 
         void init(uint32 capacity_step = 10);
@@ -47,8 +49,16 @@ namespace deep
         void set_capacity_step(usize size);
 
       protected:
-        Type *m_data;
+        mem_ptr<Type> m_data;
+
+        /**
+         * @brief Le nombre d'éléments que la liste peut stocker avec la mémoire allouée actuellement.
+         */
         size_t m_capacity;
+
+        /**
+         * @brief La valeur à ajouter à la capacité quand elle est atteinte.
+         */
         uint32_t m_capacity_step;
 
         bool grow_if_needed();
@@ -56,15 +66,15 @@ namespace deep
     };
 
     template <typename Type>
-    list<Type>::list(uint32 capacity_step)
-            : collection<Type>(), m_data(nullptr), m_capacity(0), m_capacity_step(capacity_step)
+    list<Type>::list(ctx *context, uint32 capacity_step)
+            : collection<Type>(), m_data(context, nullptr), m_capacity(0), m_capacity_step(capacity_step)
     {
     }
 
     template <typename Type>
     list<Type>::~list()
     {
-        if (m_data != nullptr)
+        if (m_data.is_valid())
         {
             if (!is_trivially_destructible<Type>)
             {
@@ -73,7 +83,7 @@ namespace deep
 
                 for (i = 0; i < len; ++i)
                 {
-                    (m_data + i)->~Type();
+                    (m_data.get() + i)->~Type();
                 }
             }
 
@@ -84,7 +94,7 @@ namespace deep
     template <typename Type>
     void list<Type>::init(uint32 capacity_step)
     {
-        m_data               = nullptr;
+        m_data.set(nullptr);
         m_capacity           = 0;
         m_capacity_step      = capacity_step;
         m_number_of_elements = 0;
@@ -113,7 +123,7 @@ namespace deep
         }
 
         // Déplace ou copie l'élément dans la case mémoire.
-        m_data[m_number_of_elements] = element;
+        m_data.get()[m_number_of_elements] = element;
         m_number_of_elements++;
 
         return true;
@@ -129,7 +139,7 @@ namespace deep
         }
 
         // Déplace ou copie l'élément dans la case mémoire.
-        m_data[m_number_of_elements] = rvalue_cast(element);
+        m_data.get()[m_number_of_elements] = rvalue_cast(element);
         m_number_of_elements++;
 
         return true;
@@ -143,7 +153,7 @@ namespace deep
             return false;
         }
 
-        memcpy(m_data + index, buffer, count * sizeof(Type));
+        memcpy(m_data.get() + index, buffer, count * sizeof(Type));
 
         return true;
     }
@@ -160,7 +170,7 @@ namespace deep
 
         for (i = 0; i < count; ++i)
         {
-            memcpy(m_data + index + i, &value, sizeof(Type));
+            memcpy(m_data.get() + index + i, &value, sizeof(Type));
         }
 
         return true;
@@ -183,7 +193,8 @@ namespace deep
         size                    = sizeof(Type);
         number_of_bytes_to_move = diff * size;
 
-        memmove(m_data + index, m_data + (index + 1), number_of_bytes_to_move);
+        Type *data = m_data.get();
+        memmove(data + index, data + (index + 1), number_of_bytes_to_move);
 
         m_number_of_elements--;
 
@@ -194,7 +205,7 @@ namespace deep
     size_t list<Type>::find(const Type &to_search) const
     {
         // Pointeur vers le tableau des éléments de la liste.
-        uint8 *ptr               = (uint8 *) m_data;
+        uint8 *ptr               = (uint8 *) m_data.get_const();
         usize number_of_elements = m_number_of_elements;
         usize index              = 0;
         usize element_size       = sizeof(Type);
@@ -230,15 +241,11 @@ namespace deep
 
         size_t new_capacity = (number_of_elements / m_capacity_step + 1) * m_capacity_step;
 
-        // TODO: utiliser mem::realloc plutôt que core_mem::realloc
-        void *ptr = core_mem::realloc(m_data, new_capacity * sizeof(Type));
-
-        if (ptr == nullptr)
+        if (!mem::realloc(m_data, new_capacity * sizeof(Type)))
         {
             return false;
         }
 
-        m_data               = static_cast<Type *>(ptr);
         m_capacity           = new_capacity;
         m_number_of_elements = number_of_elements;
 
@@ -248,13 +255,13 @@ namespace deep
     template <typename Type>
     void list<Type>::fill_with_byte(uint8 value)
     {
-        memset(m_data, value, m_number_of_elements * sizeof(Type));
+        memset(m_data.get(), value, m_number_of_elements * sizeof(Type));
     }
 
     template <typename Type>
     void list<Type>::empty()
     {
-        m_data               = nullptr;
+        m_data.set(nullptr);
         m_number_of_elements = 0;
         m_capacity           = 0;
     }
@@ -262,13 +269,7 @@ namespace deep
     template <typename Type>
     bool list<Type>::free()
     {
-        if (m_data != nullptr)
-        {
-            // TODO: utiliser mem::dealloc plutôt que core_mem::dealloc
-            core_mem::dealloc(m_data);
-
-            m_data = nullptr;
-        }
+        m_data.destroy();
 
         m_number_of_elements = 0;
         m_capacity           = 0;
@@ -291,7 +292,7 @@ namespace deep
     template <typename Type>
     typename Type &list<Type>::operator[](usize index)
     {
-        return m_data[index];
+        return m_data.get()[index];
     }
 
     template <typename Type>
@@ -301,21 +302,16 @@ namespace deep
         // on augmente celle-ci du pas attribué.
         if (m_number_of_elements >= m_capacity)
         {
-            void *ptr;
             usize new_capacity = m_number_of_elements + m_capacity;
             usize mul          = (new_capacity / m_capacity_step) + 1;
 
             new_capacity = mul * m_capacity_step;
 
-            // TODO: utiliser mem::realloc plutôt que core_mem::realloc
-            ptr = core_mem::realloc(m_data, new_capacity * sizeof(Type));
-
-            if (ptr == nullptr)
+            if (!mem::realloc(m_data, new_capacity * sizeof(Type)))
             {
                 return false;
             }
 
-            m_data     = static_cast<Type *>(ptr);
             m_capacity = new_capacity;
         }
 

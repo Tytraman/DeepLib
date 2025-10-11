@@ -16,6 +16,7 @@ add_subdirectory(DeepCore)
 
 # Crée une cible nommée 'DeepLib'.
 add_library(DeepLib SHARED
+    context.cpp
     lib.cpp
     memory/ref_counted.cpp
 )
@@ -48,6 +49,8 @@ set_target_properties(DeepLib PROPERTIES
 # Crée une variable faisant référence au dossier 'include' pour faciliter l'intégration dans un projet.
 set(DEEP_LIB_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE)
 
+message(STATUS "Compiler ID: ${CMAKE_CXX_COMPILER_ID}")
+
 # Ajoute des options de compilation et de link selon le compilateur utilisé.
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     # Active l'outil de détection d'erreurs liées à la mémoire.
@@ -57,6 +60,19 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         -Werror                                 # Considère les warning comme des erreurs.
         -Wall                                   # Active plusieurs warning.
         -Wextra                                 # Active encore plus de warning.
+        ${FSANITIZE_ADDR}
+    )
+
+    target_link_options(DeepLib PRIVATE
+        ${FSANITIZE_ADDR}
+    )
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    # Active l'outil de détection d'erreurs liées à la mémoire.
+    set(FSANITIZE_ADDR $<$<CONFIG:Debug>:/fsanitize=address>)
+
+    target_compile_options(DeepLib PRIVATE
+        /WX     # Considère les warning comme des erreurs.
+        /W4     # Niveau d'avertissement élevé.
         ${FSANITIZE_ADDR}
     )
 

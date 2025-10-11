@@ -33,4 +33,5 @@ La librairie doit être écrite tout en répondant à ces nécessités :
 Certaines restrictions sont mises en place pour avoir un code plus propre, modulaire et plus maintenable :
 
 - **Aucune** variable globale / statique, excepté le contexte global interne à la librairie.
-
+- Pas d'utilisation des mots clés `new` et `delete`.
+- Pas d'utilisation des fonctions `malloc` et `free`.

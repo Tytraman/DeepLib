@@ -1,4 +1,5 @@
 #include "ref_counted.hpp"
+#include "memory.hpp"
 
 namespace deep
 {

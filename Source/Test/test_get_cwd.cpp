@@ -1,23 +1,23 @@
-#include "DeepCore/filesystem.hpp"
 #include "lib.hpp"
+#include "DeepCore/filesystem.hpp"
 
 int main(int argc, char *argv[])
 {
-    deep::ctx context;
+    deep::ctx *context = deep::lib::create_ctx();
 
-    if (!deep::lib::create_context(context))
+    if (context == nullptr)
     {
         return 1;
     }
 
-    const char *cwd = deep::core_fs::get_current_working_directory();
+    const char *cwd = deep::core_fs::get_current_working_directory(context->get_internal_ctx());
 
     if (cwd == nullptr)
     {
         return 1;
     }
 
-    if (!deep::lib::destroy_context())
+    if (!deep::lib::destroy_ctx(context))
     {
         return 1;
     }

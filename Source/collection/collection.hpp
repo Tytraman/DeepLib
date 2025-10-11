@@ -1,7 +1,7 @@
 #ifndef DEEP_LIB_COLLECTION_HPP
 #define DEEP_LIB_COLLECTION_HPP
 
-#include "types.hpp"
+#include "../DeepCore/types.hpp"
 
 namespace deep
 {

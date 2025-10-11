@@ -10,18 +10,16 @@ namespace deep
     {
         internal_data_win32 *internal_data = static_cast<internal_data_win32 *>(internal_context);
 
-        return core_alloc(&internal_data->result, size);
-    }
-
-    void *core_alloc(uint64 *result, usize size)
-    {
         LPVOID addr;
 
         HANDLE process_heap = GetProcessHeap();
 
         if (process_heap == nullptr)
         {
-            *result = core_convert_error_code(GetLastError());
+            if (internal_data != nullptr)
+            {
+                internal_data->result = core_convert_error_code(GetLastError());
+            }
 
             return nullptr;
         }
@@ -34,7 +32,10 @@ namespace deep
             return nullptr;
         }
 
-        *result = error::NoError;
+        if (internal_data != nullptr)
+        {
+            internal_data->result = error::NoError;
+        }
 
         return addr;
     }
@@ -49,7 +50,10 @@ namespace deep
 
         if (process_heap == nullptr)
         {
-            internal_data->result = core_convert_error_code(GetLastError());
+            if (internal_data != nullptr)
+            {
+                internal_data->result = core_convert_error_code(GetLastError());
+            }
 
             return nullptr;
         }
@@ -69,6 +73,11 @@ namespace deep
             return nullptr;
         }
 
+        if (internal_data != nullptr)
+        {
+            internal_data->result = error::NoError;
+        }
+
         return addr;
     }
 
@@ -80,16 +89,27 @@ namespace deep
 
         if (process_heap == nullptr)
         {
-            internal_data->result = core_convert_error_code(GetLastError());
+            if (internal_data != nullptr)
+            {
+                internal_data->result = core_convert_error_code(GetLastError());
+            }
 
             return nullptr;
         }
 
         if (HeapFree(process_heap, 0, address) == 0)
         {
-            internal_data->result = core_convert_error_code(GetLastError());
+            if (internal_data != nullptr)
+            {
+                internal_data->result = core_convert_error_code(GetLastError());
+            }
 
             return false;
+        }
+
+        if (internal_data != nullptr)
+        {
+            internal_data->result = error::NoError;
         }
 
         return true;

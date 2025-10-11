@@ -150,6 +150,10 @@ namespace deep
         using ctype = const Type;
     };
 
+    /**
+     * @brief Retire la référence d'un type.
+     * @tparam Type
+     */
     template <class Type>
     using rm_ref = typename rm_ref_s<Type>::type;
 
@@ -158,6 +162,25 @@ namespace deep
     {
         return static_cast<rm_ref<Type> &&>(value);
     }
+
+    template <typename Type>
+    struct rm_const_s
+    {
+        using type = Type;
+    };
+
+    template <typename Type>
+    struct rm_const_s<const Type>
+    {
+        using type = Type;
+    };
+
+    /**
+     * @brief Retire la constance d'un type.
+     * @tparam Type
+     */
+    template <typename Type>
+    using rm_const = typename rm_const_s<Type>::type;
 
     using int8   = int8_d;
     using uint8  = uint8_d;

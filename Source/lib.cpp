@@ -1,38 +1,62 @@
 #include "lib.hpp"
-#include "DeepCore/core.hpp"
+#include "DeepCore/context.hpp"
+#include "DeepCore/memory.hpp"
 #include "DeepCore/error.hpp"
+#include "memory/memory_manager.hpp"
 
 namespace deep
 {
-    ctx *lib::g_current_context = nullptr;
-
     const char *lib::get_version()
     {
         return DEEP_LIB_VERSION;
     }
 
-    bool lib::create_context(ctx &context)
+    ctx *lib::create_ctx()
     {
-        // 'internal_data' peut être égale à nullptr selon le système.
-        context.internal_data = core::create_internal_context();
-
-        if (g_current_context == nullptr)
+        ctx *context = static_cast<ctx *>(core_mem::alloc(nullptr, sizeof(ctx)));
+        if (context == nullptr)
         {
-            set_current_context(context);
+            return nullptr;
         }
 
-        return true;
+        context->internal_data = core_ctx::create_internal_ctx();
+        if (context->internal_data == nullptr)
+        {
+            core_mem::dealloc(nullptr, context);
+
+            return nullptr;
+        }
+
+        context->mem = static_cast<memory_manager *>(core_mem::alloc(nullptr, sizeof(memory_manager)));
+        if (context->mem == nullptr)
+        {
+            core_ctx::destroy_internal_ctx(context->internal_data);
+            core_mem::dealloc(nullptr, context);
+
+            return nullptr;
+        }
+        context->mem->m_internal_context = context->internal_data;
+
+        return context;
     }
 
-    bool lib::destroy_context()
+    bool lib::destroy_ctx(ctx *context)
     {
-        // TODO: libérer la mémoire des autres membres du contexte
+        if (context == nullptr)
+        {
+            return false;
+        }
 
-        return core::destroy_internal_context();
-    }
+        if (!core_mem::dealloc(context->get_internal_ctx(), context->get_memory_manager()))
+        {
+            return false;
+        }
 
-    uint64 lib::get_context_result()
-    {
-        return core::get_internal_context_result();
+        if (!core_ctx::destroy_internal_ctx(context->get_internal_ctx()))
+        {
+            return false;
+        }
+
+        return core_mem::dealloc(nullptr, context);
     }
 } // namespace deep

@@ -1,10 +1,10 @@
-#include "../core.hpp"
+#include "../context.hpp"
 #include "../memory.hpp"
 #include "internal_data.hpp"
 
 namespace deep
 {
-    void *core_create_internal_context()
+    void *core_create_internal_ctx()
     {
         uint64 result;
 
@@ -20,14 +20,14 @@ namespace deep
         return internal_data;
     }
 
-    bool core_destroy_internal_context(void *internal_context)
+    bool core_destroy_internal_ctx(void *internal_ctx)
     {
         uint64 result;
-        internal_data_win32 *internal_data = static_cast<internal_data_win32 *>(internal_context);
 
-        if (!core_dealloc(&result, internal_data))
+        if (!core_dealloc(&result, internal_ctx))
         {
-            internal_data->result = result;
+            internal_data_win32 *internal_data = static_cast<internal_data_win32 *>(internal_ctx);
+            internal_data->result              = result;
 
             return false;
         }
@@ -35,14 +35,14 @@ namespace deep
         return true;
     }
 
-    uint64 core_get_internal_context_result(void *internal_context)
+    uint64 core_get_internal_ctx_result(void *internal_context)
     {
         internal_data_win32 *internal_data = static_cast<internal_data_win32 *>(internal_context);
 
         return internal_data->result;
     }
 
-    void core_set_internal_context_result(void *internal_context, uint64 result)
+    void core_set_internal_ctx_result(void *internal_context, uint64 result)
     {
         internal_data_win32 *internal_data = static_cast<internal_data_win32 *>(internal_context);
 

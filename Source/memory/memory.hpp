@@ -1,8 +1,11 @@
 #ifndef DEEP_LIB_MEMORY_HPP
 #define DEEP_LIB_MEMORY_HPP
 
-#include "../DeepCore/memory.hpp"
 #include "deep_lib_export.h"
+#include "../context.hpp"
+#include "mem_ptr.hpp"
+#include "memory_manager.hpp"
+#include "../DeepCore/memory.hpp"
 
 #include <new>
 #include <utility>
@@ -17,43 +20,53 @@ namespace deep
     {
       public:
         // TODO: static void *alloc(usize size);
-        // TODO: static void *realloc(void *address, usize size);
+
+        template <typename Type>
+        static bool realloc(mem_ptr<Type> &data, usize size);
+
         // TODO: static bool dealloc(void *address);
 
         template <typename Type, typename... Args>
-        static Type *alloc_type(Args &&...args);
+        static mem_ptr<Type> alloc_type(ctx *context, Args &&...args);
 
         template <typename Type>
-        static bool dealloc_type(Type *ptr);
+        static bool dealloc_type(mem_ptr<Type> &data);
     };
 
-    template <typename Type, typename... Args>
-    inline Type *mem::alloc_type(Args &&...args)
+    template <typename Type>
+    inline bool mem::realloc(mem_ptr<Type> &data, usize size)
     {
-        // TODO: utiliser mem::alloc plutôt que core_mem::alloc
-        Type *obj = (Type *) core_mem::alloc(sizeof(Type));
-
-        if (obj == nullptr)
+        memory_manager *mem = data.get_memory_manager();
+        if (mem == nullptr)
         {
-            return nullptr;
+            return false;
         }
 
-        new (obj) Type(std::forward<Args>(args)...);
+        return mem->realloc(data, size);
+    }
 
-        return obj;
+    template <typename Type, typename... Args>
+    inline mem_ptr<Type> mem::alloc_type(ctx *context, Args &&...args)
+    {
+        memory_manager *mem = context->get_memory_manager();
+        if (mem == nullptr)
+        {
+            return mem_ptr<Type>();
+        }
+
+        return mem->alloc<Type>(std::forward<Args>(args)...);
     }
 
     template <typename Type>
-    inline bool mem::dealloc_type(Type *ptr)
+    inline bool mem::dealloc_type(mem_ptr<Type> &data)
     {
-        // Si l'objet a un destructeur défini, l'appelle.
-        if (!is_trivially_destructible<Type>)
+        memory_manager *mem = data.get_memory_manager();
+        if (mem == nullptr)
         {
-            ptr->~Type();
+            return false;
         }
 
-        // TODO: utiliser mem::dealloc plutôt que core_mem::dealloc
-        return core_mem::dealloc(ptr);
+        return mem->dealloc(data);
     }
 } // namespace deep
 

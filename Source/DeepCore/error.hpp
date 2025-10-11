@@ -45,6 +45,7 @@ namespace deep
         static constexpr uint64 AccessDenied                 = 33;
         static constexpr uint64 BadAccess                    = 34;
         static constexpr uint64 BadData                      = 35;
+        static constexpr uint64 NoInternalCtx                = 36;
     } // namespace error
 } // namespace deep
 

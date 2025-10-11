@@ -102,15 +102,15 @@ namespace deep
         /**
          * @brief Retourne le chemin de travail actuel.
          */
-        static const char *get_current_working_directory();
+        static const char *get_current_working_directory(void *internal_context);
 
         /**
          * @brief Ouvre un fichier.
          */
-        static fd open_file(const char *filename, file_mode mode,
+        static fd open_file(void *internal_context, const char *filename, file_mode mode,
                             file_access access, file_share share);
 
-        static bool delete_file(const char *filename);
+        static bool delete_file(void *internal_context, const char *filename);
     };
 
     extern const char *core_get_current_working_directory(void *internal_context);

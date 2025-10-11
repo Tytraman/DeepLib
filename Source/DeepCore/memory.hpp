@@ -15,14 +15,12 @@ namespace deep
         static constexpr uint8 ProtExec  = 0x04;
 
       public:
-        static void *alloc(usize size);
-        static void *realloc(void *address, usize size);
-        static bool dealloc(void *address);
+        static void *alloc(void *internal_context, usize size);
+        static void *realloc(void *internal_context, void *address, usize size);
+        static bool dealloc(void *internal_context, void *address);
     };
 
     extern void *core_alloc(void *internal_context, usize size);
-    extern void *core_alloc(uint64 *result, usize size);
-
     extern void *core_realloc(void *internal_context, void *address, usize size);
     extern bool core_dealloc(void *internal_context, void *address);
 } // namespace deep

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15.7)
 
 add_library(DeepCore SHARED
-    core.cpp
+    context.cpp
     filesystem.cpp
     memory.cpp)
 add_library(Deep::Core ALIAS DeepCore)
@@ -30,7 +30,7 @@ if(UNIX)
     )
 elseif(WIN32)
     target_sources(DeepCore PRIVATE
-        "${CMAKE_CURRENT_SOURCE_DIR}/windows/core.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/windows/context.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/windows/filesystem.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/windows/error.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/windows/memory.cpp"
@@ -50,6 +50,19 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         -Werror            
         -Wall
         -Wextra            
+        ${FSANITIZE_ADDR}
+    )
+
+    target_link_options(DeepCore PRIVATE
+        ${FSANITIZE_ADDR}
+    )
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    # Active l'outil de détection d'erreurs liées à la mémoire.
+    set(FSANITIZE_ADDR $<$<CONFIG:Debug>:/fsanitize=address>)
+
+    target_compile_options(DeepCore PRIVATE
+        /WX     # Considère les warning comme des erreurs.
+        /W4     # Niveau d'avertissement élevé.
         ${FSANITIZE_ADDR}
     )
 
