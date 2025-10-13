@@ -5,6 +5,7 @@
 #include "../DeepCore/types.hpp"
 #include "../DeepCore/memory.hpp"
 #include "mem_ptr.hpp"
+#include "buffer_ptr.hpp"
 
 #include <new>
 #include <utility>
@@ -21,10 +22,16 @@ namespace deep
         mem_ptr<Type> alloc(Args &&...args);
 
         template <typename Type>
-        bool realloc(mem_ptr<Type> &data, usize size);
+        buffer_ptr<Type> alloc(usize number_of_elements);
+
+        template <typename Type>
+        bool realloc(buffer_ptr<Type> &buffer, usize number_of_elements);
 
         template <typename Type>
         bool dealloc(mem_ptr<Type> &data);
+
+        template <typename Type>
+        bool dealloc(buffer_ptr<Type> &buffer);
 
       private:
         friend class lib;
@@ -35,7 +42,6 @@ namespace deep
     template <typename Type, typename... Args>
     inline mem_ptr<Type> memory_manager::alloc(Args &&...args)
     {
-        // TODO: utiliser mem::alloc plutôt que core_mem::alloc
         Type *obj = (Type *) core_mem::alloc(m_internal_context, sizeof(Type));
 
         if (obj == nullptr)
@@ -49,16 +55,29 @@ namespace deep
     }
 
     template <typename Type>
-    inline bool memory_manager::realloc(mem_ptr<Type> &data, usize size)
+    inline buffer_ptr<Type> memory_manager::alloc(usize number_of_elements)
     {
-        Type *ptr = static_cast<Type *>(core_mem::realloc(m_internal_context, data.get(), size));
+        Type *obj = (Type *) core_mem::alloc(m_internal_context, sizeof(Type) * number_of_elements);
+
+        if (obj == nullptr)
+        {
+            return buffer_ptr<Type>();
+        }
+
+        return buffer_ptr<Type>(this, obj);
+    }
+
+    template <typename Type>
+    inline bool memory_manager::realloc(buffer_ptr<Type> &buffer, usize number_of_elements)
+    {
+        Type *ptr = static_cast<Type *>(core_mem::realloc(m_internal_context, buffer.get(), sizeof(Type) * number_of_elements));
 
         if (ptr == nullptr)
         {
             return false;
         }
 
-        data.set(ptr);
+        buffer.set(ptr);
 
         return true;
     }
@@ -86,7 +105,33 @@ namespace deep
     }
 
     template <typename Type>
+    inline bool memory_manager::dealloc(buffer_ptr<Type> &buffer)
+    {
+        Type *ptr = buffer.get();
+
+        if (!core_mem::dealloc(m_internal_context, ptr))
+        {
+            return false;
+        }
+
+        buffer.set(nullptr);
+
+        return true;
+    }
+
+    template <typename Type>
     inline bool mem_ptr<Type>::destroy()
+    {
+        if (m_memory_manager == nullptr)
+        {
+            return false;
+        }
+
+        return m_memory_manager->dealloc(*this);
+    }
+
+    template <typename Type>
+    inline bool buffer_ptr<Type>::destroy()
     {
         if (m_memory_manager == nullptr)
         {

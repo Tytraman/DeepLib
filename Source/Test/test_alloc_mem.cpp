@@ -1,5 +1,5 @@
 #include "lib.hpp"
-#include "DeepCore/memory.hpp"
+#include "memory/memory.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -10,21 +10,21 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    void *addr = deep::core_mem::alloc(context->get_internal_ctx(), 1000);
+    deep::buffer_ptr<int> buffer = deep::mem::alloc<int>(context, 100);
 
-    if (addr == nullptr)
+    if (!buffer.is_valid())
     {
         return 1;
     }
 
-    addr = deep::core_mem::realloc(context->get_internal_ctx(), addr, 2000);
-
-    if (addr == nullptr)
+    if (!deep::mem::realloc(buffer, 500))
     {
+        deep::mem::dealloc(buffer);
+
         return 1;
     }
 
-    if (!deep::core_mem::dealloc(context->get_internal_ctx(), addr))
+    if (!deep::mem::dealloc(buffer))
     {
         return 1;
     }

@@ -1,5 +1,5 @@
-#ifndef DEEP_LIB_MEM_PTR_HPP
-#define DEEP_LIB_MEM_PTR_HPP
+#ifndef DEEP_LIB_BUFFER_PTR_HPP
+#define DEEP_LIB_BUFFER_PTR_HPP
 
 #include "../context.hpp"
 
@@ -8,19 +8,17 @@ namespace deep
     class memory_manager;
 
     template <typename Type>
-    class mem_ptr
+    class buffer_ptr
     {
       public:
-        mem_ptr();
-        mem_ptr(ctx *context, Type *ptr);
-        mem_ptr(memory_manager *manager, Type *ptr);
+        buffer_ptr();
+        buffer_ptr(ctx *context, Type *ptr);
+        buffer_ptr(memory_manager *manager, Type *ptr);
 
-        mem_ptr(const mem_ptr &)            = delete;
-        mem_ptr &operator=(const mem_ptr &) = delete;
+        buffer_ptr(const buffer_ptr &)            = delete;
+        buffer_ptr &operator=(const buffer_ptr &) = delete;
 
         bool destroy();
-
-        Type *operator->();
 
         bool is_valid() const;
         bool is_null() const;
@@ -38,13 +36,13 @@ namespace deep
     };
 
     template <typename Type>
-    inline mem_ptr<Type>::mem_ptr()
+    inline buffer_ptr<Type>::buffer_ptr()
             : m_memory_manager(nullptr), m_ptr(nullptr)
     {
     }
 
     template <typename Type>
-    inline mem_ptr<Type>::mem_ptr(ctx *context, Type *ptr)
+    inline buffer_ptr<Type>::buffer_ptr(ctx *context, Type *ptr)
             : m_memory_manager(nullptr), m_ptr(ptr)
     {
         if (context != nullptr)
@@ -54,55 +52,49 @@ namespace deep
     }
 
     template <typename Type>
-    inline mem_ptr<Type>::mem_ptr(memory_manager *manager, Type *ptr)
+    inline buffer_ptr<Type>::buffer_ptr(memory_manager *manager, Type *ptr)
             : m_memory_manager(manager), m_ptr(ptr)
     {
     }
 
     template <typename Type>
-    inline Type *mem_ptr<Type>::operator->()
-    {
-        return m_ptr;
-    }
-
-    template <typename Type>
-    inline bool mem_ptr<Type>::is_valid() const
+    inline bool buffer_ptr<Type>::is_valid() const
     {
         return m_ptr != nullptr;
     }
 
     template <typename Type>
-    inline bool mem_ptr<Type>::is_null() const
+    inline bool buffer_ptr<Type>::is_null() const
     {
         return m_ptr == nullptr;
     }
 
     template <typename Type>
-    inline Type *mem_ptr<Type>::get()
+    inline Type *buffer_ptr<Type>::get()
     {
         return m_ptr;
     }
 
     template <typename Type>
-    inline Type *mem_ptr<Type>::get_const() const
+    inline Type *buffer_ptr<Type>::get_const() const
     {
         return m_ptr;
     }
 
     template <typename Type>
-    inline memory_manager *mem_ptr<Type>::get_memory_manager()
+    inline memory_manager *buffer_ptr<Type>::get_memory_manager()
     {
         return m_memory_manager;
     }
 
     template <typename Type>
-    inline memory_manager *mem_ptr<Type>::get_memory_manager_const() const
+    inline memory_manager *buffer_ptr<Type>::get_memory_manager_const() const
     {
         return m_memory_manager;
     }
 
     template <typename Type>
-    inline void mem_ptr<Type>::set(Type *ptr)
+    inline void buffer_ptr<Type>::set(Type *ptr)
     {
         m_ptr = ptr;
     }
