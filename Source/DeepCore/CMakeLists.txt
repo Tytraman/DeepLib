@@ -4,7 +4,8 @@ add_library(DeepCore SHARED
     context.cpp
     filesystem.cpp
     memory.cpp
-    string/unicode.cpp)
+    string/unicode.cpp
+    string/utf8.cpp)
 add_library(Deep::Core ALIAS DeepCore)
 
 target_include_directories(DeepCore PRIVATE

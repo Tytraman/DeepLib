@@ -1,4 +1,4 @@
-#ifndef DEEP_CORE_TYPES_HPP
+﻿#ifndef DEEP_CORE_TYPES_HPP
 #define DEEP_CORE_TYPES_HPP
 
 #include <stdint.h>
@@ -257,12 +257,24 @@ namespace deep
 #define DEEP_TEXT_NATIVE_BYTES_SIZE(__str) deep::core_unicode::calc_bytes_size(__str)
 #define DEEP_TEXT_NATIVE_LENGTH(__str) deep::core_unicode::calc_length(__str)
 #elif defined(DEEP_UNIX)
+#include "string/utf8.hpp"
 #define native_char_d char
 
 #define DEEP_NATIVE_ENCODING deep::string_encoding::UTF8
 
 #define DEEP_TEXT_NATIVE(__value) __value
+
+#define DEEP_TEXT_NATIVE_BYTES_SIZE(__str) deep::core_utf8::calc_bytes_size(__str)
+#define DEEP_TEXT_NATIVE_LENGTH(__str) deep::core_utf8::calc_length(__str)
 #endif
+#endif
+
+#ifndef DEEP_TEXT_UTF8
+#define DEEP_TEXT_UTF8(__value) DEEP_CONCAT(u8, __value)
+#endif
+
+#ifndef DEEP_STRING
+#define DEEP_STRING(__value) DEEP_TEXT_UTF8(__value)
 #endif
 
 #ifndef fd_d

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15.7)
+﻿cmake_minimum_required(VERSION 3.15.7)
 
 project(DeepLibProject
     VERSION 0.0.1
@@ -171,6 +171,9 @@ deep_create_test(OwnedPtr LINK_DEEP_CORE LINK_DEEP_LIB
 
 deep_create_test(StringNative LINK_DEEP_CORE LINK_DEEP_LIB
     SOURCES test_string_native.cpp)
+
+deep_create_test(String1 LINK_DEEP_CORE LINK_DEEP_LIB
+    SOURCES test_string1.cpp)
 
 # Crée un lien symbolique vers 'compile_commands.json' généré dans le dossier de Build.
 file(CREATE_LINK
