@@ -3,7 +3,7 @@
 
 #include "deep_lib_export.h"
 #include "../DeepCore/types.hpp"
-#include "mem_ptr.hpp"
+#include "managed_ptr.hpp"
 
 namespace deep
 {
@@ -58,11 +58,10 @@ namespace deep
     }
 
     template <typename Type>
-    class ref
+    class ref : public managed_ptr<ref<Type>, Type>
     {
       public:
-        ref();
-        ref(mem_ptr<Type> data);
+        using managed_ptr<ref<Type>, Type>::managed_ptr;
 
         /**
          * @brief Crée une nouvelle référence vers l'objet et ajoute 1 à son compteur.
@@ -75,7 +74,7 @@ namespace deep
          */
         ~ref();
 
-        static const ref<Type> invalid;
+        bool destroy_impl();
 
         /**
          * @brief Change l'objet référencé et ajoute 1 à son compteur.
@@ -95,41 +94,15 @@ namespace deep
         bool operator!=(const Type *ptr) const;
         bool operator==(const ref<Type> &other) const;
         bool operator!=(const ref<Type> &other) const;
-
-        bool is_valid() const;
-        bool is_null() const;
-
-        Type *get();
-        Type *get_const() const;
-
-      private:
-        mem_ptr<Type> m_data;
     };
 
     template <typename Type>
-    inline ref<Type>::ref()
-    {
-    }
-
-    template <typename Type>
-    inline ref<Type>::ref(mem_ptr<Type> data)
-            : m_data(data.get_memory_manager(), data.get())
-    {
-        static_assert(is_base_of<ref_counted, Type>, "The specified class needs to inherit from class ref_counted.");
-
-        if (data.is_valid())
-        {
-            data->take();
-        }
-    }
-
-    template <typename Type>
     inline ref<Type>::ref(const ref<Type> &other)
-            : m_data(other.m_data.get_memory_manager_const(), other.m_data.get_const())
+            : managed_ptr(other.get_memory_manager(), other.get(), other.get_bytes_size())
     {
-        if (m_data.is_valid())
+        if (is_valid())
         {
-            m_data->take();
+            m_ptr->take();
         }
     }
 
@@ -140,9 +113,27 @@ namespace deep
     }
 
     template <typename Type>
+    inline bool ref<Type>::destroy_impl()
+    {
+        if (m_memory_manager == nullptr)
+        {
+            return false;
+        }
+
+        if (!m_memory_manager->dealloc(m_ptr))
+        {
+            return false;
+        }
+
+        m_ptr = nullptr;
+
+        return true;
+    }
+
+    template <typename Type>
     inline void ref<Type>::reference(const ref &from)
     {
-        Type *ptr = from.m_data.get_const();
+        Type *ptr = from.m_data.get();
 
         if (m_data.get_const() == ptr)
         {
@@ -161,9 +152,9 @@ namespace deep
     template <typename Type>
     inline void ref<Type>::unreference()
     {
-        if (m_data.is_valid() && m_data->drop())
+        if (is_valid() && m_ptr->drop())
         {
-            m_data.destroy();
+            destroy();
         }
     }
 
@@ -178,13 +169,13 @@ namespace deep
     template <typename Type>
     Type *ref<Type>::operator->()
     {
-        return m_data.get();
+        return m_ptr;
     }
 
     template <typename Type>
     Type &ref<Type>::operator*()
     {
-        return *m_data.get();
+        return *m_ptr;
     }
 
     template <typename Type>
@@ -209,30 +200,6 @@ namespace deep
     inline bool ref<Type>::operator!=(const ref<Type> &other) const
     {
         return m_data.get_const() != other.m_data.get_const();
-    }
-
-    template <typename Type>
-    inline bool ref<Type>::is_valid() const
-    {
-        return m_data.is_valid();
-    }
-
-    template <typename Type>
-    inline bool ref<Type>::is_null() const
-    {
-        return m_data.is_null();
-    }
-
-    template <typename Type>
-    Type *ref<Type>::get()
-    {
-        return m_data.get();
-    }
-
-    template <typename Type>
-    Type *ref<Type>::get_const() const
-    {
-        return m_data.get_const();
     }
 
     template <typename Type, typename Kype>

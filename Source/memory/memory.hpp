@@ -5,6 +5,7 @@
 #include "../context.hpp"
 #include "mem_ptr.hpp"
 #include "buffer_ptr.hpp"
+#include "managed_ptr.hpp"
 #include "memory_manager.hpp"
 #include "../DeepCore/memory.hpp"
 
@@ -21,35 +22,49 @@ namespace deep
     {
       public:
         template <typename Type>
-        static buffer_ptr<Type> alloc(ctx *context, usize number_of_elements);
+        static Type *alloc(ctx *context, usize bytes_size);
 
         template <typename Type>
-        static bool realloc(buffer_ptr<Type> &buffer, usize number_of_elements);
+        static Type *realloc(memory_manager *manager, Type *address, usize bytes_size);
+
+        template <typename Type>
+        static bool realloc(buffer_ptr<Type> &buffer, usize bytes_size);
 
         template <typename Type>
         static bool dealloc(buffer_ptr<Type> &buffer);
 
         template <typename Type, typename... Args>
-        static mem_ptr<Type> alloc_type(ctx *context, Args &&...args);
+        static Type *alloc_type(ctx *context, Args &&...args);
 
         template <typename Type>
         static bool dealloc_type(mem_ptr<Type> &data);
     };
 
     template <typename Type>
-    inline buffer_ptr<Type> mem::alloc(ctx *context, usize number_of_elements)
+    inline Type *mem::alloc(ctx *context, usize bytes_size)
     {
         memory_manager *mem = context->get_memory_manager();
         if (mem == nullptr)
         {
-            return buffer_ptr<Type>();
+            return nullptr;
         }
 
-        return mem->alloc<Type>(number_of_elements);
+        return mem->alloc<Type>(bytes_size);
     }
 
     template <typename Type>
-    inline bool mem::realloc(buffer_ptr<Type> &buffer, usize number_of_elements)
+    inline Type *mem::realloc(memory_manager *manager, Type *address, usize bytes_size)
+    {
+        if (manager == nullptr)
+        {
+            return nullptr;
+        }
+
+        return manager->realloc(address, bytes_size);
+    }
+
+    template <typename Type>
+    inline bool mem::realloc(buffer_ptr<Type> &buffer, usize bytes_size)
     {
         memory_manager *mem = buffer.get_memory_manager();
         if (mem == nullptr)
@@ -57,7 +72,7 @@ namespace deep
             return false;
         }
 
-        return mem->realloc(buffer, number_of_elements);
+        return mem->realloc(buffer, bytes_size);
     }
 
     template <typename Type>
@@ -73,12 +88,12 @@ namespace deep
     }
 
     template <typename Type, typename... Args>
-    inline mem_ptr<Type> mem::alloc_type(ctx *context, Args &&...args)
+    inline Type *mem::alloc_type(ctx *context, Args &&...args)
     {
         memory_manager *mem = context->get_memory_manager();
         if (mem == nullptr)
         {
-            return mem_ptr<Type>();
+            return nullptr;
         }
 
         return mem->alloc<Type>(std::forward<Args>(args)...);

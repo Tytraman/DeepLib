@@ -67,7 +67,7 @@ namespace deep
 
     template <typename Type>
     list<Type>::list(ctx *context, uint32 capacity_step)
-            : collection<Type>(), m_buffer(context, nullptr), m_capacity(0), m_capacity_step(capacity_step)
+            : collection<Type>(), m_buffer(context, nullptr, 0), m_capacity(0), m_capacity_step(capacity_step)
     {
     }
 
@@ -205,7 +205,7 @@ namespace deep
     size_t list<Type>::find(const Type &to_search) const
     {
         // Pointeur vers le tableau des éléments de la liste.
-        uint8 *ptr               = (uint8 *) m_buffer.get_const();
+        uint8 *ptr               = (uint8 *) m_buffer.get();
         usize number_of_elements = m_number_of_elements;
         usize index              = 0;
         usize element_size       = sizeof(Type);
@@ -241,7 +241,7 @@ namespace deep
 
         size_t new_capacity = (number_of_elements / m_capacity_step + 1) * m_capacity_step;
 
-        if (!mem::realloc(m_buffer, new_capacity * sizeof(Type)))
+        if (!mem::realloc(m_buffer, new_capacity))
         {
             return false;
         }
@@ -261,7 +261,7 @@ namespace deep
     template <typename Type>
     void list<Type>::empty()
     {
-        m_buffer.set(nullptr);
+        m_buffer.set(nullptr, 0);
         m_number_of_elements = 0;
         m_capacity           = 0;
     }

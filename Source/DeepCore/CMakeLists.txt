@@ -3,7 +3,8 @@ cmake_minimum_required(VERSION 3.15.7)
 add_library(DeepCore SHARED
     context.cpp
     filesystem.cpp
-    memory.cpp)
+    memory.cpp
+    string/unicode.cpp)
 add_library(Deep::Core ALIAS DeepCore)
 
 target_include_directories(DeepCore PRIVATE

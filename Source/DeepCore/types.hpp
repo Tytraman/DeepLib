@@ -47,19 +47,8 @@
 #define uint64_d uint64_t
 #endif
 
-#ifndef bool_d
-#include <stdbool.h>
-#define bool_d bool
-#endif
-
-#ifndef d_true
-#include <stdbool.h>
-#define d_true true
-#endif
-
-#ifndef d_false
-#include <stdbool.h>
-#define d_false false
+#ifndef wchar_d
+#define wchar_d wchar_t
 #endif
 
 namespace deep
@@ -182,6 +171,12 @@ namespace deep
     template <typename Type>
     using rm_const = typename rm_const_s<Type>::type;
 
+    template <typename Type>
+    constexpr rm_ref<Type> &&move(Type &&value) noexcept
+    {
+        return static_cast<rm_ref<Type> &&>(value);
+    }
+
     using int8   = int8_d;
     using uint8  = uint8_d;
     using int16  = int16_d;
@@ -190,6 +185,14 @@ namespace deep
     using uint32 = uint32_d;
     using int64  = int64_d;
     using uint64 = uint64_d;
+
+    using wchar = wchar_d;
+
+    enum class string_encoding
+    {
+        UTF8,
+        Unicode
+    };
 } // namespace deep
 
 #ifndef isize_d
@@ -226,12 +229,39 @@ namespace deep
 #endif // unix
 #endif
 
+#define DEEP_CONCAT_HELPER(__a, __b) __a##__b
+#define DEEP_STRINGIFY_HELPER(__value) #__value
+
+#define DEEP_CONCAT(__a, __b) DEEP_CONCAT_HELPER(__a, __b)
+#define DEEP_STRINGIFY(__value) DEEP_STRINGIFY_HELPER(__value)
+
 #ifndef native_error_d
 #if defined(DEEP_WINDOWS)
 #include <Windows.h>
 #define native_error_d DWORD
 #elif defined(DEEP_UNIX)
 #define native_error_d int
+#endif
+#endif
+
+#ifndef native_char_d
+#if defined(DEEP_WINDOWS)
+#include <Windows.h>
+#include "string/unicode.hpp"
+#define native_char_d WCHAR
+
+#define DEEP_NATIVE_ENCODING deep::string_encoding::Unicode
+
+#define DEEP_TEXT_NATIVE(__value) DEEP_CONCAT(L, __value)
+
+#define DEEP_TEXT_NATIVE_BYTES_SIZE(__str) deep::core_unicode::calc_bytes_size(__str)
+#define DEEP_TEXT_NATIVE_LENGTH(__str) deep::core_unicode::calc_length(__str)
+#elif defined(DEEP_UNIX)
+#define native_char_d char
+
+#define DEEP_NATIVE_ENCODING deep::string_encoding::UTF8
+
+#define DEEP_TEXT_NATIVE(__value) __value
 #endif
 #endif
 
@@ -261,7 +291,7 @@ namespace deep
 
 namespace deep
 {
-
+    using native_char  = native_char_d;
     using native_error = native_error_d;
     using fd           = fd_d;
 #if defined(DEEP_WINDOWS)
@@ -272,6 +302,16 @@ namespace deep
     using path_char      = path_char_d;
     using path_str       = path_str_d;
     using const_path_str = const_path_str_d;
+
+    template <typename Type, typename K = Type>
+    Type exchange(Type &value, K &&new_value) noexcept
+    {
+        Type old_value = static_cast<Type &&>(value);
+
+        value = static_cast<K &&>(new_value);
+
+        return old_value;
+    }
 } // namespace deep
 
 #endif

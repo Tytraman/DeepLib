@@ -1,62 +1,39 @@
 #ifndef DEEP_LIB_MEM_PTR_HPP
 #define DEEP_LIB_MEM_PTR_HPP
 
-#include "../context.hpp"
+#include "managed_ptr.hpp"
 
 namespace deep
 {
-    class memory_manager;
-
     template <typename Type>
-    class mem_ptr
+    class mem_ptr : public managed_ptr<mem_ptr<Type>, Type>
     {
       public:
-        mem_ptr();
-        mem_ptr(ctx *context, Type *ptr);
-        mem_ptr(memory_manager *manager, Type *ptr);
+        using managed_ptr<mem_ptr<Type>, Type>::managed_ptr;
 
-        mem_ptr(const mem_ptr &)            = delete;
-        mem_ptr &operator=(const mem_ptr &) = delete;
-
-        bool destroy();
+        bool destroy_impl();
 
         Type *operator->();
-
-        bool is_valid() const;
-        bool is_null() const;
-
-        Type *get();
-        Type *get_const() const;
-        memory_manager *get_memory_manager();
-        memory_manager *get_memory_manager_const() const;
-
-        void set(Type *ptr);
-
-      private:
-        memory_manager *m_memory_manager;
-        Type *m_ptr;
+        Type &operator*();
     };
 
     template <typename Type>
-    inline mem_ptr<Type>::mem_ptr()
-            : m_memory_manager(nullptr), m_ptr(nullptr)
+    inline bool mem_ptr<Type>::destroy_impl()
     {
-    }
-
-    template <typename Type>
-    inline mem_ptr<Type>::mem_ptr(ctx *context, Type *ptr)
-            : m_memory_manager(nullptr), m_ptr(ptr)
-    {
-        if (context != nullptr)
+        if (m_memory_manager == nullptr)
         {
-            m_memory_manager = context->get_memory_manager();
+            return false;
         }
-    }
 
-    template <typename Type>
-    inline mem_ptr<Type>::mem_ptr(memory_manager *manager, Type *ptr)
-            : m_memory_manager(manager), m_ptr(ptr)
-    {
+        if (!m_memory_manager->dealloc(m_ptr))
+        {
+            return false;
+        }
+
+        m_ptr        = nullptr;
+        m_bytes_size = 0;
+
+        return true;
     }
 
     template <typename Type>
@@ -66,45 +43,9 @@ namespace deep
     }
 
     template <typename Type>
-    inline bool mem_ptr<Type>::is_valid() const
+    inline Type &mem_ptr<Type>::operator*()
     {
-        return m_ptr != nullptr;
-    }
-
-    template <typename Type>
-    inline bool mem_ptr<Type>::is_null() const
-    {
-        return m_ptr == nullptr;
-    }
-
-    template <typename Type>
-    inline Type *mem_ptr<Type>::get()
-    {
-        return m_ptr;
-    }
-
-    template <typename Type>
-    inline Type *mem_ptr<Type>::get_const() const
-    {
-        return m_ptr;
-    }
-
-    template <typename Type>
-    inline memory_manager *mem_ptr<Type>::get_memory_manager()
-    {
-        return m_memory_manager;
-    }
-
-    template <typename Type>
-    inline memory_manager *mem_ptr<Type>::get_memory_manager_const() const
-    {
-        return m_memory_manager;
-    }
-
-    template <typename Type>
-    inline void mem_ptr<Type>::set(Type *ptr)
-    {
-        m_ptr = ptr;
+        return *m_ptr;
     }
 } // namespace deep
 

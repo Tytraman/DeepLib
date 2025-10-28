@@ -18,6 +18,7 @@ add_subdirectory(DeepCore)
 add_library(DeepLib SHARED
     context.cpp
     lib.cpp
+    memory/memory_manager.cpp
     memory/ref_counted.cpp
 )
 add_library(Deep::Lib ALIAS DeepLib)
@@ -164,6 +165,12 @@ deep_create_test(List LINK_DEEP_CORE LINK_DEEP_LIB
 
 deep_create_test(RefCounted LINK_DEEP_CORE LINK_DEEP_LIB
     SOURCES test_ref_counted.cpp)
+
+deep_create_test(OwnedPtr LINK_DEEP_CORE LINK_DEEP_LIB
+    SOURCES test_owned_ptr.cpp)
+
+deep_create_test(StringNative LINK_DEEP_CORE LINK_DEEP_LIB
+    SOURCES test_string_native.cpp)
 
 # Crée un lien symbolique vers 'compile_commands.json' généré dans le dossier de Build.
 file(CREATE_LINK
