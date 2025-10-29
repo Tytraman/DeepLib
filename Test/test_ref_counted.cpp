@@ -1,0 +1,54 @@
+﻿#include "DeepLib/lib.hpp"
+#include "DeepLib/memory/memory.hpp"
+#include "DeepLib/memory/ref_counted.hpp"
+
+class test_ref_counted : public deep::ref_counted
+{
+};
+
+int main(int argc, char *argv[])
+{
+    deep::ctx *context = deep::lib::create_ctx();
+
+    if (context == nullptr)
+    {
+        return 1;
+    }
+
+    {
+        deep::ref<test_ref_counted> ref_test_1 = deep::ref<test_ref_counted>(context, deep::mem::alloc_type<test_ref_counted>(context), sizeof(test_ref_counted));
+
+        if (ref_test_1->get_ref_count() != 1)
+        {
+            return 2;
+        }
+
+        deep::ref<test_ref_counted> ref_test_2 = ref_test_1;
+
+        if (ref_test_1->get_ref_count() != 2)
+        {
+            return 3;
+        }
+
+        {
+            deep::ref<test_ref_counted> ref_test_3 = ref_test_1;
+
+            if (ref_test_1->get_ref_count() != 3)
+            {
+                return 4;
+            }
+        }
+
+        if (ref_test_2->get_ref_count() != 2)
+        {
+            return 5;
+        }
+    }
+
+    if (!deep::lib::destroy_ctx(context))
+    {
+        return 6;
+    }
+
+    return 0;
+}

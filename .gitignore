@@ -1,9 +1,9 @@
-.vs/
+﻿.vs/
 .cache/
-Source/.cache/
-Source/compile_commands.json
+compile_commands.json
 Build/
 Testing/
+out/
 
 *.srctrlbm
 *.srctrldb
