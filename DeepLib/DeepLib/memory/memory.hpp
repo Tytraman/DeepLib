@@ -46,6 +46,9 @@ namespace deep
         static Type *alloc_type(memory_manager *manager, Args &&...args);
 
         template <typename Type>
+        static bool dealloc_type(memory_manager *manager, Type *address);
+
+        template <typename Type>
         static bool dealloc_type(mem_ptr<Type> &data);
     };
 
@@ -150,6 +153,17 @@ namespace deep
         }
 
         return manager->alloc<Type>(std::forward<Args>(args)...);
+    }
+
+    template <typename Type>
+    inline bool mem::dealloc_type(memory_manager *manager, Type *address)
+    {
+        if (manager == nullptr)
+        {
+            return false;
+        }
+
+        return manager->dealloc(address);
     }
 
     template <typename Type>

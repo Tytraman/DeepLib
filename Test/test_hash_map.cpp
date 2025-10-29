@@ -77,6 +77,27 @@ int main(int argc, char *argv[])
         return 13;
     }
 
+    if (map.get_number_of_elements() != 4)
+    {
+        return 14;
+    }
+
+    if (!map.remove(key1))
+    {
+        return 15;
+    }
+
+    entry = map[key1];
+    if (entry != nullptr)
+    {
+        return 16;
+    }
+
+    if (map.get_number_of_elements() != 3)
+    {
+        return 17;
+    }
+
     if (!deep::lib::destroy_ctx(context))
     {
         return 100;

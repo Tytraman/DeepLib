@@ -31,11 +31,36 @@ namespace deep
         hash_map() = delete;
         hash_map(ctx *context, usize size = 10);
 
+        /**
+         * @brief Récupère l'entrée correspondante à la clé spécifiée.
+         * @param key La clé à rechercher.
+         * @return L'entrée liée à la clé ou `nullptr` si rien n'est trouvé.
+         */
         hash_entry<Type> *operator[](const char *key);
         hash_entry<Type> *operator[](uint64 key);
 
+        /**
+         * @brief Insère un élément lié à la clé spécifiée. Si une clé existe déjà, remplace sa valeur avec la nouvelle.
+         * @param key La clé à laquelle lier l'élément.
+         * @param value L'élément à insérer.
+         * @return L'entrée insérée ou `nullptr` en cas d'erreur.
+         */
         hash_entry<Type> *insert(const char *key, const Type &value);
         hash_entry<Type> *insert(uint64 key, const Type &value);
+
+        /**
+         * @brief Supprime l'entrée liée à la clé spécifiée.
+         * @param key La clé à laquelle supprimer l'entrée.
+         * @return
+         */
+        bool remove(const char *key);
+        bool remove(uint64 key);
+
+        /**
+         * @brief Permet d'obtenir le nombre d'éléments stockés dans la `hash_map`.
+         * @return Le nombre d'éléments stockés dans la `hash_map`.
+         */
+        usize get_number_of_elements() const;
 
       private:
         hash_entry<Type> **m_map;
@@ -155,6 +180,57 @@ namespace deep
         m_number_of_elements++;
 
         return entry->next;
+    }
+
+    template <typename Type>
+    inline bool hash_map<Type>::remove(const char *key)
+    {
+        return remove(string::hash(key));
+    }
+
+    template <typename Type>
+    inline bool hash_map<Type>::remove(uint64 key)
+    {
+        // Récupère l'entrée à supprimer.
+        hash_entry<Type> *entry = operator[](key);
+
+        if (entry == nullptr)
+        {
+            return false;
+        }
+
+        if (entry->previous != nullptr)
+        {
+            entry->previous->next = entry->next;
+
+            if (entry->next != nullptr)
+            {
+                entry->next->previous = entry->previous;
+            }
+        }
+        else
+        {
+            uint64 bucket = key % m_size;
+
+            m_map[bucket] = entry->next;
+
+            if (entry->next != nullptr)
+            {
+                entry->next->previous = nullptr;
+            }
+        }
+
+        mem::dealloc_type<hash_entry<Type>>(m_memory_manager, entry);
+
+        m_number_of_elements--;
+
+        return true;
+    }
+
+    template <typename Type>
+    inline usize hash_map<Type>::get_number_of_elements() const
+    {
+        return m_number_of_elements;
     }
 } // namespace deep
 
