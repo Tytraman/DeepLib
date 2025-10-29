@@ -7,7 +7,9 @@
 
 namespace deep
 {
-    class string : public string_base<string, char>
+    template class DEEP_LIB_API owned_ptr<char>;
+
+    class DEEP_LIB_API string : public string_base<string, char>
     {
       public:
         using string_base<string, char>::string_base;

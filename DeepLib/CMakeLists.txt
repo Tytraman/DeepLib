@@ -5,7 +5,6 @@
 add_library(DeepLib SHARED
     DeepLib/context.cpp
     DeepLib/lib.cpp
-    DeepLib/memory/memory_manager.cpp
     DeepLib/memory/ref_counted.cpp
     DeepLib/string/string.cpp
 )

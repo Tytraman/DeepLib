@@ -29,6 +29,9 @@ namespace deep
         Type *alloc(usize bytes_size);
 
         template <typename Type>
+        Type **alloc_table(usize number_of_elements);
+
+        template <typename Type>
         Type *realloc(Type *address, usize bytes_size);
 
         template <typename Type>
@@ -48,6 +51,11 @@ namespace deep
 
         void *m_internal_context;
     };
+
+    inline memory_manager::memory_manager(void *internal_context)
+            : m_internal_context(internal_context)
+    {
+    }
 
     template <typename Type, typename... Args>
     inline Type *memory_manager::alloc(Args &&...args)
@@ -78,16 +86,15 @@ namespace deep
     }
 
     template <typename Type>
+    inline Type **memory_manager::alloc_table(usize number_of_elements)
+    {
+        return static_cast<Type **>(core_mem::alloc(m_internal_context, sizeof(Type) * number_of_elements));
+    }
+
+    template <typename Type>
     inline Type *memory_manager::realloc(Type *address, usize bytes_size)
     {
-        Type *ptr = static_cast<Type *>(core_mem::realloc(m_internal_context, address, bytes_size));
-
-        if (ptr == nullptr)
-        {
-            return nullptr;
-        }
-
-        return ptr;
+        return static_cast<Type *>(core_mem::realloc(m_internal_context, address, bytes_size));
     }
 
     template <typename Type>

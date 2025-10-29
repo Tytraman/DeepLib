@@ -25,6 +25,12 @@ namespace deep
         static Type *alloc(ctx *context, usize bytes_size);
 
         template <typename Type>
+        static Type **alloc_table(ctx *context, usize number_of_elements);
+
+        template <typename Type>
+        static Type **alloc_table(memory_manager *manager, usize number_of_elements);
+
+        template <typename Type>
         static Type *realloc(memory_manager *manager, Type *address, usize bytes_size);
 
         template <typename Type>
@@ -36,6 +42,9 @@ namespace deep
         template <typename Type, typename... Args>
         static Type *alloc_type(ctx *context, Args &&...args);
 
+        template <typename Type, typename... Args>
+        static Type *alloc_type(memory_manager *manager, Args &&...args);
+
         template <typename Type>
         static bool dealloc_type(mem_ptr<Type> &data);
     };
@@ -43,6 +52,11 @@ namespace deep
     template <typename Type>
     inline Type *mem::alloc(ctx *context, usize bytes_size)
     {
+        if (context == nullptr)
+        {
+            return nullptr;
+        }
+
         memory_manager *mem = context->get_memory_manager();
         if (mem == nullptr)
         {
@@ -50,6 +64,34 @@ namespace deep
         }
 
         return mem->alloc<Type>(bytes_size);
+    }
+
+    template <typename Type>
+    inline Type **mem::alloc_table(ctx *context, usize number_of_elements)
+    {
+        if (context == nullptr)
+        {
+            return nullptr;
+        }
+
+        memory_manager *mem = context->get_memory_manager();
+        if (mem == nullptr)
+        {
+            return nullptr;
+        }
+
+        return mem->alloc_table<Type>(number_of_elements);
+    }
+
+    template <typename Type>
+    inline Type **mem::alloc_table(memory_manager *manager, usize number_of_elements)
+    {
+        if (manager == nullptr)
+        {
+            return nullptr;
+        }
+
+        return manager->alloc_table<Type>(number_of_elements);
     }
 
     template <typename Type>
@@ -97,6 +139,17 @@ namespace deep
         }
 
         return mem->alloc<Type>(std::forward<Args>(args)...);
+    }
+
+    template <typename Type, typename... Args>
+    inline Type *mem::alloc_type(memory_manager *manager, Args &&...args)
+    {
+        if (manager == nullptr)
+        {
+            return nullptr;
+        }
+
+        return manager->alloc<Type>(std::forward<Args>(args)...);
     }
 
     template <typename Type>
