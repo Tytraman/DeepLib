@@ -37,14 +37,20 @@
     # Crée un exécutable pour le test.
     add_executable(${test_name} ${src})
 
-    target_link_libraries(${test_name} PRIVATE
-        ${libs})
+    target_link_libraries(${test_name}
+        PRIVATE
+            ${libs}
+    )
 
-    target_compile_options(${test_name} PRIVATE
-        ${FSANITIZE_ADDR})
+    target_compile_options(${test_name}
+        PRIVATE
+            ${FSANITIZE_ADDR}
+    )
 
-    target_link_options(${test_name} PRIVATE
-        ${FSANITIZE_ADDR})
+    target_link_options(${test_name}
+        PRIVATE
+            ${FSANITIZE_ADDR}
+    )
 
     add_test(NAME "Deep.${test_name}"
             COMMAND ${test_name})

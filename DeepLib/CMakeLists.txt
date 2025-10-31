@@ -7,6 +7,7 @@ add_library(DeepLib SHARED
     DeepLib/lib.cpp
     DeepLib/memory/ref_counted.cpp
     DeepLib/string/string.cpp
+    DeepLib/stream/memory_stream.cpp
 )
 add_library(Deep::Lib ALIAS DeepLib)
 
