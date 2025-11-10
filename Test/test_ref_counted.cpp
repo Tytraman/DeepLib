@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     }
 
     {
-        deep::ref<test_ref_counted> ref_test_1 = deep::ref<test_ref_counted>(context, deep::mem::alloc_type<test_ref_counted>(context), sizeof(test_ref_counted));
+        deep::ref<test_ref_counted> ref_test_1 = deep::ref<test_ref_counted>(context, deep::mem::alloc_type<test_ref_counted>(context));
 
         if (ref_test_1->get_ref_count() != 1)
         {

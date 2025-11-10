@@ -25,6 +25,9 @@ namespace deep
         static Type *alloc(ctx *context, usize bytes_size);
 
         template <typename Type>
+        static buffer_ptr<Type> alloc_buffer(ctx *context, usize number_of_elements);
+
+        template <typename Type>
         static Type **alloc_table(ctx *context, usize number_of_elements);
 
         template <typename Type>
@@ -38,6 +41,9 @@ namespace deep
 
         template <typename Type>
         static bool dealloc(buffer_ptr<Type> &buffer);
+
+        template <typename Type>
+        static bool dealloc_buffer(buffer_ptr<Type> &buffer);
 
         template <typename Type, typename... Args>
         static Type *alloc_type(ctx *context, Args &&...args);
@@ -67,6 +73,31 @@ namespace deep
         }
 
         return mem->alloc<Type>(bytes_size);
+    }
+
+    template <typename Type>
+    inline buffer_ptr<Type> mem::alloc_buffer(ctx *context, usize number_of_elements)
+    {
+        if (context == nullptr)
+        {
+            return buffer_ptr<Type>();
+        }
+
+        memory_manager *mem = context->get_memory_manager();
+        if (mem == nullptr)
+        {
+            return buffer_ptr<Type>();
+        }
+
+        usize bytes_size = number_of_elements * sizeof(Type);
+        Type *ptr        = mem->alloc<Type>(bytes_size);
+
+        if (ptr == nullptr)
+        {
+            return buffer_ptr<Type>();
+        }
+
+        return buffer_ptr<Type>(mem, ptr, bytes_size);
     }
 
     template <typename Type>
@@ -122,6 +153,18 @@ namespace deep
 
     template <typename Type>
     inline bool mem::dealloc(buffer_ptr<Type> &buffer)
+    {
+        memory_manager *mem = buffer.get_memory_manager();
+        if (mem == nullptr)
+        {
+            return false;
+        }
+
+        return mem->dealloc(buffer);
+    }
+
+    template <typename Type>
+    inline bool mem::dealloc_buffer(buffer_ptr<Type> &buffer)
     {
         memory_manager *mem = buffer.get_memory_manager();
         if (mem == nullptr)

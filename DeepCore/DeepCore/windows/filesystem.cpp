@@ -1,4 +1,4 @@
-#include "../filesystem.hpp"
+Ôªø#include "../filesystem.hpp"
 #include "../error.hpp"
 #include "../memory.hpp"
 #include "internal_data.hpp"
@@ -18,7 +18,7 @@ namespace deep
         static char cwd[cwd_len];
         WCHAR buffer[buffer_len];
 
-        // DÈtermine la taille nÈcessaire au buffer pour rÈcupÈrer le chemin.
+        // D√©termine la taille n√©cessaire au buffer pour r√©cup√©rer le chemin.
         DWORD buf_len = GetCurrentDirectoryW(0, nullptr);
 
         if (buf_len > buffer_len)
@@ -37,7 +37,7 @@ namespace deep
             return nullptr;
         }
 
-        // DÈtermine la taille nÈcessaire pour stocker la conversion.
+        // D√©termine la taille n√©cessaire pour stocker la conversion.
         int bytes = WideCharToMultiByte(CP_UTF8, 0, buffer, buf_len, nullptr, 0, nullptr, nullptr);
 
         if (bytes >= sizeof(cwd))
@@ -63,7 +63,7 @@ namespace deep
         return cwd;
     }
 
-    fd core_open_file(void *internal_context, const char *filename, core_fs::file_mode mode, core_fs::file_access access, core_fs::file_share share)
+    fd core_open_file(void *internal_context, const native_char *filename, core_fs::file_mode mode, core_fs::file_access access, core_fs::file_share share)
     {
         internal_data_win32 *internal_data = static_cast<internal_data_win32 *>(internal_context);
 
@@ -73,33 +73,10 @@ namespace deep
 
         fd file_descriptor;
 
-        // DÈtermine la taille nÈcessaire pour stocker la conversion.
-        // Retourne le nombre de caractËres que cela va produire.
-        int characters_number = MultiByteToWideChar(CP_UTF8, 0, filename, -1, nullptr, 0);
-
-        WCHAR *buffer = static_cast<WCHAR *>(core_alloc(internal_data, characters_number * sizeof(*buffer)));
-
-        if (buffer == nullptr)
-        {
-            return false;
-        }
-
-        // D'aprËs la documentation officielle la fonction ajoute un caractËre null ‡ la fin puisque le paramËtre pour la taille est de '-1'.
-        characters_number = MultiByteToWideChar(CP_UTF8, 0, filename, -1, buffer, characters_number);
-
-        if (characters_number == 0)
-        {
-            core_dealloc(internal_data, buffer);
-
-            internal_data->result = core_convert_error_code(GetLastError());
-
-            return invalid_fd;
-        }
-
         switch (mode)
         {
             default:
-                break;
+                return invalid_fd;
             case core_fs::file_mode::Create:
             {
                 mode_flags |= CREATE_ALWAYS;
@@ -182,13 +159,14 @@ namespace deep
             break;
         }
 
-        file_descriptor = CreateFileW(buffer, access_flags, share_flags, nullptr, mode_flags, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_POSIX_SEMANTICS, nullptr);
-
-        core_dealloc(internal_data, buffer);
+        file_descriptor = CreateFileW(filename, access_flags, share_flags, nullptr, mode_flags, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_POSIX_SEMANTICS, nullptr);
 
         if (file_descriptor == invalid_fd)
         {
-            internal_data->result = core_convert_error_code(GetLastError());
+            if (internal_data != nullptr)
+            {
+                internal_data->result = core_convert_error_code(GetLastError());
+            }
 
             return invalid_fd;
         }
@@ -198,47 +176,279 @@ namespace deep
         return file_descriptor;
     }
 
-    bool core_delete_file(void *internal_context, const char *filename)
+    bool core_close_file(void *internal_context, fd file_descriptor)
     {
         internal_data_win32 *internal_data = static_cast<internal_data_win32 *>(internal_context);
 
-        BOOL ret;
-
-        // DÈtermine la taille nÈcessaire pour stocker la conversion.
-        // Retourne le nombre de caractËres que cela va produire.
-        int characters_number = MultiByteToWideChar(CP_UTF8, 0, filename, -1, nullptr, 0);
-
-        WCHAR *buffer = static_cast<WCHAR *>(core_alloc(internal_data, characters_number * sizeof(*buffer)));
-
-        if (buffer == nullptr)
+        if (CloseHandle(file_descriptor) == 0)
         {
-            return false;
-        }
-
-        // D'aprËs la documentation officielle la fonction ajoute un caractËre null ‡ la fin puisque le paramËtre pour la taille est de '-1'.
-        characters_number = MultiByteToWideChar(CP_UTF8, 0, filename, -1, buffer, characters_number);
-
-        if (characters_number == 0)
-        {
-            core_dealloc(internal_data, buffer);
-
-            internal_data->result = core_convert_error_code(GetLastError());
+            if (internal_data != nullptr)
+            {
+                internal_data->result = core_convert_error_code(GetLastError());
+            }
 
             return false;
         }
 
-        ret = DeleteFileW(buffer);
+        return true;
+    }
 
-        core_dealloc(internal_data, buffer);
+    bool core_flush_file(void *internal_context, fd file_descriptor)
+    {
+        internal_data_win32 *internal_data = static_cast<internal_data_win32 *>(internal_context);
 
-        if (ret == 0)
+        if (FlushFileBuffers(file_descriptor) == 0)
         {
-            internal_data->result = core_convert_error_code(GetLastError());
+            if (internal_data != nullptr)
+            {
+                internal_data->result = core_convert_error_code(GetLastError());
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+
+    bool core_seek_file(void *internal_context, fd file_descriptor, isize offset, core_fs::seek_origin origin, usize *new_size)
+    {
+        internal_data_win32 *internal_data = static_cast<internal_data_win32 *>(internal_context);
+
+        LARGE_INTEGER linteger;
+        linteger.QuadPart = offset;
+
+        DWORD method;
+        switch (origin)
+        {
+            default:
+            {
+                if (internal_data != nullptr)
+                {
+                    internal_data->result = error::InvalidArgument;
+                }
+
+                return false;
+            }
+            case core_fs::seek_origin::Begin:
+            {
+                method = FILE_BEGIN;
+            }
+            break;
+            case core_fs::seek_origin::Current:
+            {
+                method = FILE_CURRENT;
+            }
+            break;
+            case core_fs::seek_origin::End:
+            {
+                method = FILE_END;
+            }
+            break;
+        }
+
+        if (SetFilePointerEx(file_descriptor, linteger, &linteger, method) == 0)
+        {
+            if (internal_data != nullptr)
+            {
+                internal_data->result = core_convert_error_code(GetLastError());
+            }
+
+            return false;
+        }
+
+        if (new_size != nullptr)
+        {
+            *new_size = linteger.QuadPart;
+        }
+
+        return true;
+    }
+
+    bool core_delete_file(void *internal_context, const native_char *filename)
+    {
+        internal_data_win32 *internal_data = static_cast<internal_data_win32 *>(internal_context);
+
+        if (DeleteFileW(filename) == 0)
+        {
+            if (internal_data != nullptr)
+            {
+                internal_data->result = core_convert_error_code(GetLastError());
+            }
 
             return false;
         }
 
         internal_data->result = error::NoError;
+
+        return true;
+    }
+
+    bool core_read_file(void *internal_context, fd file_descriptor, usize count, void *dest, usize *bytes_read)
+    {
+        static constexpr DWORD max_bytes = 4096;
+
+        internal_data_win32 *internal_data = static_cast<internal_data_win32 *>(internal_context);
+
+        usize total = 0;
+        usize diff  = count;
+
+        DWORD bytes = 0;
+
+        while (total < count)
+        {
+            if (ReadFile(file_descriptor, static_cast<uint8 *>(dest) + total, diff > max_bytes ? max_bytes : static_cast<DWORD>(diff), &bytes, nullptr) == 0)
+            {
+                if (internal_data != nullptr)
+                {
+                    internal_data->result = core_convert_error_code(GetLastError());
+                }
+
+                return false;
+            }
+
+            if (bytes == 0)
+            {
+                break;
+            }
+
+            total += bytes;
+
+            diff = count - total;
+        }
+
+        if (bytes_read != nullptr)
+        {
+            *bytes_read = total;
+        }
+
+        return true;
+    }
+
+    bool core_write_file(void *internal_context, fd file_descriptor, usize count, void *from, usize *bytes_written)
+    {
+        static constexpr DWORD max_bytes = 4096;
+
+        internal_data_win32 *internal_data = static_cast<internal_data_win32 *>(internal_context);
+
+        usize total = 0;
+        usize diff  = count;
+
+        DWORD bytes = 0;
+
+        while (total < count)
+        {
+            if (WriteFile(file_descriptor, static_cast<uint8 *>(from) + total, diff > max_bytes ? max_bytes : static_cast<DWORD>(diff), &bytes, nullptr) == 0)
+            {
+                if (internal_data != nullptr)
+                {
+                    internal_data->result = core_convert_error_code(GetLastError());
+                }
+
+                return false;
+            }
+
+            if (bytes == 0)
+            {
+                break;
+            }
+
+            total += bytes;
+
+            diff = count - total;
+        }
+
+        if (bytes_written != nullptr)
+        {
+            *bytes_written = total;
+        }
+
+        return true;
+    }
+
+    bool core_get_file_size(void *internal_context, fd file_descriptor, usize *dest)
+    {
+        internal_data_win32 *internal_data = static_cast<internal_data_win32 *>(internal_context);
+
+        LARGE_INTEGER linteger;
+
+        if (GetFileSizeEx(file_descriptor, &linteger) == 0)
+        {
+            if (internal_data != nullptr)
+            {
+                internal_data->result = core_convert_error_code(GetLastError());
+            }
+
+            return false;
+        }
+
+        if (dest != nullptr)
+        {
+            *dest = linteger.QuadPart;
+        }
+
+        return true;
+    }
+
+    bool core_set_file_size(void *internal_context, fd file_descriptor, usize size)
+    {
+        internal_data_win32 *internal_data = static_cast<internal_data_win32 *>(internal_context);
+
+        usize current_position = 0;
+
+        // Pour augmenter la taille d'un fichier il faut d√©placer la position √† la taille souhait√©e et la d√©finir comme fin de fichier.
+
+        if (!core_get_file_position(internal_context, file_descriptor, &current_position))
+        {
+            return false;
+        }
+
+        // Met la position √† la taille souhait√©e.
+        if (!core_seek_file(internal_context, file_descriptor, static_cast<usize>(size), core_fs::seek_origin::Begin, nullptr))
+        {
+            return false;
+        }
+
+        // D√©fini la position comme emplacement de fin de fichier.
+        if (SetEndOfFile(file_descriptor) == 0)
+        {
+            if (internal_data != nullptr)
+            {
+                internal_data->result = core_convert_error_code(GetLastError());
+            }
+
+            return false;
+        }
+
+        // Remet la position √† l√† o√π elle √©tait √† l'origine.
+        if (!core_seek_file(internal_context, file_descriptor, current_position, core_fs::seek_origin::Begin, nullptr))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    bool core_get_file_position(void *internal_context, fd file_descriptor, usize *dest)
+    {
+        internal_data_win32 *internal_data = static_cast<internal_data_win32 *>(internal_context);
+
+        LARGE_INTEGER linteger;
+        linteger.QuadPart = 0;
+
+        if (SetFilePointerEx(file_descriptor, linteger, &linteger, FILE_CURRENT) == 0)
+        {
+            if (internal_data != nullptr)
+            {
+                internal_data->result = core_convert_error_code(GetLastError());
+            }
+
+            return false;
+        }
+
+        if (dest != nullptr)
+        {
+            *dest = linteger.QuadPart;
+        }
 
         return true;
     }

@@ -1,4 +1,4 @@
-# Objectifs
+﻿# Objectifs
 
 L'objectif principal de cette librairie est de pouvoir l'utiliser dans tous mes projets afin de m'éviter de devoir réécrire le même code en boucle.
 
@@ -22,6 +22,11 @@ La librairie doit être écrite tout en répondant à ces nécessités :
 ## Gestion de la mémoire
 
 - L'allocation de mémoire doit suivre des stratégies qui permettent d'éviter des fuites de mémoire.
+- Toute allocation dynamique doit impérativement passer par la classe `mem`.
+
+## Évènements
+
+- La librairie doit permettre aux utilisateurs de spécifier des fonctions `callback` qui seront appelées lorsque certains évènements se produisent.
 
 ## Documentation
 
@@ -32,6 +37,6 @@ La librairie doit être écrite tout en répondant à ces nécessités :
 
 Certaines restrictions sont mises en place pour avoir un code plus propre, modulaire et plus maintenable :
 
-- **Aucune** variable globale / statique, excepté le contexte global interne à la librairie.
+- **Aucune** variable globale / statique.
 - Pas d'utilisation des mots clés `new` et `delete`.
 - Pas d'utilisation des fonctions `malloc` et `free`.

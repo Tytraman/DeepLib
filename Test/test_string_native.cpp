@@ -35,20 +35,46 @@ int main(int argc, char *argv[])
             return 5;
         }
 
-        deep::string_native &other = str += DEEP_TEXT_NATIVE("C++");
-        if (other.get_length() != 15)
-        {
-            return 6;
-        }
+        str += DEEP_TEXT_NATIVE("C++");
 
-        if (other.encoding == deep::string_encoding::Unicode)
         {
-            if (other.get_bytes_size() != 32)
+            deep::string_native other = str;
+            if (other.get_length() != 15)
             {
-                return 7;
+                return 6;
             }
 
-            printf("%ls", *other);
+            if (other.encoding == deep::string_encoding::Unicode)
+            {
+                deep::usize bytes_size = other.get_bytes_size();
+                if (bytes_size != 32)
+                {
+                    return 7;
+                }
+
+                bytes_size = str.get_bytes_size();
+                if (bytes_size != 32)
+                {
+                    return 8;
+                }
+
+                printf("Original: %ls\n", *str);
+                printf("Copy ref: %ls\n", *other);
+            }
+
+            deep::usize ref_count = str.get_ref()->get_ref_count();
+
+            if (ref_count != 2)
+            {
+                return 9;
+            }
+        }
+
+        deep::usize ref_count = str.get_ref()->get_ref_count();
+
+        if (ref_count != 1)
+        {
+            return 10;
         }
     }
 

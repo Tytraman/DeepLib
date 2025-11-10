@@ -48,6 +48,9 @@ deep_create_test(HashMap LINK_DEEP_CORE LINK_DEEP_LIB
 deep_create_test(MemoryStream LINK_DEEP_CORE LINK_DEEP_LIB
     SOURCES stream/test_memory_stream.cpp)
 
+deep_create_test(FileStream LINK_DEEP_CORE LINK_DEEP_LIB
+    SOURCES stream/test_file_stream.cpp)
+
 # Crée un lien symbolique vers 'compile_commands.json' généré dans le dossier de Build.
 file(CREATE_LINK
     ${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json   # Fichier pointé.

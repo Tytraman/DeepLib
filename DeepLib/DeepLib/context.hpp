@@ -19,6 +19,9 @@ namespace deep
       public:
         ctx();
 
+        static constexpr void *get_internal_ctx(ctx *from);
+        static constexpr memory_manager *get_memory_manager(ctx *from);
+
         bool destroy_internal_ctx();
 
         void *get_internal_ctx();
@@ -34,6 +37,26 @@ namespace deep
         void *internal_data;
         memory_manager *mem;
     };
+
+    inline constexpr void *ctx::get_internal_ctx(ctx *from)
+    {
+        if (from != nullptr)
+        {
+            return from->get_internal_ctx();
+        }
+
+        return nullptr;
+    }
+
+    inline constexpr memory_manager *ctx::get_memory_manager(ctx *from)
+    {
+        if (from != nullptr)
+        {
+            return from->mem;
+        }
+
+        return nullptr;
+    }
 
     inline void *ctx::get_internal_ctx()
     {

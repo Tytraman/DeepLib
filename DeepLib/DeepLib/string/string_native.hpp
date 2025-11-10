@@ -6,7 +6,9 @@
 
 namespace deep
 {
-    class string_native : public string_base<string_native, native_char>
+    template class DEEP_LIB_API ref<buffer_primitive<native_char>>;
+
+    class DEEP_LIB_API string_native : public string_base<string_native, native_char>
     {
       public:
         using string_base<string_native, native_char>::string_base;

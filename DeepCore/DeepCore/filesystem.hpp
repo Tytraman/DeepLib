@@ -98,6 +98,13 @@ namespace deep
             ReadWrite = 4
         };
 
+        enum class DEEP_CORE_API seek_origin
+        {
+            Begin,
+            Current,
+            End
+        };
+
       public:
         /**
          * @brief Retourne le chemin de travail actuel.
@@ -107,15 +114,38 @@ namespace deep
         /**
          * @brief Ouvre un fichier.
          */
-        static fd open_file(void *internal_context, const char *filename, file_mode mode,
+        static fd open_file(void *internal_context, const native_char *filename, file_mode mode,
                             file_access access, file_share share);
 
-        static bool delete_file(void *internal_context, const char *filename);
+        static bool close_file(void *internal_context, fd file_descriptor);
+
+        static bool flush_file(void *internal_context, fd file_descriptor);
+
+        static bool seek_file(void *internal_context, fd file_descriptor, isize offset, seek_origin origin, usize *new_size);
+
+        static bool delete_file(void *internal_context, const native_char *filename);
+
+        static bool read_file(void *internal_context, fd file_descriptor, usize count, void *dest, usize *bytes_read);
+        static bool write_file(void *internal_context, fd file_descriptor, usize count, void *from, usize *bytes_written);
+
+        static bool get_file_size(void *internal_context, fd file_descriptor, usize *dest);
+
+        static bool set_file_size(void *internal_context, fd file_descriptor, usize size);
+
+        static bool get_file_position(void *internal_context, fd file_descriptor, usize *dest);
     };
 
     extern const char *core_get_current_working_directory(void *internal_context);
-    extern fd core_open_file(void *internal_context, const char *filename, core_fs::file_mode mode, core_fs::file_access access, core_fs::file_share share);
-    extern bool core_delete_file(void *internal_context, const char *filename);
+    extern fd core_open_file(void *internal_context, const native_char *filename, core_fs::file_mode mode, core_fs::file_access access, core_fs::file_share share);
+    extern bool core_close_file(void *internal_context, fd file_descriptor);
+    extern bool core_flush_file(void *internal_context, fd file_descriptor);
+    extern bool core_seek_file(void *internal_context, fd file_descriptor, isize offset, core_fs::seek_origin origin, usize *new_size);
+    extern bool core_delete_file(void *internal_context, const native_char *filename);
+    extern bool core_read_file(void *internal_context, fd file_descriptor, usize count, void *dest, usize *bytes_read);
+    extern bool core_write_file(void *internal_context, fd file_descriptor, usize count, void *from, usize *bytes_written);
+    extern bool core_get_file_size(void *internal_context, fd file_descriptor, usize *dest);
+    extern bool core_set_file_size(void *internal_context, fd file_descriptor, usize size);
+    extern bool core_get_file_position(void *internal_context, fd file_descriptor, usize *dest);
 
 } // namespace deep
 

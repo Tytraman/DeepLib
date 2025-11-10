@@ -2,7 +2,7 @@
 #define DEEP_LIB_STRING_BASE_HPP
 
 #include "DeepCore/types.hpp"
-#include "DeepLib/memory/owned_ptr.hpp"
+#include "DeepLib/memory/ref_counted.hpp"
 #include "DeepLib/memory/memory.hpp"
 
 namespace deep
@@ -11,7 +11,7 @@ namespace deep
     class string_base
     {
       public:
-        string_base() = default;
+        string_base();
         string_base(ctx *context, const Type *str);
 
         static usize calc_bytes_size(const Type *str);
@@ -28,10 +28,18 @@ namespace deep
         usize get_bytes_size() const;
         usize get_length() const;
 
+        const ref<buffer_primitive<Type>> &get_ref() const;
+
       protected:
-        owned_ptr<Type> m_data;
+        ref<buffer_primitive<Type>> m_data;
         usize m_length;
     };
+
+    template <typename Derived, typename Type>
+    inline string_base<Derived, Type>::string_base()
+            : m_length(0)
+    {
+    }
 
     template <typename Derived, typename Type>
     inline string_base<Derived, Type>::string_base(ctx *context, const Type *str)
@@ -49,11 +57,9 @@ namespace deep
         memcpy(ptr, str, bytes_size);
         *((Type *) (((uint8 *) ptr) + bytes_size)) = static_cast<Type>('\0');
 
-        m_data.set(ptr, bytes_size + sizeof(Type));
-        if (context != nullptr)
-        {
-            m_data.set(context->get_memory_manager());
-        }
+        m_data.set(context, mem::alloc_type<buffer_primitive<Type>>(context, context, ptr, bytes_size + sizeof(Type)), sizeof(buffer_primitive<Type>));
+        m_data->take();
+
         m_length = length;
     }
 
@@ -74,20 +80,17 @@ namespace deep
     {
         usize bytes_size         = calc_bytes_size(str);
         usize length             = calc_length(str);
-        usize current_bytes_size = m_data.get_bytes_size();
+        usize current_bytes_size = m_data->get_buffer().get_bytes_size();
         usize new_bytes_size     = current_bytes_size + bytes_size;
 
-        Type *ptr = mem::realloc<Type>(m_data.get_memory_manager(), m_data.get(), new_bytes_size);
-
-        if (ptr == nullptr)
+        if (!mem::realloc<Type>(m_data->get_buffer(), new_bytes_size))
         {
             return false;
         }
 
-        memcpy(((uint8 *) ptr) + current_bytes_size - sizeof(Type), str, bytes_size);
-        *((Type *) (((uint8 *) ptr) + new_bytes_size - sizeof(Type))) = static_cast<Type>('\0');
+        memcpy(((uint8 *) m_data->get_buffer().get()) + current_bytes_size - sizeof(Type), str, bytes_size);
+        *((Type *) (((uint8 *) m_data->get_buffer().get()) + new_bytes_size - sizeof(Type))) = static_cast<Type>('\0');
 
-        m_data.set(ptr, new_bytes_size);
         m_length += length;
 
         return true;
@@ -104,7 +107,7 @@ namespace deep
     template <typename Derived, typename Type>
     inline const Type *string_base<Derived, Type>::operator*() const
     {
-        return m_data.get();
+        return m_data.get()->get_buffer().get();
     }
 
     template <typename Derived, typename Type>
@@ -122,13 +125,18 @@ namespace deep
     template <typename Derived, typename Type>
     inline usize string_base<Derived, Type>::get_bytes_size() const
     {
-        return m_data.get_bytes_size();
+        return m_data->get_buffer().get_bytes_size();
     }
 
     template <typename Derived, typename Type>
     inline usize string_base<Derived, Type>::get_length() const
     {
         return m_length;
+    }
+    template <typename Derived, typename Type>
+    inline const ref<buffer_primitive<Type>> &string_base<Derived, Type>::get_ref() const
+    {
+        return m_data;
     }
 } // namespace deep
 

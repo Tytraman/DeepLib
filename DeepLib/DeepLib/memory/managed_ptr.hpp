@@ -17,7 +17,7 @@ namespace deep
     class managed_ptr
     {
       public:
-        managed_ptr() = default;
+        managed_ptr();
         managed_ptr(ctx *context, Type *ptr, usize bytes_size);
         managed_ptr(const ctx *context, const Type *ptr, usize bytes_size);
         managed_ptr(memory_manager *manager, Type *ptr, usize bytes_size);
@@ -34,6 +34,7 @@ namespace deep
         const memory_manager *get_memory_manager() const;
         usize get_bytes_size() const;
 
+        void set(ctx *context, Type *ptr, usize bytes_size);
         void set(Type *ptr, usize bytes_size);
         void set(memory_manager *manager);
 
@@ -45,6 +46,12 @@ namespace deep
         Type *m_ptr;
         usize m_bytes_size;
     };
+
+    template <typename Derived, typename Type>
+    inline managed_ptr<Derived, Type>::managed_ptr()
+            : m_memory_manager(nullptr), m_ptr(nullptr), m_bytes_size(0)
+    {
+    }
 
     template <typename Derived, typename Type>
     inline managed_ptr<Derived, Type>::managed_ptr(ctx *context, Type *ptr, usize bytes_size)
@@ -124,6 +131,18 @@ namespace deep
     inline usize managed_ptr<Derived, Type>::get_bytes_size() const
     {
         return m_bytes_size;
+    }
+
+    template <typename Derived, typename Type>
+    inline void managed_ptr<Derived, Type>::set(ctx *context, Type *ptr, usize bytes_size)
+    {
+        if (context != nullptr)
+        {
+            m_memory_manager = context->get_memory_manager();
+        }
+
+        m_ptr        = ptr;
+        m_bytes_size = bytes_size;
     }
 
     template <typename Derived, typename Type>

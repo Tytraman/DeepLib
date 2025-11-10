@@ -7,7 +7,7 @@
 
 namespace deep
 {
-    template class DEEP_LIB_API owned_ptr<char>;
+    template class DEEP_LIB_API ref<buffer_primitive<char>>;
 
     class DEEP_LIB_API string : public string_base<string, char>
     {

@@ -3,6 +3,7 @@
 
 #include "DeepLib/deep_lib_export.h"
 #include "DeepLib/memory/managed_ptr.hpp"
+#include "DeepLib/memory/buffer_ptr.hpp"
 #include "DeepCore/types.hpp"
 
 namespace deep
@@ -38,6 +39,11 @@ namespace deep
         mutable usize m_count;
     };
 
+    inline ref_counted::ref_counted()
+            : m_count(0)
+    {
+    }
+
     inline void ref_counted::take() const
     {
         m_count++;
@@ -58,10 +64,26 @@ namespace deep
     }
 
     template <typename Type>
+    class buffer_primitive : public ref_counted
+    {
+        static_assert(is_primitive<Type>, "Type must be primitive");
+
+      public:
+        buffer_primitive(ctx *context, Type *ptr, usize bytes_size);
+
+        buffer_ptr<Type> &get_buffer();
+        const buffer_ptr<Type> &get_buffer() const;
+
+      protected:
+        buffer_ptr<Type> m_buffer;
+    };
+
+    template <typename Type>
     class ref : public managed_ptr<ref<Type>, Type>
     {
       public:
-        using managed_ptr<ref<Type>, Type>::managed_ptr;
+        ref() = default;
+        ref(ctx *context, Type *ptr);
 
         /**
          * @brief Crée une nouvelle référence vers l'objet et ajoute 1 à son compteur.
@@ -85,9 +107,11 @@ namespace deep
 
         void unreference();
 
+        ref<Type> &operator=(ref<Type> &other);
         ref<Type> &operator=(const ref<Type> &other);
 
         Type *operator->();
+        const Type *operator->() const;
         Type &operator*();
 
         bool operator==(const Type *ptr) const;
@@ -97,8 +121,18 @@ namespace deep
     };
 
     template <typename Type>
+    inline ref<Type>::ref(ctx *context, Type *ptr)
+            : managed_ptr<ref<Type>, Type>(context, ptr, sizeof(Type))
+    {
+        if (is_valid())
+        {
+            m_ptr->take();
+        }
+    }
+
+    template <typename Type>
     inline ref<Type>::ref(const ref<Type> &other)
-            : managed_ptr(other.get_memory_manager(), other.get(), other.get_bytes_size())
+            : managed_ptr<ref<Type>, Type>(other.get_memory_manager(), other.get(), other.get_bytes_size())
     {
         if (is_valid())
         {
@@ -133,19 +167,17 @@ namespace deep
     template <typename Type>
     inline void ref<Type>::reference(const ref &from)
     {
-        Type *ptr = from.m_data.get();
-
-        if (m_data.get_const() == ptr)
+        if (m_ptr == from.m_ptr)
         {
             return;
         }
 
         unreference();
 
-        m_data.set(ptr);
-        if (m_data.is_valid())
+        set(from.m_ptr, from.m_bytes_size);
+        if (is_valid())
         {
-            m_data->take();
+            m_ptr->take();
         }
     }
 
@@ -156,6 +188,14 @@ namespace deep
         {
             destroy();
         }
+    }
+
+    template <typename Type>
+    ref<Type> &ref<Type>::operator=(ref<Type> &other)
+    {
+        reference(other);
+
+        return *this;
     }
 
     template <typename Type>
@@ -173,6 +213,12 @@ namespace deep
     }
 
     template <typename Type>
+    inline const Type *ref<Type>::operator->() const
+    {
+        return m_ptr;
+    }
+
+    template <typename Type>
     Type &ref<Type>::operator*()
     {
         return *m_ptr;
@@ -181,31 +227,49 @@ namespace deep
     template <typename Type>
     inline bool ref<Type>::operator==(const Type *ptr) const
     {
-        return m_data.get_const() == ptr;
+        return m_ptr == ptr;
     }
 
     template <typename Type>
     inline bool ref<Type>::operator!=(const Type *ptr) const
     {
-        return m_data.get_const() != ptr;
+        return m_ptr != ptr;
     }
 
     template <typename Type>
     bool ref<Type>::operator==(const ref<Type> &other) const
     {
-        return m_data.get_const() == other.m_data.get_const();
+        return m_ptr == other.m_ptr;
     }
 
     template <typename Type>
     inline bool ref<Type>::operator!=(const ref<Type> &other) const
     {
-        return m_data.get_const() != other.m_data.get_const();
+        return m_ptr != other.m_ptr;
     }
 
     template <typename Type, typename Kype>
     inline Type *ref_cast(const Kype &to_cast)
     {
         return reinterpret_cast<Type *>(to_cast.get());
+    }
+
+    template <typename Type>
+    inline buffer_primitive<Type>::buffer_primitive(ctx *context, Type *ptr, usize bytes_size)
+            : m_buffer(context, ptr, bytes_size)
+    {
+    }
+
+    template <typename Type>
+    inline buffer_ptr<Type> &buffer_primitive<Type>::get_buffer()
+    {
+        return m_buffer;
+    }
+
+    template <typename Type>
+    inline const buffer_ptr<Type> &buffer_primitive<Type>::get_buffer() const
+    {
+        return m_buffer;
     }
 
 } // namespace deep

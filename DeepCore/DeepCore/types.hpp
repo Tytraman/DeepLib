@@ -53,8 +53,10 @@
 
 namespace deep
 {
+    using null_ptr = decltype(nullptr);
+
     /**
-     * @brief Vérifie statiquement si le type passé est une énumération.
+     * @brief Vérifie à la compilation si le type passé est une énumération.
      *
      * @tparam Type
      */
@@ -71,7 +73,7 @@ namespace deep
     }
 
     /**
-     * @brief Vérifie statiquement si un type hérite bien du type spécifié.
+     * @brief Vérifie à la compilation si un type hérite bien du type spécifié.
      *
      * @tparam Base
      * @tparam Derived
@@ -82,6 +84,37 @@ namespace deep
     template <typename Type>
     inline constexpr bool is_trivially_destructible =
             __is_trivially_destructible(Type);
+
+    /**
+     * @brief Vérifie à la compilation qu'un type soit bien une classe.
+     * @tparam Type Le type à vérifier.
+     */
+    template <typename Type>
+    inline constexpr bool is_class = __is_class(Type);
+
+    /**
+     * @brief Vérifie à la compilation que deux types soient les mêmes.
+     * @tparam Le premier type à vérifier.
+     * @tparam Le deuxième type à vérifier.
+     */
+    template <typename, typename>
+    inline constexpr bool is_same = false;
+
+    template <typename Type>
+    inline constexpr bool is_same<Type, Type> = true;
+
+    /**
+     * @brief Vérifie à la compilation qu'un type est void.
+     * @tparam Type Le type de donnée à vérifier.
+     */
+    template <typename Type>
+    inline constexpr bool is_void = is_same<rm_const_volatile<Type>, void>;
+
+    template <typename Type>
+    inline constexpr bool is_nullptr = is_same<rm_const_volatile<Type>, null_ptr>;
+
+    template <typename Type, typename... Types>
+    inline constexpr bool is_any_of = (is_same<Type, Types> || ...);
 
     template <uint64_d>
     struct mk_signed;
@@ -164,12 +197,54 @@ namespace deep
         using type = Type;
     };
 
+    template <typename Type>
+    struct rm_volatile_s
+    {
+        using type = Type;
+    };
+
+    template <typename Type>
+    struct rm_volatile_s<volatile Type>
+    {
+        using type = Type;
+    };
+
+    template <typename Type>
+    struct rm_const_volatile_s
+    {
+        using type = Type;
+    };
+
+    template <typename Type>
+    struct rm_const_volatile_s<const Type>
+    {
+        using type = Type;
+    };
+
+    template <typename Type>
+    struct rm_const_volatile_s<volatile Type>
+    {
+        using type = Type;
+    };
+
+    template <typename Type>
+    struct rm_const_volatile_s<const volatile Type>
+    {
+        using type = Type;
+    };
+
     /**
      * @brief Retire la constance d'un type.
      * @tparam Type
      */
     template <typename Type>
     using rm_const = typename rm_const_s<Type>::type;
+
+    template <typename Type>
+    using rm_volatile = typename rm_volatile_s<Type>::type;
+
+    template <typename Type>
+    using rm_const_volatile = typename rm_const_volatile_s<Type>::type;
 
     template <typename Type>
     constexpr rm_ref<Type> &&move(Type &&value) noexcept
@@ -187,6 +262,18 @@ namespace deep
     using uint64 = uint64_d;
 
     using wchar = wchar_d;
+
+    template <typename Type>
+    inline constexpr bool is_integral = is_any_of<rm_const_volatile<Type>, bool, char, int8, uint8, int16, uint16, int32, uint32, int64, uint64, wchar>;
+
+    template <typename Type>
+    inline constexpr bool is_floating_point = is_any_of<rm_const_volatile<Type>, float, double, long double>;
+
+    template <typename Type>
+    inline constexpr bool is_arithmetic = is_integral<Type> || is_floating_point<Type>;
+
+    template <typename Type>
+    inline constexpr bool is_primitive = is_arithmetic<Type> || is_void<Type> || is_nullptr<Type>;
 
     enum class string_encoding
     {
