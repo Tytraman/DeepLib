@@ -12,6 +12,7 @@ namespace deep
       public:
         using mem_ptr<Type>::mem_ptr;
 
+        Type operator[](usize index) const;
         Type &operator[](usize index);
 
       private:
@@ -19,7 +20,13 @@ namespace deep
     };
 
     template <typename Type>
-    typename Type &buffer_ptr<Type>::operator[](usize index)
+    inline Type buffer_ptr<Type>::operator[](usize index) const
+    {
+        return m_ptr[index];
+    }
+
+    template <typename Type>
+    inline Type &buffer_ptr<Type>::operator[](usize index)
     {
         return m_ptr[index];
     }

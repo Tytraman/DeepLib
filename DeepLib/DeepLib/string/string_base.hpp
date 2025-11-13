@@ -11,16 +11,33 @@ namespace deep
     class string_base
     {
       public:
-        string_base();
+        string_base() = delete;
+        string_base(ctx *context);
         string_base(ctx *context, const Type *str);
 
         static usize calc_bytes_size(const Type *str);
         static usize calc_length(const Type *str);
 
+        static Derived from(ctx *context, bool value);
+        static Derived from(ctx *context, int64 value);
+        static Derived from(ctx *context, uint64 value);
+        static Derived from(ctx *context, double value);
+
+        static bool equals(const Type *first, const Type *second);
+
+        bool append(Type character);
         bool append(const Type *str);
+
+        bool insert(Type character);
+        bool insert(const Type *str);
+
+        bool equals(const string_base &other) const;
+        bool equals(const Type *str) const;
+
         Derived &operator+=(const Type *str);
 
         const Type *operator*() const;
+        const Type operator[](usize index) const;
 
         bool is_valid() const;
         bool is_null() const;
@@ -31,19 +48,23 @@ namespace deep
         const ref<buffer_primitive<Type>> &get_ref() const;
 
       protected:
+        ctx *m_context;
         ref<buffer_primitive<Type>> m_data;
         usize m_length;
+
+      private:
+        bool realloc(usize new_bytes_size);
     };
 
     template <typename Derived, typename Type>
-    inline string_base<Derived, Type>::string_base()
-            : m_length(0)
+    inline string_base<Derived, Type>::string_base(ctx *context)
+            : m_context(context), m_length(0)
     {
     }
 
     template <typename Derived, typename Type>
     inline string_base<Derived, Type>::string_base(ctx *context, const Type *str)
-            : m_length(0)
+            : m_context(context), m_length(0)
     {
         usize bytes_size = calc_bytes_size(str);
         usize length     = calc_length(str);
@@ -76,14 +97,75 @@ namespace deep
     }
 
     template <typename Derived, typename Type>
+    inline Derived string_base<Derived, Type>::from(ctx *context, bool value)
+    {
+        return Derived::from_impl(context, value);
+    }
+
+    template <typename Derived, typename Type>
+    inline Derived string_base<Derived, Type>::from(ctx *context, int64 value)
+    {
+        return Derived::from_impl(context, value);
+    }
+
+    template <typename Derived, typename Type>
+    inline Derived string_base<Derived, Type>::from(ctx *context, uint64 value)
+    {
+        return Derived::from_impl(context, value);
+    }
+
+    template <typename Derived, typename Type>
+    inline Derived string_base<Derived, Type>::from(ctx *context, double value)
+    {
+        return Derived::from_impl(context, value);
+    }
+
+    template <typename Derived, typename Type>
+    inline bool string_base<Derived, Type>::equals(const Type *first, const Type *second)
+    {
+        usize bytes_size1 = calc_bytes_size(first);
+        usize bytes_size2 = calc_bytes_size(second);
+
+        if (bytes_size1 != bytes_size2)
+        {
+            return false;
+        }
+
+        return memcmp(first, second, bytes_size1) == 0;
+    }
+
+    template <typename Derived, typename Type>
+    inline bool string_base<Derived, Type>::append(Type character)
+    {
+        usize new_bytes_size = get_bytes_size() + sizeof(character);
+
+        if (new_bytes_size < 2)
+        {
+            new_bytes_size = 2;
+        }
+
+        if (!realloc(new_bytes_size))
+        {
+            return false;
+        }
+
+        *((Type *) (((uint8 *) m_data->get_buffer().get()) + new_bytes_size - (sizeof(Type) * 2))) = character;
+        *((Type *) (((uint8 *) m_data->get_buffer().get()) + new_bytes_size - sizeof(Type)))       = static_cast<Type>('\0');
+
+        m_length++;
+
+        return true;
+    }
+
+    template <typename Derived, typename Type>
     inline bool string_base<Derived, Type>::append(const Type *str)
     {
         usize bytes_size         = calc_bytes_size(str);
         usize length             = calc_length(str);
-        usize current_bytes_size = m_data->get_buffer().get_bytes_size();
+        usize current_bytes_size = get_bytes_size();
         usize new_bytes_size     = current_bytes_size + bytes_size;
 
-        if (!mem::realloc<Type>(m_data->get_buffer(), new_bytes_size))
+        if (!realloc(new_bytes_size))
         {
             return false;
         }
@@ -94,6 +176,94 @@ namespace deep
         m_length += length;
 
         return true;
+    }
+
+    template <typename Derived, typename Type>
+    inline bool string_base<Derived, Type>::insert(Type character)
+    {
+        usize current_bytes_size = get_bytes_size();
+        usize new_bytes_size     = current_bytes_size + sizeof(character);
+
+        if (new_bytes_size < 2)
+        {
+            new_bytes_size = 2;
+        }
+
+        if (!realloc(new_bytes_size))
+        {
+            return false;
+        }
+
+        if (current_bytes_size > 0)
+        {
+            memmove(m_data->get_buffer().get() + 1, m_data->get_buffer().get(), current_bytes_size - sizeof(Type));
+        }
+
+        *((Type *) (((uint8 *) m_data->get_buffer().get())))                                 = character;
+        *((Type *) (((uint8 *) m_data->get_buffer().get()) + new_bytes_size - sizeof(Type))) = static_cast<Type>('\0');
+
+        m_length++;
+
+        return true;
+    }
+
+    template <typename Derived, typename Type>
+    inline bool string_base<Derived, Type>::insert(const Type *str)
+    {
+        usize bytes_size         = calc_bytes_size(str);
+        usize length             = calc_length(str);
+        usize current_bytes_size = get_bytes_size();
+        usize new_bytes_size     = current_bytes_size + bytes_size;
+
+        if (!realloc(new_bytes_size))
+        {
+            return false;
+        }
+
+        if (current_bytes_size > 0)
+        {
+            memmove(m_data->get_buffer().get() + bytes_size, m_data->get_buffer().get(), current_bytes_size - sizeof(Type));
+        }
+
+        memcpy(m_data->get_buffer().get(), str, bytes_size);
+        *((Type *) (((uint8 *) m_data->get_buffer().get()) + new_bytes_size - sizeof(Type))) = static_cast<Type>('\0');
+
+        m_length += length;
+
+        return true;
+    }
+
+    template <typename Derived, typename Type>
+    inline bool string_base<Derived, Type>::equals(const string_base &other) const
+    {
+        usize bytes_size = get_bytes_size();
+
+        if (bytes_size != other.get_bytes_size())
+        {
+            return false;
+        }
+
+        const Type *str1 = operator*();
+        const Type *str2 = *other;
+
+        return memcmp(str1, str2, bytes_size) == 0;
+    }
+
+    template <typename Derived, typename Type>
+    inline bool string_base<Derived, Type>::equals(const Type *str) const
+    {
+        const Type *str1 = operator*();
+        const Type *str2 = str;
+
+        usize bytes_size1 = get_bytes_size();
+        usize bytes_size2 = calc_bytes_size(str2) + sizeof(Type);
+
+        if (bytes_size1 != bytes_size2)
+        {
+            return false;
+        }
+
+        return memcmp(str1, str2, bytes_size1) == 0;
     }
 
     template <typename Derived, typename Type>
@@ -111,6 +281,17 @@ namespace deep
     }
 
     template <typename Derived, typename Type>
+    inline const Type string_base<Derived, Type>::operator[](usize index) const
+    {
+        if (!m_data.is_valid())
+        {
+            return static_cast<Type>('\0');
+        }
+
+        return m_data.get()->get_buffer()[index];
+    }
+
+    template <typename Derived, typename Type>
     inline bool string_base<Derived, Type>::is_valid() const
     {
         return m_data.is_valid();
@@ -125,6 +306,11 @@ namespace deep
     template <typename Derived, typename Type>
     inline usize string_base<Derived, Type>::get_bytes_size() const
     {
+        if (!m_data.is_valid())
+        {
+            return 0;
+        }
+
         return m_data->get_buffer().get_bytes_size();
     }
 
@@ -137,6 +323,34 @@ namespace deep
     inline const ref<buffer_primitive<Type>> &string_base<Derived, Type>::get_ref() const
     {
         return m_data;
+    }
+
+    template <typename Derived, typename Type>
+    inline bool string_base<Derived, Type>::realloc(usize new_bytes_size)
+    {
+        if (m_data.is_valid())
+        {
+            return mem::realloc<Type>(m_data->get_buffer(), new_bytes_size);
+        }
+
+        Type *ptr = mem::alloc<Type>(m_context, new_bytes_size);
+        if (ptr == nullptr)
+        {
+            return false;
+        }
+
+        buffer_primitive<Type> *buffer = mem::alloc_type<buffer_primitive<Type>>(m_context, m_context, ptr, new_bytes_size);
+        if (buffer == nullptr)
+        {
+            mem::dealloc<Type>(m_context, ptr);
+
+            return false;
+        }
+
+        m_data.set(m_context, buffer, sizeof(buffer_primitive<Type>));
+        m_data->take();
+
+        return true;
     }
 } // namespace deep
 

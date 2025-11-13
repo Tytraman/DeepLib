@@ -75,6 +75,11 @@ int main(int argc, char *argv[])
         }
 
         printf("%s\n", out);
+
+        if (is.get_ref_count() != 0)
+        {
+            return 10;
+        }
     }
 
     if (!deep::lib::destroy_ctx(context))

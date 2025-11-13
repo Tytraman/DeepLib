@@ -40,6 +40,9 @@ namespace deep
         static bool realloc(buffer_ptr<Type> &buffer, usize bytes_size);
 
         template <typename Type>
+        static bool dealloc(ctx *context, Type *address);
+
+        template <typename Type>
         static bool dealloc(buffer_ptr<Type> &buffer);
 
         template <typename Type>
@@ -149,6 +152,23 @@ namespace deep
         }
 
         return mem->realloc(buffer, bytes_size);
+    }
+
+    template <typename Type>
+    inline bool mem::dealloc(ctx *context, Type *address)
+    {
+        if (context == nullptr)
+        {
+            return false;
+        }
+
+        memory_manager *mem = context->get_memory_manager();
+        if (mem == nullptr)
+        {
+            return false;
+        }
+
+        return mem->dealloc(address);
     }
 
     template <typename Type>

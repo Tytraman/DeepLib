@@ -37,10 +37,13 @@ deep_create_test(OwnedPtr LINK_DEEP_CORE LINK_DEEP_LIB
     SOURCES test_owned_ptr.cpp)
 
 deep_create_test(StringNative LINK_DEEP_CORE LINK_DEEP_LIB
-    SOURCES test_string_native.cpp)
+    SOURCES string/test_string_native.cpp)
 
 deep_create_test(String1 LINK_DEEP_CORE LINK_DEEP_LIB
-    SOURCES test_string1.cpp)
+    SOURCES string/test_string1.cpp)
+
+deep_create_test(String2 LINK_DEEP_CORE LINK_DEEP_LIB
+    SOURCES string/test_string2.cpp)
 
 deep_create_test(HashMap LINK_DEEP_CORE LINK_DEEP_LIB
     SOURCES test_hash_map.cpp)
