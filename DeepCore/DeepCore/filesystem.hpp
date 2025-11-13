@@ -109,7 +109,7 @@ namespace deep
         /**
          * @brief Retourne le chemin de travail actuel.
          */
-        static const char *get_current_working_directory(void *internal_context);
+        static const native_char *get_current_working_directory(void *internal_context);
 
         /**
          * @brief Ouvre un fichier.
@@ -135,7 +135,7 @@ namespace deep
         static bool get_file_position(void *internal_context, fd file_descriptor, usize *dest);
     };
 
-    extern const char *core_get_current_working_directory(void *internal_context);
+    extern const native_char *core_get_current_working_directory(void *internal_context);
     extern fd core_open_file(void *internal_context, const native_char *filename, core_fs::file_mode mode, core_fs::file_access access, core_fs::file_share share);
     extern bool core_close_file(void *internal_context, fd file_descriptor);
     extern bool core_flush_file(void *internal_context, fd file_descriptor);

@@ -15,6 +15,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 message(STATUS "Compiler ID: ${CMAKE_CXX_COMPILER_ID}")
 
+find_package(PNG REQUIRED)
+
 add_subdirectory(DeepCore)
 add_subdirectory(DeepLib)
 
@@ -53,6 +55,9 @@ deep_create_test(MemoryStream LINK_DEEP_CORE LINK_DEEP_LIB
 
 deep_create_test(FileStream LINK_DEEP_CORE LINK_DEEP_LIB
     SOURCES stream/test_file_stream.cpp)
+
+deep_create_test(ImagePng LINK_DEEP_CORE LINK_DEEP_LIB
+    SOURCES image/test_png.cpp)
 
 # Crée un lien symbolique vers 'compile_commands.json' généré dans le dossier de Build.
 file(CREATE_LINK

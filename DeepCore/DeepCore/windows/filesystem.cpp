@@ -8,15 +8,14 @@
 namespace deep
 {
 
-    const char *core_get_current_working_directory(void *internal_context)
+    const native_char *core_get_current_working_directory(void *internal_context)
     {
         internal_data_win32 *internal_data = static_cast<internal_data_win32 *>(internal_context);
 
         constexpr DWORD cwd_len    = 8192;
         constexpr DWORD buffer_len = cwd_len / 2;
 
-        static char cwd[cwd_len];
-        WCHAR buffer[buffer_len];
+        static WCHAR buffer[buffer_len];
 
         // Détermine la taille nécessaire au buffer pour récupérer le chemin.
         DWORD buf_len = GetCurrentDirectoryW(0, nullptr);
@@ -37,30 +36,9 @@ namespace deep
             return nullptr;
         }
 
-        // Détermine la taille nécessaire pour stocker la conversion.
-        int bytes = WideCharToMultiByte(CP_UTF8, 0, buffer, buf_len, nullptr, 0, nullptr, nullptr);
-
-        if (bytes >= sizeof(cwd))
-        {
-            internal_data->result = error::OutOfRange;
-
-            return nullptr;
-        }
-
-        bytes = WideCharToMultiByte(CP_UTF8, 0, buffer, buf_len, cwd, sizeof(cwd), nullptr, nullptr);
-
-        if (bytes == 0)
-        {
-            internal_data->result = core_convert_error_code(GetLastError());
-
-            return nullptr;
-        }
-
-        cwd[bytes] = '\0';
-
         internal_data->result = error::NoError;
 
-        return cwd;
+        return buffer;
     }
 
     fd core_open_file(void *internal_context, const native_char *filename, core_fs::file_mode mode, core_fs::file_access access, core_fs::file_share share)

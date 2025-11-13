@@ -6,13 +6,20 @@ add_library(DeepLib SHARED
     DeepLib/context.cpp
     DeepLib/lib.cpp
     DeepLib/string/string.cpp
+    DeepLib/filesystem/filesystem.cpp
     DeepLib/stream/memory_stream.cpp
     DeepLib/stream/file_stream.cpp
+    DeepLib/image/png.cpp
 )
 add_library(Deep::Lib ALIAS DeepLib)
 
 target_link_libraries(DeepLib PRIVATE
-    Deep::Core)
+    Deep::Core
+    PNG::PNG)
+
+target_include_directories(DeepLib
+    PRIVATE
+        "${PNG_INCLUDE_DIRS}")
 
 set_target_properties(DeepLib PROPERTIES
     OUTPUT_NAME DeepLib

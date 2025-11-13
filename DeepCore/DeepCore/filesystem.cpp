@@ -5,7 +5,7 @@
 
 namespace deep
 {
-    const char *core_fs::get_current_working_directory(void *internal_context)
+    const native_char *core_fs::get_current_working_directory(void *internal_context)
     {
         return core_get_current_working_directory(internal_context);
     }

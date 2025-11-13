@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    const char *cwd = deep::core_fs::get_current_working_directory(context->get_internal_ctx());
+    const deep::native_char *cwd = deep::core_fs::get_current_working_directory(context->get_internal_ctx());
 
     if (cwd == nullptr)
     {

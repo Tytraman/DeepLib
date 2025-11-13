@@ -37,6 +37,10 @@
     # Crée un exécutable pour le test.
     add_executable(${test_name} ${src})
 
+    target_include_directories(${test_name}
+        PRIVATE
+            "${PNG_INCLUDE_DIRS}")
+
     target_link_libraries(${test_name}
         PRIVATE
             ${libs}

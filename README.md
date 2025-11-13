@@ -1,10 +1,10 @@
-# DeepLib
+ï»¿# DeepLib
 
-Librairie libre et cross-plateforme facilitant le développement de mes projets.
+Librairie libre et cross-plateforme facilitant le dÃ©veloppement de mes projets.
 
 ## Objectifs
 
-La librairie a été développée pour répondre à certains besoins qui sont expliqués dans [**Objectifs**](./GOALS.md).
+La librairie a Ã©tÃ© dÃ©veloppÃ©e pour rÃ©pondre Ã  certains besoins qui sont expliquÃ©s dans [**Objectifs**](./GOALS.md).
 
 ## Compilation
 
@@ -12,5 +12,12 @@ La construction du projet utilise le moteur de production [**CMake**](https://cm
 
 ### Visual Studio
 
-Les dernières versions de **Visual Studio** intègrent **CMake** directement dans l'éditeur.<br>
+Pour faciliter l'intÃ©gration des dÃ©pendances le gestionnaire de paquets [**vcpkg**](https://vcpkg.io/) peut Ãªtre utilisÃ©.
+
+- `libpng` :
+```cmd
+vcpkg install libpng
+```
+
+Les derniÃ¨res versions de **Visual Studio** intÃ¨grent **CMake** directement dans l'Ã©diteur.<br>
 Il suffit donc de **configurer** et **construire** les cibles depuis l'interface.
