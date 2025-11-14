@@ -10,6 +10,7 @@ add_library(DeepLib SHARED
     DeepLib/stream/memory_stream.cpp
     DeepLib/stream/file_stream.cpp
     DeepLib/image/png.cpp
+    DeepLib/image/image.cpp
 )
 add_library(Deep::Lib ALIAS DeepLib)
 

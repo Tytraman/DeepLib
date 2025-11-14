@@ -1,5 +1,6 @@
 ﻿#include "DeepLib/lib.hpp"
 #include "DeepLib/image/png.hpp"
+#include "DeepLib/image/image.hpp"
 #include "DeepLib/stream/file_stream.hpp"
 #include "DeepLib/filesystem/filesystem.hpp"
 
@@ -33,36 +34,43 @@ int main(int argc, char *argv[])
             return 2;
         }
 
-        deep::png image = deep::png::load(context, &input);
+        deep::png p = deep::png::load(context, &input);
 
-        if (!image.is_valid())
+        if (!p.is_valid())
         {
             return 3;
         }
 
-        if (!image.check())
+        if (!p.check())
         {
             return 4;
         }
 
-        if (!image.read_info())
+        if (!p.read_info())
         {
             return 5;
         }
 
-        deep::uint32 width   = image.get_width();
-        deep::uint32 height  = image.get_height();
-        deep::uint8 channels = image.get_channels();
+        deep::image img = p.read_image();
 
-        printf("Image info:\n"
-               "  Width: %u\n"
-               "  Height: %u\n"
-               "  Channels: %u\n",
-               width, height, channels);
-
-        if (!image.read_image())
+        if (!img.is_valid())
         {
             return 6;
+        }
+
+        deep::file_stream output = deep::file_stream(context, DEEP_TEXT_NATIVE("test_output.png"),
+                                                     deep::core_fs::file_mode::Create,
+                                                     deep::core_fs::file_access::Write,
+                                                     deep::core_fs::file_share::Read);
+
+        if (!output.open())
+        {
+            return 7;
+        }
+
+        if (!deep::png::convert(img, &output))
+        {
+            return 8;
         }
     }
 

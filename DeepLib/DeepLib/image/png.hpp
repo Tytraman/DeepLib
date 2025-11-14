@@ -2,9 +2,11 @@
 #define DEEP_LIB_PNG_HPP
 
 #include "DeepLib/deep_lib_export.h"
+#include "DeepCore/types.hpp"
 #include "DeepLib/string/string.hpp"
 #include "DeepLib/stream/stream.hpp"
 #include "DeepLib/memory/buffer_ptr.hpp"
+#include "DeepLib/image/image.hpp"
 
 #include <png.h>
 
@@ -16,12 +18,13 @@ namespace deep
     {
       public:
         static png load(ctx *context, stream *input);
+        static bool convert(const image &from, stream *output);
 
         static string get_libpng_version(ctx *context);
 
         bool check() const;
         bool read_info();
-        bool read_image();
+        image read_image();
 
         usize get_position() const;
         usize get_bytes_size() const;
@@ -30,7 +33,6 @@ namespace deep
 
         uint32 get_width() const;
         uint32 get_height() const;
-        uint8 get_channels() const;
 
         void set_position(usize position);
 
@@ -42,7 +44,6 @@ namespace deep
       protected:
         ctx *m_context;
         buffer_ptr<uint8> m_data;
-        uint8 *m_image;
         usize m_position;
 
         png_structp m_png;
@@ -53,7 +54,6 @@ namespace deep
         int m_bit_depth;
         int m_color_type;
         int m_interlace_type;
-        uint8 m_channels;
     };
 
     inline usize png::get_position() const
@@ -79,11 +79,6 @@ namespace deep
     inline uint32 png::get_height() const
     {
         return m_height;
-    }
-
-    inline uint8 png::get_channels() const
-    {
-        return m_channels;
     }
 
     inline void png::set_position(usize position)
