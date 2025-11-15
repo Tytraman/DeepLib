@@ -51,26 +51,65 @@ int main(int argc, char *argv[])
             return 5;
         }
 
-        deep::image img = p.read_image();
+        deep::image original = p.read_image();
 
-        if (!img.is_valid())
+        if (!original.is_valid())
         {
             return 6;
         }
 
-        deep::file_stream output = deep::file_stream(context, DEEP_TEXT_NATIVE("test_output.png"),
-                                                     deep::core_fs::file_mode::Create,
-                                                     deep::core_fs::file_access::Write,
-                                                     deep::core_fs::file_share::Read);
+        deep::image horizontal = original.copy(context);
 
-        if (!output.open())
+        if (!horizontal.is_valid())
         {
             return 7;
         }
 
-        if (!deep::png::convert(img, &output))
+        if (!horizontal.apply_horizontal_mirror_effect())
         {
             return 8;
+        }
+
+        deep::image vertical = original.copy(context);
+
+        if (!vertical.is_valid())
+        {
+            return 9;
+        }
+
+        if (!vertical.apply_vertical_mirror_effect())
+        {
+            return 10;
+        }
+
+        deep::file_stream output_horizontal = deep::file_stream(context, DEEP_TEXT_NATIVE("test_output_horizontal.png"),
+                                                                deep::core_fs::file_mode::Create,
+                                                                deep::core_fs::file_access::Write,
+                                                                deep::core_fs::file_share::Read);
+
+        deep::file_stream output_vertical = deep::file_stream(context, DEEP_TEXT_NATIVE("test_output_vertical.png"),
+                                                              deep::core_fs::file_mode::Create,
+                                                              deep::core_fs::file_access::Write,
+                                                              deep::core_fs::file_share::Read);
+
+        if (!output_horizontal.open())
+        {
+            return 40;
+        }
+
+        if (!output_vertical.open())
+        {
+            return 41;
+        }
+
+        if (!deep::png::convert(horizontal, &output_horizontal))
+        {
+            return 50;
+        }
+
+        if (!deep::png::convert(vertical, &output_vertical))
+        {
+            return 51;
         }
     }
 

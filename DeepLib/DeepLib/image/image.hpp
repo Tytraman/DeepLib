@@ -39,6 +39,11 @@ namespace deep
 
         const uint8 *operator*() const;
 
+        bool apply_horizontal_mirror_effect();
+        bool apply_vertical_mirror_effect();
+
+        image copy(ctx *context) const;
+
         usize get_row_bytes() const;
         uint32 get_width() const;
         uint32 get_height() const;
