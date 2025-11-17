@@ -25,6 +25,9 @@ namespace deep
         static Type *alloc(ctx *context, usize bytes_size);
 
         template <typename Type>
+        static Type *alloc(memory_manager *manager, usize bytes_size);
+
+        template <typename Type>
         static buffer_ptr<Type> alloc_buffer(ctx *context, usize number_of_elements);
 
         template <typename Type>
@@ -76,6 +79,17 @@ namespace deep
         }
 
         return mem->alloc<Type>(bytes_size);
+    }
+
+    template <typename Type>
+    inline Type *mem::alloc(memory_manager *manager, usize bytes_size)
+    {
+        if (manager == nullptr)
+        {
+            return nullptr;
+        }
+
+        return manager->alloc<Type>(bytes_size);
     }
 
     template <typename Type>

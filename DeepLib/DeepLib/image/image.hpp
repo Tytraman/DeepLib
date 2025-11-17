@@ -42,6 +42,8 @@ namespace deep
         bool apply_horizontal_mirror_effect();
         bool apply_vertical_mirror_effect();
 
+        bool resize(uint32 width, uint32 height);
+
         image copy(ctx *context) const;
 
         usize get_row_bytes() const;

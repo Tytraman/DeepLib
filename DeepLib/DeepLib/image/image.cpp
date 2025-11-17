@@ -1,6 +1,7 @@
 ﻿#include "image.hpp"
 
 #include "DeepLib/memory/memory.hpp"
+#include "DeepLib/maths/math.hpp"
 
 namespace deep
 {
@@ -75,6 +76,45 @@ namespace deep
                 memcpy(raw + index2, temp, pixel_size);
             }
         }
+
+        return true;
+    }
+
+    bool image::resize(uint32 width, uint32 height)
+    {
+        if (!m_image.is_valid())
+        {
+            return false;
+        }
+
+        uint32 pixel_size = m_channels * (m_bit_depth / 8);
+
+        usize new_bytes_size = width * height * pixel_size;
+
+        memory_manager *manager = m_image.get_memory_manager();
+        uint8 *dest             = mem::alloc<uint8>(manager, new_bytes_size);
+        const uint8 *from       = m_image.get();
+
+        usize row_bytes     = m_row_bytes;
+        usize new_row_bytes = width * pixel_size;
+
+        usize bytes_to_copy = math::min(row_bytes, new_row_bytes);
+
+        uint32 rows = math::min(height, m_height);
+        uint32 row;
+
+        for (row = 0; row < rows; ++row)
+        {
+            memcpy(dest + row * new_row_bytes, from + row * row_bytes, bytes_to_copy);
+        }
+
+        mem::dealloc(m_image);
+
+        m_image.set(manager, dest, new_bytes_size);
+
+        m_width     = width;
+        m_height    = height;
+        m_row_bytes = new_row_bytes;
 
         return true;
     }

@@ -35,6 +35,7 @@ namespace deep
         usize get_bytes_size() const;
 
         void set(ctx *context, Type *ptr, usize bytes_size);
+        void set(memory_manager *manager, Type *ptr, usize bytes_size);
         void set(Type *ptr, usize bytes_size);
         void set(memory_manager *manager);
 
@@ -143,6 +144,14 @@ namespace deep
 
         m_ptr        = ptr;
         m_bytes_size = bytes_size;
+    }
+
+    template <typename Derived, typename Type>
+    inline void managed_ptr<Derived, Type>::set(memory_manager *manager, Type *ptr, usize bytes_size)
+    {
+        m_memory_manager = manager;
+        m_ptr            = ptr;
+        m_bytes_size     = bytes_size;
     }
 
     template <typename Derived, typename Type>

@@ -413,4 +413,14 @@ namespace deep
     }
 } // namespace deep
 
+// undef
+
+#ifdef min
+#undef min
+#endif
+
+#ifdef max
+#undef max
+#endif
+
 #endif
