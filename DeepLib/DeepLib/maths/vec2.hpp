@@ -171,7 +171,7 @@ namespace deep
     template <typename Type>
     inline vec2<Type> vec2<Type>::yx() const
     {
-        return vec2(y, x);
+        return vec2<Type>(y, x);
     }
 
     template <typename Type>
@@ -183,37 +183,49 @@ namespace deep
     template <typename Type>
     inline vec2<Type> vec2<Type>::sub(const vec2 &vec, const Type &value)
     {
-        return vec2(vec.x - value, value.y - value);
+        return vec2<Type>(
+                vec.x - value,
+                value.y - value);
     }
 
     template <typename Type>
     inline vec2<Type> vec2<Type>::sub(const vec2 &vec1, const vec2 &vec2)
     {
-        return vec2(vec1.x - vec2.x, vec1.y - vec2.y);
+        return vec2<Type>(
+                vec1.x - vec2.x,
+                vec1.y - vec2.y);
     }
 
     template <typename Type>
     inline vec2<Type> vec2<Type>::add(const vec2 &vec, const Type &value)
     {
-        return vec2(vec.x + value, vec.y + value);
+        return vec2<Type>(
+                vec.x + value,
+                vec.y + value);
     }
 
     template <typename Type>
     inline vec2<Type> vec2<Type>::add(const vec2 &vec1, const vec2 &vec2)
     {
-        return vec2(vec1.x + vec2.x, vec1.y + vec2.y);
+        return vec2<Type>(
+                vec1.x + vec2.x,
+                vec1.y + vec2.y);
     }
 
     template <typename Type>
     inline vec2<Type> vec2<Type>::mul(const vec2 &vec, const Type &value)
     {
-        return vec2(vec.x * value, vec.y * value);
+        return vec2<Type>(
+                vec.x * value,
+                vec.y * value);
     }
 
     template <typename Type>
     inline vec2<Type> vec2<Type>::div(const vec2 &vec, const Type &value)
     {
-        return vec2(vec.x / value, vec.y / value);
+        return vec2<Type>(
+                vec.x / value,
+                vec.y / value);
     }
 
     template <typename Type>
@@ -233,7 +245,7 @@ namespace deep
     {
         float length = magn(vec);
 
-        return vec2(
+        return vec2<Type>(
                 vec.x / length,
                 vec.y / length);
     }
