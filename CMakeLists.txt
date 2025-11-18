@@ -59,6 +59,9 @@ deep_create_test(FileStream LINK_DEEP_CORE LINK_DEEP_LIB
 deep_create_test(ImagePng LINK_DEEP_CORE LINK_DEEP_LIB
     SOURCES image/test_png.cpp)
 
+deep_create_test(Vec2 LINK_DEEP_CORE LINK_DEEP_LIB
+    SOURCES maths/test_vec2.cpp)
+
 # Crée un lien symbolique vers 'compile_commands.json' généré dans le dossier de Build.
 file(CREATE_LINK
     ${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json   # Fichier pointé.

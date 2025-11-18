@@ -1,5 +1,5 @@
-﻿#ifndef DEEP_LIB_PNG_HPP
-#define DEEP_LIB_PNG_HPP
+﻿#ifndef DEEP_LIB_MATH_HPP
+#define DEEP_LIB_MATH_HPP
 
 #include "DeepLib/deep_lib_export.h"
 #include "DeepCore/types.hpp"
