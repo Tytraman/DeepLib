@@ -364,6 +364,13 @@ namespace deep
 #define DEEP_STRING(__value) DEEP_TEXT_UTF8(__value)
 #endif
 
+#ifndef handle_d
+#if defined(DEEP_WINDOWS)
+#include <Windows.h>
+#define handle_d HANDLE
+#endif
+#endif
+
 #ifndef fd_d
 #if defined(DEEP_WINDOWS)
 #include <Windows.h>
@@ -392,6 +399,7 @@ namespace deep
 {
     using native_char  = native_char_d;
     using native_error = native_error_d;
+    using handle       = handle_d;
     using fd           = fd_d;
 #if defined(DEEP_WINDOWS)
     static const fd invalid_fd = invalid_fd_d;
@@ -401,6 +409,11 @@ namespace deep
     using path_char      = path_char_d;
     using path_str       = path_str_d;
     using const_path_str = const_path_str_d;
+
+#if defined(DEEP_WINDOWS)
+#include <Windows.h>
+    static constexpr DWORD infinite = INFINITE;
+#endif
 
     template <typename Type, typename K = Type>
     Type exchange(Type &value, K &&new_value) noexcept

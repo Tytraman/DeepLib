@@ -8,6 +8,7 @@ add_library(DeepLib SHARED
     DeepLib/maths/math.cpp
     DeepLib/string/string.cpp
     DeepLib/filesystem/filesystem.cpp
+    DeepLib/multithreading/event.cpp
     DeepLib/stream/memory_stream.cpp
     DeepLib/stream/file_stream.cpp
     DeepLib/image/png.cpp
