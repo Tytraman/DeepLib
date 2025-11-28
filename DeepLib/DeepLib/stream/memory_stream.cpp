@@ -1,5 +1,6 @@
 ﻿#include "memory_stream.hpp"
 #include "DeepLib/memory/memory.hpp"
+#include "DeepLib/maths/math.hpp"
 
 namespace deep
 {
@@ -112,7 +113,7 @@ namespace deep
             {
                 if (offset < 0)
                 {
-                    if (static_cast<usize>(std::abs(offset)) >= m_position)
+                    if (math::abs(offset) >= m_position)
                     {
                         m_position = 0;
 
@@ -132,7 +133,7 @@ namespace deep
 
                 usize length = get_length();
 
-                if (static_cast<usize>(std::abs(offset)) >= length)
+                if (math::abs(offset) >= length)
                 {
                     m_position = 0;
                 }

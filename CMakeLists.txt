@@ -59,6 +59,9 @@ deep_create_test(FileStream LINK_DEEP_CORE LINK_DEEP_LIB
 deep_create_test(ImagePng LINK_DEEP_CORE LINK_DEEP_LIB
     SOURCES image/test_png.cpp)
 
+deep_create_test(Math LINK_DEEP_CORE LINK_DEEP_LIB
+    SOURCES maths/test_math.cpp)
+
 deep_create_test(Vec2 LINK_DEEP_CORE LINK_DEEP_LIB
     SOURCES maths/test_vec2.cpp)
 

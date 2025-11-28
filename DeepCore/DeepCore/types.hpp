@@ -413,6 +413,38 @@ namespace deep
     }
 } // namespace deep
 
+#ifndef DEEP_I8
+#define DEEP_I8(__value) static_cast<deep::int8>(__value)
+#endif
+
+#ifndef DEEP_I16
+#define DEEP_I16(__value) static_cast<deep::int16>(__value)
+#endif
+
+#ifndef DEEP_I32
+#define DEEP_I32(__value) static_cast<deep::int32>(__value)
+#endif
+
+#ifndef DEEP_I64
+#define DEEP_I64(__value) static_cast<deep::int64>(__value)
+#endif
+
+#ifndef DEEP_U8
+#define DEEP_U8(__value) static_cast<deep::uint8>(__value)
+#endif
+
+#ifndef DEEP_U16
+#define DEEP_U16(__value) static_cast<deep::uint16>(__value)
+#endif
+
+#ifndef DEEP_U32
+#define DEEP_U32(__value) static_cast<deep::uint32>(__value)
+#endif
+
+#ifndef DEEP_U64
+#define DEEP_U64(__value) static_cast<deep::uint64>(__value)
+#endif
+
 // undef
 
 #ifdef min

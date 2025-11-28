@@ -4,6 +4,7 @@
 #include "DeepLib/deep_lib_export.h"
 #include "DeepCore/string/utf8.hpp"
 #include "DeepLib/string/string_base.hpp"
+#include "DeepLib/maths/math.hpp"
 
 #include <cmath>
 
@@ -64,7 +65,7 @@ namespace deep
     {
         string str = string(context);
 
-        auto ab = std::abs(value);
+        uint64 ab = math::abs(value);
 
         if (value > -10 && value < 10)
         {

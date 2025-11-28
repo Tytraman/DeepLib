@@ -3,6 +3,7 @@
 
 #include "DeepLib/deep_lib_export.h"
 #include "DeepLib/string/string_base.hpp"
+#include "DeepLib/maths/math.hpp"
 
 #include <cmath>
 
@@ -61,7 +62,7 @@ namespace deep
     {
         string_native str = string_native(context);
 
-        auto ab = std::abs(value);
+        uint64 ab = math::abs(value);
 
         if (value > -10 && value < 10)
         {

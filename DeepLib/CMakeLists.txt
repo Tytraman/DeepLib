@@ -5,6 +5,7 @@
 add_library(DeepLib SHARED
     DeepLib/context.cpp
     DeepLib/lib.cpp
+    DeepLib/maths/math.cpp
     DeepLib/string/string.cpp
     DeepLib/filesystem/filesystem.cpp
     DeepLib/stream/memory_stream.cpp
