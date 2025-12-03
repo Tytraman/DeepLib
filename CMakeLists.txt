@@ -71,6 +71,9 @@ deep_create_test(Vec3 LINK_DEEP_CORE LINK_DEEP_LIB
 deep_create_test(Thread LINK_DEEP_CORE LINK_DEEP_LIB
     SOURCES multithreading/test_thread.cpp)
 
+deep_create_test(Bitmask LINK_DEEP_CORE LINK_DEEP_LIB
+    SOURCES utils/test_bitmask.cpp)
+
 # Crée un lien symbolique vers 'compile_commands.json' généré dans le dossier de Build.
 file(CREATE_LINK
     ${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json   # Fichier pointé.
