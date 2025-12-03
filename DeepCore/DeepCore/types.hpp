@@ -413,7 +413,12 @@ namespace deep
 #if defined(DEEP_WINDOWS)
 #include <Windows.h>
     static constexpr DWORD infinite = INFINITE;
+
+    using native_thread_callback = DWORD (*)(LPVOID lpParameter);
+#define DEEP_NATIVE_THREAD DWORD WINAPI core_native_thread(LPVOID lpParameter)
 #endif
+
+    using thread_callback = void (*)(void *args);
 
     template <typename Type, typename K = Type>
     Type exchange(Type &value, K &&new_value) noexcept

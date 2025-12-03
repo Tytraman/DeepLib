@@ -6,6 +6,7 @@ add_library(DeepCore
         DeepCore/filesystem.cpp
         DeepCore/memory.cpp
         DeepCore/event.cpp
+        DeepCore/thread.cpp
         DeepCore/string/unicode.cpp
         DeepCore/string/utf8.cpp)
 add_library(Deep::Core ALIAS DeepCore)
@@ -37,6 +38,7 @@ elseif(WIN32)
             "${CMAKE_CURRENT_SOURCE_DIR}/DeepCore/windows/error.cpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/DeepCore/windows/memory.cpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/DeepCore/windows/event.cpp"
+            "${CMAKE_CURRENT_SOURCE_DIR}/DeepCore/windows/thread.cpp"
         
     )
 endif()

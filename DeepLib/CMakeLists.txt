@@ -1,7 +1,7 @@
 ﻿cmake_minimum_required(VERSION 3.15.7)
 
 # Crée une cible nommée 'DeepLib' qui se lie au projet précédemment créé.
-# Dans ce cas lç, 'DeepLibProject'.
+# Dans ce cas là, 'DeepLibProject'.
 add_library(DeepLib SHARED
     DeepLib/context.cpp
     DeepLib/lib.cpp
@@ -9,6 +9,7 @@ add_library(DeepLib SHARED
     DeepLib/string/string.cpp
     DeepLib/filesystem/filesystem.cpp
     DeepLib/multithreading/event.cpp
+    DeepLib/multithreading/thread.cpp
     DeepLib/stream/memory_stream.cpp
     DeepLib/stream/file_stream.cpp
     DeepLib/image/png.cpp
