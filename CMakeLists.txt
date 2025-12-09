@@ -80,3 +80,45 @@ file(CREATE_LINK
     ${CMAKE_CURRENT_LIST_DIR}/compile_commands.json     # Destination.
     COPY_ON_ERROR   # S'il n'est pas possible de créer de lien symbolique, fait une copie du fichier à la place.
     SYMBOLIC)
+
+# Inclue le module permettant d'installer le projet sur la machine de l'utilisateur.
+include(GNUInstallDirs)
+
+install(TARGETS DeepCore
+    EXPORT DeepLib
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
+install(DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/DeepCore/DeepCore"
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    FILES_MATCHING
+        PATTERN "*.h"
+        PATTERN "*.hpp")
+
+get_target_property(DeepCoreExport DeepCore DEEP_EXPORT_HEADER_FILE)
+
+install(FILES "${DeepCoreExport}"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/DeepCore")
+
+install(TARGETS DeepLib
+    EXPORT DeepLib
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
+install(DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/DeepLib/DeepLib"
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    FILES_MATCHING
+        PATTERN "*.h"
+        PATTERN "*.hpp")
+
+get_target_property(DeepLibExport DeepLib DEEP_EXPORT_HEADER_FILE)
+
+install(FILES "${DeepLibExport}"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/DeepLib")
+
+# Crée un fichier '.cmake' utilisable par d'autres projets CMake afin d'utiliser la librairie.
+install(EXPORT DeepLib
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake
+    NAMESPACE Deep::)

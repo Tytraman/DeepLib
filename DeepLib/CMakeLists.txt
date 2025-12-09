@@ -17,9 +17,21 @@ add_library(DeepLib SHARED
 )
 add_library(Deep::Lib ALIAS DeepLib)
 
-target_link_libraries(DeepLib PRIVATE
-    Deep::Core
-    PNG::PNG)
+set(DeepLibExport "${CMAKE_CURRENT_BINARY_DIR}/export/DeepLib/deep_lib_export.h")
+
+include(GenerateExportHeader)
+generate_export_header(DeepLib
+    EXPORT_FILE_NAME ${DeepLibExport}
+    EXPORT_MACRO_NAME DEEP_LIB_API)
+
+set_target_properties(DeepLib PROPERTIES
+    DEEP_EXPORT_HEADER_FILE "${DeepLibExport}")
+
+target_link_libraries(DeepLib
+    PUBLIC
+        Deep::Core
+    PRIVATE
+        PNG::PNG)
 
 target_include_directories(DeepLib
     PRIVATE
@@ -27,6 +39,7 @@ target_include_directories(DeepLib
 
 set_target_properties(DeepLib PROPERTIES
     OUTPUT_NAME DeepLib
+    EXPORT_NAME Lib
     VERSION ${PROJECT_VERSION}
     SOVERSION ${PROJECT_VERSION_MAJOR}
     PREFIX ""   # Retire le prefix du nom du fichier généré ('lib' sous Linux par exemple).
@@ -36,8 +49,7 @@ set_target_properties(DeepLib PROPERTIES
     CXX_VISIBILITY_PRESET hidden
     # Indique que les fonctions 'inline' sont cachées par défaut, permettant de réduire la taille
     # du fichier généré lors de l'utilisation de templates en C++.
-    VISIBILITY_INLINES_HIDDEN TRUE
-)
+    VISIBILITY_INLINES_HIDDEN TRUE)
 
 # Ajoute des options de compilation et de link selon le compilateur utilisé.
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
@@ -77,20 +89,14 @@ list(APPEND defs "DEEP_LIB_VERSION=\"${DeepLibProject_VERSION}\"")
 set_source_files_properties(DeepLib/lib.cpp PROPERTIES
     COMPILE_DEFINITIONS "${defs}")
 
-include(GenerateExportHeader)
-generate_export_header(DeepLib
-    EXPORT_FILE_NAME export/DeepLib/deep_lib_export.h
-    EXPORT_MACRO_NAME DEEP_LIB_API)
-
 target_include_directories(DeepLib
     PUBLIC
-        # Le dossier où se trouve les fichiers d'en-tête de DeepLib.
+        # 1. Compilation locale : Source + Dossier de build (pour l'export généré)
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-)
-
-target_include_directories(DeepLib
-    PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/export>
+
+        # 2. Installation : Indique aux clients de regarder dans le dossier 'include'
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
 # =====[ Test de commandes CMake ]=====

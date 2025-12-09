@@ -11,15 +11,25 @@ add_library(DeepCore
         DeepCore/string/utf8.cpp)
 add_library(Deep::Core ALIAS DeepCore)
 
+set(DeepCoreExport "${CMAKE_CURRENT_BINARY_DIR}/export/DeepCore/deep_core_export.h")
+
+include(GenerateExportHeader)
+generate_export_header(DeepCore
+    EXPORT_FILE_NAME "${DeepCoreExport}"
+    EXPORT_MACRO_NAME DEEP_CORE_API)
+
+set_target_properties(DeepCore PROPERTIES
+    DEEP_EXPORT_HEADER_FILE "${DeepCoreExport}")
+
 set_target_properties(DeepCore PROPERTIES
     OUTPUT_NAME DeepCore
+    EXPORT_NAME Core
     VERSION ${PROJECT_VERSION}
     SOVERSION ${PROJECT_VERSION_MAJOR}
     PREFIX ""
     C_VISIBILITY_PRESET hidden
     CXX_VISIBILITY_PRESET hidden
-    VISIBILITY_INLINES_HIDDEN TRUE
-)
+    VISIBILITY_INLINES_HIDDEN TRUE)
 
 # Ajoute les fichiers sources selon le système cible.
 if(UNIX)
@@ -43,20 +53,18 @@ elseif(WIN32)
     )
 endif()
 
-include(GenerateExportHeader)
-generate_export_header(DeepCore
-    EXPORT_FILE_NAME export/DeepCore/deep_core_export.h
-    EXPORT_MACRO_NAME DEEP_CORE_API)
+
 
 target_include_directories(DeepCore
     PUBLIC
-        # Le dossier où se trouve les fichiers d'en-tête de DeepCore.
-        "${CMAKE_CURRENT_SOURCE_DIR}"
-)
-
-target_include_directories(DeepCore
-    PUBLIC
+        # 1. Pour la compilation locale (BUILD_INTERFACE)
+        # On inclut la source ET le dossier de build (pour deep_core_export.h généré)
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/export>
+
+        # 2. Pour l'installation (INSTALL_INTERFACE)
+        # On indique aux utilisateurs d'aller chercher dans le dossier "include" de l'installation
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
