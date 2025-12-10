@@ -81,8 +81,28 @@ file(CREATE_LINK
     COPY_ON_ERROR   # S'il n'est pas possible de créer de lien symbolique, fait une copie du fichier à la place.
     SYMBOLIC)
 
+# --- Configuration du package ---
+
 # Inclue le module permettant d'installer le projet sur la machine de l'utilisateur.
 include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+
+set(DeepInstallConfigDir "${CMAKE_INSTALL_LIBDIR}/cmake/DeepLib")
+set(DeepLibConfigVersion "${CMAKE_CURRENT_BINARY_DIR}/DeepLibConfigVersion.cmake")
+set(DeepLibConfig "${CMAKE_CURRENT_BINARY_DIR}/DeepLibConfig.cmake")
+
+# Génère le fichier 'DeepLibConfigVersion.cmake'
+write_basic_package_version_file("${DeepLibConfigVersion}"
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY SameMajorVersion)
+
+# Génère le fichier 'DeepLibConfig.cmake'
+configure_package_config_file(
+    "${CMAKE_CURRENT_LIST_DIR}/DeepLibConfig.cmake.in"
+    "${DeepLibConfig}"
+    INSTALL_DESTINATION "${DeepInstallConfigDir}")
+
+# --- Installation ---
 
 install(TARGETS DeepCore
     EXPORT DeepLib
@@ -118,7 +138,30 @@ get_target_property(DeepLibExport DeepLib DEEP_EXPORT_HEADER_FILE)
 install(FILES "${DeepLibExport}"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/DeepLib")
 
-# Crée un fichier '.cmake' utilisable par d'autres projets CMake afin d'utiliser la librairie.
+install(FILES
+    "${DeepLibConfigVersion}"
+    "${DeepLibConfig}"
+    DESTINATION "${DeepInstallConfigDir}")
+
 install(EXPORT DeepLib
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake
-    NAMESPACE Deep::)
+    DESTINATION "${DeepInstallConfigDir}"
+    NAMESPACE Deep::
+    FILE DeepLibTargets.cmake)
+
+# --- Packaging ---
+
+if (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+    set(CPACK_PACKAGE_NAME DeepLib)
+    set(CPACK_PACKAGE_VENDOR Tytraman)
+    set(CPACK_PACKAGE_INSTALL_DIRECTORY ${CPACK_PACKAGE_NAME})
+    set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+    set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
+    set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
+    set(CPACK_VERBATIM_VARIABLES YES)
+
+    if (WIN32)
+        set(CPACK_GENERATOR ZIP)
+    endif()
+
+    include(CPack)
+endif()
