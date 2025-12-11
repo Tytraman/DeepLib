@@ -67,7 +67,7 @@ namespace deep
         return core_read_file(internal_context, file_descriptor, count, dest, bytes_read);
     }
 
-    bool core_fs::write_file(void *internal_context, fd file_descriptor, usize count, void *from, usize *bytes_written)
+    bool core_fs::write_file(void *internal_context, fd file_descriptor, usize count, const void *from, usize *bytes_written)
     {
         return core_write_file(internal_context, file_descriptor, count, from, bytes_written);
     }

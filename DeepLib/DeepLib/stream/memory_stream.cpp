@@ -186,7 +186,7 @@ namespace deep
         return true;
     }
 
-    bool memory_stream::write(void *src, usize count, usize *bytes_written)
+    bool memory_stream::write(const void *src, usize count, usize *bytes_written)
     {
         usize position = m_position;
         usize length   = get_length();

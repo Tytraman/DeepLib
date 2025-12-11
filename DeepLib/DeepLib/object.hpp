@@ -3,11 +3,10 @@
 
 #include "DeepLib/deep_lib_export.h"
 #include "DeepLib/memory/ref_counted.hpp"
+#include "DeepLib/context.hpp"
 
 namespace deep
 {
-    class ctx;
-
     template class DEEP_LIB_API ref<ctx>;
 
     /**

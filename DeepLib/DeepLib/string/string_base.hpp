@@ -37,7 +37,7 @@ namespace deep
 
         Derived &operator+=(const Type *str);
 
-        const Type *operator*() const;
+        Type *operator*() const;
         const Type operator[](usize index) const;
 
         bool is_valid() const;
@@ -281,7 +281,7 @@ namespace deep
     }
 
     template <typename Derived, typename Type>
-    inline const Type *string_base<Derived, Type>::operator*() const
+    inline Type *string_base<Derived, Type>::operator*() const
     {
         return m_data.get()->get_buffer().get();
     }

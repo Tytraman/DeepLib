@@ -210,7 +210,7 @@ namespace deep
         return core_fs::read_file(ctx::get_internal_ctx(get_context_ptr()), m_fd, count, dest, bytes_read);
     }
 
-    bool file_stream::write(void *src, usize count, usize *bytes_written)
+    bool file_stream::write(const void *src, usize count, usize *bytes_written)
     {
         if (!m_is_opened)
         {

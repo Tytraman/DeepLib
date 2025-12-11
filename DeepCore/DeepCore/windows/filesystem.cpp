@@ -302,7 +302,7 @@ namespace deep
         return true;
     }
 
-    bool core_write_file(void *internal_context, fd file_descriptor, usize count, void *from, usize *bytes_written)
+    bool core_write_file(void *internal_context, fd file_descriptor, usize count, const void *from, usize *bytes_written)
     {
         static constexpr DWORD max_bytes = 4096;
 
@@ -315,7 +315,7 @@ namespace deep
 
         while (total < count)
         {
-            if (WriteFile(file_descriptor, static_cast<uint8 *>(from) + total, diff > max_bytes ? max_bytes : static_cast<DWORD>(diff), &bytes, nullptr) == 0)
+            if (WriteFile(file_descriptor, static_cast<const uint8 *>(from) + total, diff > max_bytes ? max_bytes : static_cast<DWORD>(diff), &bytes, nullptr) == 0)
             {
                 if (internal_data != nullptr)
                 {

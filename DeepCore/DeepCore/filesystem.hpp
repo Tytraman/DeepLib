@@ -126,7 +126,7 @@ namespace deep
         static bool delete_file(void *internal_context, const native_char *filename);
 
         static bool read_file(void *internal_context, fd file_descriptor, usize count, void *dest, usize *bytes_read);
-        static bool write_file(void *internal_context, fd file_descriptor, usize count, void *from, usize *bytes_written);
+        static bool write_file(void *internal_context, fd file_descriptor, usize count, const void *from, usize *bytes_written);
 
         static bool get_file_size(void *internal_context, fd file_descriptor, usize *dest);
 
@@ -142,7 +142,7 @@ namespace deep
     extern bool core_seek_file(void *internal_context, fd file_descriptor, isize offset, core_fs::seek_origin origin, usize *new_size);
     extern bool core_delete_file(void *internal_context, const native_char *filename);
     extern bool core_read_file(void *internal_context, fd file_descriptor, usize count, void *dest, usize *bytes_read);
-    extern bool core_write_file(void *internal_context, fd file_descriptor, usize count, void *from, usize *bytes_written);
+    extern bool core_write_file(void *internal_context, fd file_descriptor, usize count, const void *from, usize *bytes_written);
     extern bool core_get_file_size(void *internal_context, fd file_descriptor, usize *dest);
     extern bool core_set_file_size(void *internal_context, fd file_descriptor, usize size);
     extern bool core_get_file_position(void *internal_context, fd file_descriptor, usize *dest);

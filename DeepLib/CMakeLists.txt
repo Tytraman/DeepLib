@@ -13,6 +13,8 @@ add_library(DeepLib SHARED
     DeepLib/multithreading/thread.cpp
     DeepLib/stream/memory_stream.cpp
     DeepLib/stream/file_stream.cpp
+    DeepLib/stream/text_writer.cpp
+    DeepLib/stream/stream_writer.cpp
     DeepLib/image/png.cpp
     DeepLib/image/image.cpp
 )

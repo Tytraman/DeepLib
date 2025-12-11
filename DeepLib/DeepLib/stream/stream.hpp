@@ -44,8 +44,8 @@ namespace deep
 
         virtual usize seek(isize offset, seek_origin origin) = 0;
 
-        virtual bool read(void *dest, usize count, usize *bytes_read)    = 0;
-        virtual bool write(void *src, usize count, usize *bytes_written) = 0;
+        virtual bool read(void *dest, usize count, usize *bytes_read)          = 0;
+        virtual bool write(const void *src, usize count, usize *bytes_written) = 0;
 
         virtual bool copy_to(stream &other) = 0;
 
