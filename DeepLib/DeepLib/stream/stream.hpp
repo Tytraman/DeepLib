@@ -3,11 +3,11 @@
 
 #include "DeepLib/deep_lib_export.h"
 #include "DeepCore/types.hpp"
-#include "DeepLib/memory/ref_counted.hpp"
+#include "DeepLib/object.hpp"
 
 namespace deep
 {
-    class DEEP_LIB_API stream : public ref_counted
+    class DEEP_LIB_API stream : public object
     {
       public:
         enum class seek_origin
@@ -18,6 +18,8 @@ namespace deep
         };
 
       public:
+        using object::object;
+
         virtual ~stream() = default;
 
         virtual bool open()  = 0;

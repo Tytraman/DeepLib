@@ -4,6 +4,8 @@
 #include "DeepLib/lib.hpp"
 #include "DeepLib/memory/memory_manager.hpp"
 
+#include <new>
+
 namespace deep
 {
     const char *lib::get_version()
@@ -11,33 +13,37 @@ namespace deep
         return DEEP_LIB_VERSION;
     }
 
-    ctx *lib::create_ctx()
+    ref<ctx> lib::create_ctx()
     {
-        ctx *context = static_cast<ctx *>(core_mem::alloc(nullptr, sizeof(ctx)));
-        if (context == nullptr)
+        void *raw = core_mem::alloc(nullptr, sizeof(ctx));
+        if (raw == nullptr)
         {
-            return nullptr;
+            return ref<ctx>();
         }
+
+        ctx *context = new (raw) ctx();
 
         context->internal_data = core_ctx::create_internal_ctx();
         if (context->internal_data == nullptr)
         {
-            core_mem::dealloc(nullptr, context);
+            context->~ctx();
+            core_mem::dealloc(nullptr, raw);
 
-            return nullptr;
+            return ref<ctx>();
         }
 
         context->mem = static_cast<memory_manager *>(core_mem::alloc(nullptr, sizeof(memory_manager)));
         if (context->mem == nullptr)
         {
             core_ctx::destroy_internal_ctx(context->internal_data);
-            core_mem::dealloc(nullptr, context);
+            context->~ctx();
+            core_mem::dealloc(nullptr, raw);
 
-            return nullptr;
+            return ref<ctx>();
         }
         context->mem->m_internal_context = context->internal_data;
 
-        return context;
+        return ref<ctx>(context, context);
     }
 
     bool lib::destroy_ctx(ctx *context)

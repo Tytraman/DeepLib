@@ -4,6 +4,7 @@
 # Dans ce cas là, 'DeepLibProject'.
 add_library(DeepLib SHARED
     DeepLib/context.cpp
+    DeepLib/object.cpp
     DeepLib/lib.cpp
     DeepLib/maths/math.cpp
     DeepLib/string/string.cpp
@@ -30,7 +31,6 @@ set_target_properties(DeepLib PROPERTIES
 target_link_libraries(DeepLib
     PUBLIC
         Deep::Core
-    PRIVATE
         PNG::PNG)
 
 target_include_directories(DeepLib

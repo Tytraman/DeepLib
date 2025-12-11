@@ -1,11 +1,11 @@
 ﻿#include "DeepLib/lib.hpp"
 #include "DeepLib/maths/vec.hpp"
 
-int main(int argc, char *argv[])
+int main(int /*argc*/, char * /*argv*/[])
 {
-    deep::ctx *context = deep::lib::create_ctx();
+    deep::ref<deep::ctx> context = deep::lib::create_ctx();
 
-    if (context == nullptr)
+    if (!context.is_valid())
     {
         return 1;
     }
@@ -24,11 +24,6 @@ int main(int argc, char *argv[])
     if (v1 != deep::ivec2(30, 40))
     {
         return 3;
-    }
-
-    if (!deep::lib::destroy_ctx(context))
-    {
-        return 100;
     }
 
     return 0;

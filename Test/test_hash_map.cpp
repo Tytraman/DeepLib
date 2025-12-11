@@ -1,11 +1,11 @@
 ﻿#include "DeepLib/lib.hpp"
 #include "DeepLib/collection/hash_map.hpp"
 
-int main(int argc, char *argv[])
+int main(int /*argc*/, char * /*argv*/[])
 {
-    deep::ctx *context = deep::lib::create_ctx();
+    deep::ref<deep::ctx> context = deep::lib::create_ctx();
 
-    if (context == nullptr)
+    if (!context.is_valid())
     {
         return 1;
     }
@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
     constexpr const char *key3 = DEEP_STRING("super_key3");
     constexpr const char *key4 = DEEP_STRING("super_key4");
 
-    deep::hash_map<deep::uint16> map(context);
+    deep::hash_map<deep::uint16> map(context.get());
 
     if (map.insert(key1, 150) == nullptr)
     {
@@ -96,11 +96,6 @@ int main(int argc, char *argv[])
     if (map.get_number_of_elements() != 3)
     {
         return 17;
-    }
-
-    if (!deep::lib::destroy_ctx(context))
-    {
-        return 100;
     }
 
     return 0;

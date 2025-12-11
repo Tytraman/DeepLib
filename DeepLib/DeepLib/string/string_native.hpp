@@ -21,10 +21,10 @@ namespace deep
         static usize calc_bytes_size_impl(const native_char *str);
         static usize calc_length_impl(const native_char *str);
 
-        static string_native from_impl(ctx *context, bool value);
-        static string_native from_impl(ctx *context, int64 value);
-        static string_native from_impl(ctx *context, uint64 value);
-        static string_native from_impl(ctx *context, double value);
+        static string_native from_impl(const ref<ctx> &context, bool value);
+        static string_native from_impl(const ref<ctx> &context, int64 value);
+        static string_native from_impl(const ref<ctx> &context, uint64 value);
+        static string_native from_impl(const ref<ctx> &context, double value);
     };
 
     inline usize string_native::calc_bytes_size_impl(const native_char *str)
@@ -37,7 +37,7 @@ namespace deep
         return DEEP_TEXT_NATIVE_LENGTH(str);
     }
 
-    inline string_native string_native::from_impl(ctx *context, bool value)
+    inline string_native string_native::from_impl(const ref<ctx> &context, bool value)
     {
         string_native str = string_native(context);
 
@@ -58,7 +58,7 @@ namespace deep
         return str;
     }
 
-    inline string_native string_native::from_impl(ctx *context, int64 value)
+    inline string_native string_native::from_impl(const ref<ctx> &context, int64 value)
     {
         string_native str = string_native(context);
 
@@ -90,7 +90,7 @@ namespace deep
         return str;
     }
 
-    inline string_native string_native::from_impl(ctx *context, uint64 value)
+    inline string_native string_native::from_impl(const ref<ctx> &context, uint64 value)
     {
         string_native str = string_native(context);
 
@@ -110,7 +110,7 @@ namespace deep
         return str;
     }
 
-    inline string_native string_native::from_impl(ctx *context, double value)
+    inline string_native string_native::from_impl(const ref<ctx> &context, double value)
     {
         string_native str = string_native(context);
 

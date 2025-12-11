@@ -2,25 +2,25 @@
 
 namespace deep
 {
-    file_stream::file_stream(ctx *context, const native_char *filename, core_fs::file_mode mode, core_fs::file_access access, core_fs::file_share share)
-            : m_filename(context, filename),
+    file_stream::file_stream(const ref<ctx> &context, const native_char *filename, core_fs::file_mode mode, core_fs::file_access access, core_fs::file_share share)
+            : stream(context),
+              m_filename(context, filename),
               m_mode(mode),
               m_access(access),
               m_share(share),
               m_fd(invalid_fd),
-              m_is_opened(false),
-              m_context(context)
+              m_is_opened(false)
     {
     }
 
-    file_stream::file_stream(ctx *context, string_native &filename, core_fs::file_mode mode, core_fs::file_access access, core_fs::file_share share)
-            : m_filename(filename),
+    file_stream::file_stream(const ref<ctx> &context, string_native &filename, core_fs::file_mode mode, core_fs::file_access access, core_fs::file_share share)
+            : stream(context),
+              m_filename(filename),
               m_mode(mode),
               m_access(access),
               m_share(share),
               m_fd(invalid_fd),
-              m_is_opened(false),
-              m_context(context)
+              m_is_opened(false)
     {
     }
 
@@ -36,7 +36,7 @@ namespace deep
             return true;
         }
 
-        m_fd = core_fs::open_file(ctx::get_internal_ctx(m_context), *m_filename, m_mode, m_access, m_share);
+        m_fd = core_fs::open_file(ctx::get_internal_ctx(get_context_ptr()), *m_filename, m_mode, m_access, m_share);
 
         if (m_fd == invalid_fd)
         {
@@ -55,7 +55,7 @@ namespace deep
             return false;
         }
 
-        if (!core_fs::close_file(ctx::get_internal_ctx(m_context), m_fd))
+        if (!core_fs::close_file(ctx::get_internal_ctx(get_context_ptr()), m_fd))
         {
             return false;
         }
@@ -73,7 +73,7 @@ namespace deep
             return false;
         }
 
-        return core_fs::flush_file(ctx::get_internal_ctx(m_context), m_fd);
+        return core_fs::flush_file(ctx::get_internal_ctx(get_context_ptr()), m_fd);
     }
 
     bool file_stream::can_read() const
@@ -107,7 +107,7 @@ namespace deep
 
         usize size = 0;
 
-        if (!core_fs::get_file_size(ctx::get_internal_ctx(m_context), m_fd, &size))
+        if (!core_fs::get_file_size(ctx::get_internal_ctx(get_context_ptr()), m_fd, &size))
         {
             return 0;
         }
@@ -122,7 +122,7 @@ namespace deep
             return 0;
         }
 
-        return core_fs::set_file_size(ctx::get_internal_ctx(m_context), m_fd, length);
+        return core_fs::set_file_size(ctx::get_internal_ctx(get_context_ptr()), m_fd, length);
     }
 
     usize file_stream::get_position() const
@@ -134,7 +134,7 @@ namespace deep
 
         usize size = 0;
 
-        if (!core_fs::get_file_position(ctx::get_internal_ctx(m_context), m_fd, &size))
+        if (!core_fs::get_file_position(ctx::get_internal_ctx(get_context_ptr()), m_fd, &size))
         {
             return 0;
         }
@@ -192,7 +192,7 @@ namespace deep
 
         usize new_size;
 
-        if (!core_fs::seek_file(ctx::get_internal_ctx(m_context), m_fd, offset, or, &new_size))
+        if (!core_fs::seek_file(ctx::get_internal_ctx(get_context_ptr()), m_fd, offset, or, &new_size))
         {
             return 0;
         }
@@ -207,7 +207,7 @@ namespace deep
             return false;
         }
 
-        return core_fs::read_file(ctx::get_internal_ctx(m_context), m_fd, count, dest, bytes_read);
+        return core_fs::read_file(ctx::get_internal_ctx(get_context_ptr()), m_fd, count, dest, bytes_read);
     }
 
     bool file_stream::write(void *src, usize count, usize *bytes_written)
@@ -217,7 +217,7 @@ namespace deep
             return false;
         }
 
-        return core_fs::write_file(ctx::get_internal_ctx(m_context), m_fd, count, src, bytes_written);
+        return core_fs::write_file(ctx::get_internal_ctx(get_context_ptr()), m_fd, count, src, bytes_written);
     }
 
     bool file_stream::copy_to(stream &other)
@@ -228,7 +228,7 @@ namespace deep
         usize length   = 0;
         usize diff;
         usize bytes_read       = 0;
-        void *internal_context = ctx::get_internal_ctx(m_context);
+        void *internal_context = ctx::get_internal_ctx(get_context_ptr());
 
         if (!m_is_opened)
         {
@@ -253,7 +253,7 @@ namespace deep
 
         diff = length - position;
 
-        buffer_ptr<uint8> buffer = mem::alloc_buffer<uint8>(m_context, diff);
+        buffer_ptr<uint8> buffer = mem::alloc_buffer<uint8>(get_context_ptr(), diff);
 
         if (!buffer.is_valid())
         {

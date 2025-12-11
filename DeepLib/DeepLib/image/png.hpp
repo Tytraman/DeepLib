@@ -17,10 +17,10 @@ namespace deep
     class DEEP_LIB_API png
     {
       public:
-        static png load(ctx *context, stream *input);
+        static png load(const ref<ctx> &context, stream *input);
         static bool convert(const image &from, stream *output);
 
-        static string get_libpng_version(ctx *context);
+        static string get_libpng_version(const ref<ctx> &context);
 
         bool check() const;
         bool read_info();

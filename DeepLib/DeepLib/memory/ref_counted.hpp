@@ -64,25 +64,11 @@ namespace deep
     }
 
     template <typename Type>
-    class buffer_primitive : public ref_counted
-    {
-        static_assert(is_primitive<Type>, "Type must be primitive");
-
-      public:
-        buffer_primitive(ctx *context, Type *ptr, usize bytes_size);
-
-        buffer_ptr<Type> &get_buffer();
-        const buffer_ptr<Type> &get_buffer() const;
-
-      protected:
-        buffer_ptr<Type> m_buffer;
-    };
-
-    template <typename Type>
     class ref : public managed_ptr<ref<Type>, Type>
     {
       public:
         ref() = default;
+        ref(const ref<ctx> &context, Type *ptr);
         ref(ctx *context, Type *ptr);
 
         /**
@@ -119,6 +105,16 @@ namespace deep
         bool operator==(const ref<Type> &other) const;
         bool operator!=(const ref<Type> &other) const;
     };
+
+    template <typename Type>
+    inline ref<Type>::ref(const ref<ctx> &context, Type *ptr)
+            : managed_ptr<ref<Type>, Type>(context.get(), ptr, sizeof(Type))
+    {
+        if (is_valid())
+        {
+            m_ptr->take();
+        }
+    }
 
     template <typename Type>
     inline ref<Type>::ref(ctx *context, Type *ptr)
@@ -253,6 +249,21 @@ namespace deep
     {
         return reinterpret_cast<Type *>(to_cast.get());
     }
+
+    template <typename Type>
+    class buffer_primitive : public ref_counted
+    {
+        static_assert(is_primitive<Type>, "Type must be primitive");
+
+      public:
+        buffer_primitive(ctx *context, Type *ptr, usize bytes_size);
+
+        buffer_ptr<Type> &get_buffer();
+        const buffer_ptr<Type> &get_buffer() const;
+
+      protected:
+        buffer_ptr<Type> m_buffer;
+    };
 
     template <typename Type>
     inline buffer_primitive<Type>::buffer_primitive(ctx *context, Type *ptr, usize bytes_size)

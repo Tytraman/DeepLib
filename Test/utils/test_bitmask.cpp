@@ -1,11 +1,11 @@
 ﻿#include "DeepLib/lib.hpp"
 #include "DeepLib/utils/bitmask.hpp"
 
-int main(int argc, char *argv[])
+int main(int /*argc*/, char * /*argv*/[])
 {
-    deep::ctx *context = deep::lib::create_ctx();
+    deep::ref<deep::ctx> context = deep::lib::create_ctx();
 
-    if (context == nullptr)
+    if (!context.is_valid())
     {
         return 1;
     }
@@ -166,11 +166,6 @@ int main(int argc, char *argv[])
     if (cmp1 == cmp3)
     {
         return 72;
-    }
-
-    if (!deep::lib::destroy_ctx(context))
-    {
-        return 100;
     }
 
     return 0;

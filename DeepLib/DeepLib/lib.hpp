@@ -11,7 +11,7 @@ namespace deep
       public:
         static const char *get_version();
 
-        static ctx *create_ctx();
+        static ref<ctx> create_ctx();
         static bool destroy_ctx(ctx *context);
     };
 } // namespace deep

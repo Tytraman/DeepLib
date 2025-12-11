@@ -4,24 +4,25 @@
 #include "DeepCore/types.hpp"
 #include "DeepLib/memory/ref_counted.hpp"
 #include "DeepLib/memory/memory.hpp"
+#include "DeepLib/object.hpp"
 
 namespace deep
 {
     template <typename Derived, typename Type>
-    class string_base
+    class string_base : public object
     {
       public:
-        string_base() = delete;
-        string_base(ctx *context);
-        string_base(ctx *context, const Type *str);
+        string_base();
+        string_base(const ref<ctx> &context);
+        string_base(const ref<ctx> &context, const Type *str);
 
         static usize calc_bytes_size(const Type *str);
         static usize calc_length(const Type *str);
 
-        static Derived from(ctx *context, bool value);
-        static Derived from(ctx *context, int64 value);
-        static Derived from(ctx *context, uint64 value);
-        static Derived from(ctx *context, double value);
+        static Derived from(const ref<ctx> &context, bool value);
+        static Derived from(const ref<ctx> &context, int64 value);
+        static Derived from(const ref<ctx> &context, uint64 value);
+        static Derived from(const ref<ctx> &context, double value);
 
         static bool equals(const Type *first, const Type *second);
 
@@ -48,7 +49,6 @@ namespace deep
         const ref<buffer_primitive<Type>> &get_ref() const;
 
       protected:
-        ctx *m_context;
         ref<buffer_primitive<Type>> m_data;
         usize m_length;
 
@@ -57,19 +57,25 @@ namespace deep
     };
 
     template <typename Derived, typename Type>
-    inline string_base<Derived, Type>::string_base(ctx *context)
-            : m_context(context), m_length(0)
+    inline string_base<Derived, Type>::string_base()
+            : object()
     {
     }
 
     template <typename Derived, typename Type>
-    inline string_base<Derived, Type>::string_base(ctx *context, const Type *str)
-            : m_context(context), m_length(0)
+    inline string_base<Derived, Type>::string_base(const ref<ctx> &context)
+            : object(context), m_length(0)
+    {
+    }
+
+    template <typename Derived, typename Type>
+    inline string_base<Derived, Type>::string_base(const ref<ctx> &context, const Type *str)
+            : object(context), m_length(0)
     {
         usize bytes_size = calc_bytes_size(str);
         usize length     = calc_length(str);
 
-        Type *ptr = mem::alloc<Type>(context, bytes_size + sizeof(Type));
+        Type *ptr = mem::alloc<Type>(context.get(), bytes_size + sizeof(Type));
         if (ptr == nullptr)
         {
             return;
@@ -78,7 +84,7 @@ namespace deep
         memcpy(ptr, str, bytes_size);
         *((Type *) (((uint8 *) ptr) + bytes_size)) = static_cast<Type>('\0');
 
-        m_data.set(context, mem::alloc_type<buffer_primitive<Type>>(context, context, ptr, bytes_size + sizeof(Type)), sizeof(buffer_primitive<Type>));
+        m_data.set(context.get(), mem::alloc_type<buffer_primitive<Type>>(context.get(), context.get(), ptr, bytes_size + sizeof(Type)), sizeof(buffer_primitive<Type>));
         m_data->take();
 
         m_length = length;
@@ -97,25 +103,25 @@ namespace deep
     }
 
     template <typename Derived, typename Type>
-    inline Derived string_base<Derived, Type>::from(ctx *context, bool value)
+    inline Derived string_base<Derived, Type>::from(const ref<ctx> &context, bool value)
     {
         return Derived::from_impl(context, value);
     }
 
     template <typename Derived, typename Type>
-    inline Derived string_base<Derived, Type>::from(ctx *context, int64 value)
+    inline Derived string_base<Derived, Type>::from(const ref<ctx> &context, int64 value)
     {
         return Derived::from_impl(context, value);
     }
 
     template <typename Derived, typename Type>
-    inline Derived string_base<Derived, Type>::from(ctx *context, uint64 value)
+    inline Derived string_base<Derived, Type>::from(const ref<ctx> &context, uint64 value)
     {
         return Derived::from_impl(context, value);
     }
 
     template <typename Derived, typename Type>
-    inline Derived string_base<Derived, Type>::from(ctx *context, double value)
+    inline Derived string_base<Derived, Type>::from(const ref<ctx> &context, double value)
     {
         return Derived::from_impl(context, value);
     }
@@ -333,21 +339,21 @@ namespace deep
             return mem::realloc<Type>(m_data->get_buffer(), new_bytes_size);
         }
 
-        Type *ptr = mem::alloc<Type>(m_context, new_bytes_size);
+        Type *ptr = mem::alloc<Type>(get_context_ptr(), new_bytes_size);
         if (ptr == nullptr)
         {
             return false;
         }
 
-        buffer_primitive<Type> *buffer = mem::alloc_type<buffer_primitive<Type>>(m_context, m_context, ptr, new_bytes_size);
+        buffer_primitive<Type> *buffer = mem::alloc_type<buffer_primitive<Type>>(get_context_ptr(), get_context_ptr(), ptr, new_bytes_size);
         if (buffer == nullptr)
         {
-            mem::dealloc<Type>(m_context, ptr);
+            mem::dealloc<Type>(get_context_ptr(), ptr);
 
             return false;
         }
 
-        m_data.set(m_context, buffer, sizeof(buffer_primitive<Type>));
+        m_data.set(get_context_ptr(), buffer, sizeof(buffer_primitive<Type>));
         m_data->take();
 
         return true;

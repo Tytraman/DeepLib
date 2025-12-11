@@ -2,11 +2,11 @@
 #include "DeepLib/memory/memory.hpp"
 #include "DeepLib/memory/buffer_ptr.hpp"
 
-int main(int argc, char *argv[])
+int main(int /*argc*/, char * /*argv*/[])
 {
-    deep::ctx *context = deep::lib::create_ctx();
+    deep::ref<deep::ctx> context = deep::lib::create_ctx();
 
-    if (context == nullptr)
+    if (!context.is_valid())
     {
         return 1;
     }
@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
     constexpr deep::usize bytes_size_1 = sizeof(int) * 100;
     constexpr deep::usize bytes_size_2 = sizeof(int) * 100;
 
-    deep::buffer_ptr<int> buffer = deep::buffer_ptr<int>(context, deep::mem::alloc<int>(context, bytes_size_1), bytes_size_1);
+    deep::buffer_ptr<int> buffer = deep::buffer_ptr<int>(context.get(), deep::mem::alloc<int>(context.get(), bytes_size_1), bytes_size_1);
 
     if (!buffer.is_valid())
     {
@@ -31,11 +31,6 @@ int main(int argc, char *argv[])
     if (!deep::mem::dealloc(buffer))
     {
         return 3;
-    }
-
-    if (!deep::lib::destroy_ctx(context))
-    {
-        return 100;
     }
 
     return 0;

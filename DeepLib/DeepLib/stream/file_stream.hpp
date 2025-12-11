@@ -13,8 +13,8 @@ namespace deep
     class DEEP_LIB_API file_stream : public stream
     {
       public:
-        file_stream(ctx *context, const native_char *filename, core_fs::file_mode mode, core_fs::file_access access, core_fs::file_share share);
-        file_stream(ctx *context, string_native &filename, core_fs::file_mode mode, core_fs::file_access access, core_fs::file_share share);
+        file_stream(const ref<ctx> &context, const native_char *filename, core_fs::file_mode mode, core_fs::file_access access, core_fs::file_share share);
+        file_stream(const ref<ctx> &context, string_native &filename, core_fs::file_mode mode, core_fs::file_access access, core_fs::file_share share);
         ~file_stream();
 
         virtual bool open() override;
@@ -53,7 +53,6 @@ namespace deep
         core_fs::file_share m_share;
         fd m_fd;
         bool m_is_opened;
-        ctx *m_context;
     };
 } // namespace deep
 

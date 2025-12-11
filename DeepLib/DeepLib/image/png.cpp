@@ -43,7 +43,7 @@ namespace deep
     {
     }
 
-    png png::load(ctx *context, stream *input)
+    png png::load(const ref<ctx> &context, stream *input)
     {
         png out;
 
@@ -56,7 +56,7 @@ namespace deep
         usize position   = input->get_position();
         usize bytes_size = length - position;
 
-        uint8 *buffer = mem::alloc<uint8>(context, bytes_size);
+        uint8 *buffer = mem::alloc<uint8>(context.get(), bytes_size);
 
         if (buffer == nullptr)
         {
@@ -65,13 +65,13 @@ namespace deep
 
         if (!input->read(buffer, bytes_size, nullptr))
         {
-            mem::dealloc(context, buffer);
+            mem::dealloc(context.get(), buffer);
 
             return out;
         }
 
-        out.m_context = context;
-        out.m_data.set(context, buffer, bytes_size);
+        out.m_context = context.get();
+        out.m_data.set(context.get(), buffer, bytes_size);
 
         return out;
     }
@@ -146,7 +146,7 @@ namespace deep
         return true;
     }
 
-    string png::get_libpng_version(ctx *context)
+    string png::get_libpng_version(const ref<ctx> &context)
     {
         return string(context, DEEP_TEXT_UTF8(PNG_LIBPNG_VER_STRING));
     }

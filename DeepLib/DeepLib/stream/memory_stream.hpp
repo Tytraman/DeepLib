@@ -12,7 +12,7 @@ namespace deep
     class DEEP_LIB_API memory_stream : public stream
     {
       public:
-        memory_stream(ctx *context);
+        memory_stream(const ref<ctx> &context);
 
         virtual bool open() override;
         virtual bool close() override;

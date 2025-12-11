@@ -9,7 +9,7 @@ namespace deep
     class DEEP_LIB_API fs
     {
       public:
-        static string_native get_cwd(ctx *context);
+        static string_native get_cwd(const ref<ctx> &context);
     };
 } // namespace deep
 

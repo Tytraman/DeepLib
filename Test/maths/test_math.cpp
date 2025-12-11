@@ -2,11 +2,11 @@
 #include "DeepLib/maths/math.hpp"
 #include "DeepLib/maths/limit.hpp"
 
-int main(int argc, char *argv[])
+int main(int /*argc*/, char * /*argv*/[])
 {
-    deep::ctx *context = deep::lib::create_ctx();
+    deep::ref<deep::ctx> context = deep::lib::create_ctx();
 
-    if (context == nullptr)
+    if (!context.is_valid())
     {
         return 1;
     }
@@ -31,11 +31,6 @@ int main(int argc, char *argv[])
     if (a3 != max1)
     {
         return 4;
-    }
-
-    if (!deep::lib::destroy_ctx(context))
-    {
-        return 100;
     }
 
     return 0;

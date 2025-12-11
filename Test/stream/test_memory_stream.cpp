@@ -1,73 +1,66 @@
 ﻿#include "DeepLib/lib.hpp"
 #include "DeepLib/stream/memory_stream.hpp"
 
-int main(int argc, char *argv[])
+int main(int /*argc*/, char * /*argv*/[])
 {
-    deep::ctx *context = deep::lib::create_ctx();
+    deep::ref<deep::ctx> context = deep::lib::create_ctx();
 
-    if (context == nullptr)
+    if (!context.is_valid())
     {
         return 1;
     }
 
+    deep::uint8 buffer[] = {
+        7, 8, 9,
+        4, 5, 6,
+        1, 2, 3
+    };
+
+    deep::uint8 out[sizeof(buffer)];
+
+    deep::memory_stream s = deep::memory_stream(context);
+
+    deep::usize bytes = 0;
+
+    if (!s.write(buffer, sizeof(buffer), &bytes))
     {
-        deep::uint8 buffer[] = {
-            7, 8, 9,
-            4, 5, 6,
-            1, 2, 3
-        };
+        return 10;
+    }
 
-        deep::uint8 out[sizeof(buffer)];
+    if (bytes != sizeof(buffer))
+    {
+        return 11;
+    }
 
-        deep::memory_stream s = deep::memory_stream(context);
+    s.seek(0, deep::stream::seek_origin::Begin);
 
-        deep::usize bytes = 0;
+    bytes = 0;
 
-        if (!s.write(buffer, sizeof(buffer), &bytes))
+    if (!s.read(out, sizeof(out), &bytes))
+    {
+        return 12;
+    }
+
+    if (bytes != sizeof(out))
+    {
+        return 13;
+    }
+
+    deep::usize index;
+    for (index = 0; index < sizeof(out); ++index)
+    {
+        if (out[index] != buffer[index])
         {
-            return 2;
-        }
-
-        if (bytes != sizeof(buffer))
-        {
-            return 3;
-        }
-
-        s.seek(0, deep::stream::seek_origin::Begin);
-
-        bytes = 0;
-
-        if (!s.read(out, sizeof(out), &bytes))
-        {
-            return 4;
-        }
-
-        if (bytes != sizeof(out))
-        {
-            return 5;
-        }
-
-        deep::usize index;
-        for (index = 0; index < sizeof(out); ++index)
-        {
-            if (out[index] != buffer[index])
-            {
-                return 6;
-            }
-        }
-
-        for (index = 0; index < sizeof(out); ++index)
-        {
-            if (out[index] != s.get()[index])
-            {
-                return 7;
-            }
+            return 14;
         }
     }
 
-    if (!deep::lib::destroy_ctx(context))
+    for (index = 0; index < sizeof(out); ++index)
     {
-        return 100;
+        if (out[index] != s.get()[index])
+        {
+            return 15;
+        }
     }
 
     return 0;

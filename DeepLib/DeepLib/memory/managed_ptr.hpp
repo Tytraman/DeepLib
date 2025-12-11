@@ -2,11 +2,11 @@
 #define DEEP_LIB_MANAGED_PTR_HPP
 
 #include "DeepCore/types.hpp"
-#include "DeepLib/context.hpp"
 #include "DeepLib/memory/memory_manager.hpp"
 
 namespace deep
 {
+    class ctx;
 
     /**
      * @brief Classe qui utilise le CRTP (Curiously Recurring Template Pattern) afin de créer une interface statique pour la gestion des pointeurs.
@@ -29,7 +29,7 @@ namespace deep
         bool is_null() const;
 
         Type *get();
-        const Type *get() const;
+        Type *get() const;
         memory_manager *get_memory_manager();
         const memory_manager *get_memory_manager() const;
         usize get_bytes_size() const;
@@ -111,7 +111,7 @@ namespace deep
     }
 
     template <typename Derived, typename Type>
-    inline const Type *managed_ptr<Derived, Type>::get() const
+    inline Type *managed_ptr<Derived, Type>::get() const
     {
         return m_ptr;
     }

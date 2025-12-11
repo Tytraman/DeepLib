@@ -4,8 +4,8 @@
 
 namespace deep
 {
-    memory_stream::memory_stream(ctx *context)
-            : stream(), m_buffer(context, nullptr, 0), m_position(0)
+    memory_stream::memory_stream(const ref<ctx> &context)
+            : stream(context), m_buffer(context.get(), nullptr, 0), m_position(0)
     {
     }
 

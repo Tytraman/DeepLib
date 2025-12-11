@@ -24,10 +24,10 @@ namespace deep
         static usize calc_bytes_size_impl(const char *str);
         static usize calc_length_impl(const char *str);
 
-        static string from_impl(ctx *context, bool value);
-        static string from_impl(ctx *context, int64 value);
-        static string from_impl(ctx *context, uint64 value);
-        static string from_impl(ctx *context, double value);
+        static string from_impl(const ref<ctx> &context, bool value);
+        static string from_impl(const ref<ctx> &context, int64 value);
+        static string from_impl(const ref<ctx> &context, uint64 value);
+        static string from_impl(const ref<ctx> &context, double value);
     };
 
     inline usize deep::string::calc_bytes_size_impl(const char *str)
@@ -40,7 +40,7 @@ namespace deep
         return core_utf8::calc_length(str);
     }
 
-    inline string string::from_impl(ctx *context, bool value)
+    inline string string::from_impl(const ref<ctx> &context, bool value)
     {
         string str = string(context);
 
@@ -61,7 +61,7 @@ namespace deep
         return str;
     }
 
-    inline string string::from_impl(ctx *context, int64 value)
+    inline string string::from_impl(const ref<ctx> &context, int64 value)
     {
         string str = string(context);
 
@@ -93,7 +93,7 @@ namespace deep
         return str;
     }
 
-    inline string string::from_impl(ctx *context, uint64 value)
+    inline string string::from_impl(const ref<ctx> &context, uint64 value)
     {
         string str = string(context);
 
@@ -113,7 +113,7 @@ namespace deep
         return str;
     }
 
-    inline string string::from_impl(ctx *context, double value)
+    inline string string::from_impl(const ref<ctx> &context, double value)
     {
         string str = string(context);
 

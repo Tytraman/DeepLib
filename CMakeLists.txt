@@ -23,56 +23,73 @@ add_subdirectory(DeepLib)
 # Inclue la fonction 'deep_create_test'.
 include(cmake/CreateTest.cmake)
 
-deep_create_test(GetCWD LINK_DEEP_CORE LINK_DEEP_LIB
-    SOURCES test_get_cwd.cpp)
+deep_create_test(NAME GetCWD
+    SOURCES test_get_cwd.cpp
+    LIBRARIES Deep::Lib)
 
-deep_create_test(AllocMem LINK_DEEP_CORE LINK_DEEP_LIB
-    SOURCES test_alloc_mem.cpp)
+deep_create_test(NAME AllocMem
+    SOURCES test_alloc_mem.cpp
+    LIBRARIES Deep::Lib)
 
-deep_create_test(List LINK_DEEP_CORE LINK_DEEP_LIB
-    SOURCES test_list.cpp)
+deep_create_test(NAME List
+    SOURCES test_list.cpp
+    LIBRARIES Deep::Lib)
 
-deep_create_test(RefCounted LINK_DEEP_CORE LINK_DEEP_LIB
-    SOURCES test_ref_counted.cpp)
+deep_create_test(NAME RefCounted
+    SOURCES test_ref_counted.cpp
+    LIBRARIES Deep::Lib)
 
-deep_create_test(OwnedPtr LINK_DEEP_CORE LINK_DEEP_LIB
-    SOURCES test_owned_ptr.cpp)
+deep_create_test(NAME OwnedPtr
+    SOURCES test_owned_ptr.cpp
+    LIBRARIES Deep::Lib)
 
-deep_create_test(StringNative LINK_DEEP_CORE LINK_DEEP_LIB
-    SOURCES string/test_string_native.cpp)
+deep_create_test(NAME StringNative
+    SOURCES string/test_string_native.cpp
+    LIBRARIES Deep::Lib)
 
-deep_create_test(String1 LINK_DEEP_CORE LINK_DEEP_LIB
-    SOURCES string/test_string1.cpp)
+deep_create_test(NAME String1
+    SOURCES string/test_string1.cpp
+    LIBRARIES Deep::Lib)
 
-deep_create_test(String2 LINK_DEEP_CORE LINK_DEEP_LIB
-    SOURCES string/test_string2.cpp)
+deep_create_test(NAME String2
+    SOURCES string/test_string2.cpp
+    LIBRARIES Deep::Lib)
 
-deep_create_test(HashMap LINK_DEEP_CORE LINK_DEEP_LIB
-    SOURCES test_hash_map.cpp)
+deep_create_test(NAME HashMap
+    SOURCES test_hash_map.cpp
+    LIBRARIES Deep::Lib)
 
-deep_create_test(MemoryStream LINK_DEEP_CORE LINK_DEEP_LIB
-    SOURCES stream/test_memory_stream.cpp)
+deep_create_test(NAME MemoryStream
+    SOURCES stream/test_memory_stream.cpp
+    LIBRARIES Deep::Lib)
 
-deep_create_test(FileStream LINK_DEEP_CORE LINK_DEEP_LIB
-    SOURCES stream/test_file_stream.cpp)
+deep_create_test(NAME FileStream
+    SOURCES stream/test_file_stream.cpp
+    LIBRARIES Deep::Lib)
 
-deep_create_test(ImagePng LINK_DEEP_CORE LINK_DEEP_LIB
-    SOURCES image/test_png.cpp)
+deep_create_test(NAME ImagePng
+    SOURCES image/test_png.cpp
+    LIBRARIES Deep::Lib)
 
-deep_create_test(Math LINK_DEEP_CORE LINK_DEEP_LIB
-    SOURCES maths/test_math.cpp)
+deep_create_test(NAME Math
+    SOURCES maths/test_math.cpp
+    LIBRARIES Deep::Lib)
 
-deep_create_test(Vec2 LINK_DEEP_CORE LINK_DEEP_LIB
-    SOURCES maths/test_vec2.cpp)
+deep_create_test(NAME Vec2
+    SOURCES maths/test_vec2.cpp
+    LIBRARIES Deep::Lib)
 
-deep_create_test(Vec3 LINK_DEEP_CORE LINK_DEEP_LIB
-    SOURCES maths/test_vec3.cpp)
+deep_create_test(NAME Vec3
+    SOURCES maths/test_vec3.cpp
+    LIBRARIES Deep::Lib)
 
-deep_create_test(Thread LINK_DEEP_CORE LINK_DEEP_LIB
-    SOURCES multithreading/test_thread.cpp)
+deep_create_test(NAME Thread
+    SOURCES multithreading/test_thread.cpp
+    LIBRARIES Deep::Lib)
 
-deep_create_test(Bitmask LINK_DEEP_CORE LINK_DEEP_LIB
-    SOURCES utils/test_bitmask.cpp)
+deep_create_test(NAME Bitmask
+    SOURCES utils/test_bitmask.cpp
+    LIBRARIES Deep::Lib)
 
 # Crée un lien symbolique vers 'compile_commands.json' généré dans le dossier de Build.
 file(CREATE_LINK

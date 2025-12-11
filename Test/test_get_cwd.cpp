@@ -1,11 +1,11 @@
 ﻿#include <DeepCore/filesystem.hpp>
 #include <DeepLib/lib.hpp>
 
-int main(int argc, char *argv[])
+int main(int /*argc*/, char * /*argv*/[])
 {
-    deep::ctx *context = deep::lib::create_ctx();
+    deep::ref<deep::ctx> context = deep::lib::create_ctx();
 
-    if (context == nullptr)
+    if (!context.is_valid())
     {
         return 1;
     }
@@ -14,12 +14,7 @@ int main(int argc, char *argv[])
 
     if (cwd == nullptr)
     {
-        return 1;
-    }
-
-    if (!deep::lib::destroy_ctx(context))
-    {
-        return 1;
+        return 2;
     }
 
     return 0;

@@ -10,39 +10,34 @@ void thread_callback(void *args)
     *shared_value = NEW_VALUE;
 }
 
-int main(int argc, char *argv[])
+int main(int /*argc*/, char * /*argv*/[])
 {
-    deep::ctx *context = deep::lib::create_ctx();
+    deep::ref<deep::ctx> context = deep::lib::create_ctx();
 
-    if (context == nullptr)
+    if (!context.is_valid())
     {
         return 1;
     }
 
     deep::uint32 shared_value = 789;
 
-    deep::thread t = deep::thread::create(context, thread_callback, &shared_value, true);
+    deep::thread t = deep::thread::create(context.get(), thread_callback, &shared_value, true);
 
     if (!t.is_valid())
     {
-        return 2;
+        return 10;
     }
 
     if (!t.resume())
     {
-        return 3;
+        return 11;
     }
 
     t.wait();
 
     if (shared_value != NEW_VALUE)
     {
-        return 10;
-    }
-
-    if (!deep::lib::destroy_ctx(context))
-    {
-        return 100;
+        return 12;
     }
 
     return 0;

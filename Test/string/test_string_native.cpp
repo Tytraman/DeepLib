@@ -3,84 +3,77 @@
 
 #include <stdio.h>
 
-int main(int argc, char *argv[])
+int main(int /*argc*/, char * /*argv*/[])
 {
-    deep::ctx *context = deep::lib::create_ctx();
+    deep::ref<deep::ctx> context = deep::lib::create_ctx();
 
-    if (context == nullptr)
+    if (!context.is_valid())
     {
         return 1;
     }
 
+    deep::string_native str = deep::string_native(context, DEEP_TEXT_NATIVE("Hello "));
+
+    if (!str.is_valid())
     {
-        deep::string_native str = deep::string_native(context, DEEP_TEXT_NATIVE("Hello "));
+        return 10;
+    }
 
-        if (!str.is_valid())
+    if (str.get_length() != 6)
+    {
+        return 11;
+    }
+
+    if (!str.append(DEEP_TEXT_NATIVE("world ")))
+    {
+        return 12;
+    }
+
+    if (str.get_length() != 12)
+    {
+        return 13;
+    }
+
+    str += DEEP_TEXT_NATIVE("C++");
+
+    {
+        deep::string_native other = str;
+        if (other.get_length() != 15)
         {
-            return 2;
+            return 14;
         }
 
-        if (str.get_length() != 6)
+        if constexpr (other.encoding == deep::string_encoding::Unicode)
         {
-            return 3;
-        }
-
-        if (!str.append(DEEP_TEXT_NATIVE("world ")))
-        {
-            return 4;
-        }
-
-        if (str.get_length() != 12)
-        {
-            return 5;
-        }
-
-        str += DEEP_TEXT_NATIVE("C++");
-
-        {
-            deep::string_native other = str;
-            if (other.get_length() != 15)
+            deep::usize bytes_size = other.get_bytes_size();
+            if (bytes_size != 32)
             {
-                return 6;
+                return 15;
             }
 
-            if (other.encoding == deep::string_encoding::Unicode)
+            bytes_size = str.get_bytes_size();
+            if (bytes_size != 32)
             {
-                deep::usize bytes_size = other.get_bytes_size();
-                if (bytes_size != 32)
-                {
-                    return 7;
-                }
-
-                bytes_size = str.get_bytes_size();
-                if (bytes_size != 32)
-                {
-                    return 8;
-                }
-
-                printf("Original: %ls\n", *str);
-                printf("Copy ref: %ls\n", *other);
+                return 16;
             }
 
-            deep::usize ref_count = str.get_ref()->get_ref_count();
-
-            if (ref_count != 2)
-            {
-                return 9;
-            }
+            printf("Original: %ls\n", *str);
+            printf("Copy ref: %ls\n", *other);
         }
 
         deep::usize ref_count = str.get_ref()->get_ref_count();
 
-        if (ref_count != 1)
+        if (ref_count != 2)
         {
-            return 10;
+            return 17;
         }
     }
 
-    if (!deep::lib::destroy_ctx(context))
+    deep::usize ref_count = str.get_ref()->get_ref_count();
+
+    if (ref_count != 1)
     {
-        return 100;
+        return 18;
     }
 
     return 0;
