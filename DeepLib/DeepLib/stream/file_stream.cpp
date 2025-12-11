@@ -24,6 +24,17 @@ namespace deep
     {
     }
 
+    file_stream::file_stream(const ref<ctx> &context, fd file)
+            : stream(context),
+              m_filename(context),
+              m_mode(core_fs::file_mode::None),
+              m_access(core_fs::file_access::ReadWrite),
+              m_share(core_fs::file_share::None),
+              m_fd(file),
+              m_is_opened(true)
+    {
+    }
+
     file_stream::~file_stream()
     {
         close();

@@ -1,5 +1,5 @@
-﻿#ifndef DEEP_LIB_NATIVE_STRING_HPP
-#define DEEP_LIB_NATIVE_STRING_HPP
+﻿#ifndef DEEP_LIB_STRING_NATIVE_HPP
+#define DEEP_LIB_STRING_NATIVE_HPP
 
 #include "DeepLib/deep_lib_export.h"
 #include "DeepLib/string/string_base.hpp"

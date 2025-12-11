@@ -1,7 +1,7 @@
-#ifndef DEEP_LIB_MEM_PTR_HPP
+﻿#ifndef DEEP_LIB_MEM_PTR_HPP
 #define DEEP_LIB_MEM_PTR_HPP
 
-#include "managed_ptr.hpp"
+#include "DeepLib/memory/managed_ptr.hpp"
 
 namespace deep
 {

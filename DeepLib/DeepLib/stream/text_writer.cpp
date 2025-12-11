@@ -1,4 +1,5 @@
 ﻿#include "text_writer.hpp"
+#include "DeepLib/context.hpp"
 
 namespace deep
 {

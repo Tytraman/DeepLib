@@ -47,7 +47,7 @@ namespace deep
         bool dealloc(buffer_ptr<Type> &buffer);
 
       private:
-        friend class lib;
+        friend class ctx;
 
         void *m_internal_context;
     };

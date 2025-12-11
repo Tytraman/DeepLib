@@ -1,8 +1,6 @@
 ﻿#include "DeepLib/lib.hpp"
 #include "DeepLib/string/string.hpp"
 
-#include <stdio.h>
-
 int main(int /*argc*/, char * /*argv*/[])
 {
     deep::ref<deep::ctx> context = deep::lib::create_ctx();
@@ -31,7 +29,7 @@ int main(int /*argc*/, char * /*argv*/[])
         return 12;
     }
 
-    printf("%s", *str);
+    context->out() << *str << DEEP_STRING("\n");
 
     return 0;
 }

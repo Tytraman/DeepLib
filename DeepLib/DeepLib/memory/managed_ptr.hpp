@@ -31,7 +31,7 @@ namespace deep
         Type *get();
         Type *get() const;
         memory_manager *get_memory_manager();
-        const memory_manager *get_memory_manager() const;
+        memory_manager *get_memory_manager() const;
         usize get_bytes_size() const;
 
         void set(ctx *context, Type *ptr, usize bytes_size);
@@ -123,7 +123,7 @@ namespace deep
     }
 
     template <typename Derived, typename Type>
-    inline const memory_manager *managed_ptr<Derived, Type>::get_memory_manager() const
+    inline memory_manager *managed_ptr<Derived, Type>::get_memory_manager() const
     {
         return m_memory_manager;
     }

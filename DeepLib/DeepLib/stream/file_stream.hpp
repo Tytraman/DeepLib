@@ -2,10 +2,9 @@
 #define DEEP_LIB_FILE_STREAM_HPP
 
 #include "DeepLib/deep_lib_export.h"
-#include "DeepLib/context.hpp"
+#include "DeepCore/filesystem.hpp"
 #include "DeepLib/stream/stream.hpp"
 #include "DeepLib/string/string_native.hpp"
-#include "DeepCore/filesystem.hpp"
 
 namespace deep
 {
@@ -15,6 +14,7 @@ namespace deep
       public:
         file_stream(const ref<ctx> &context, const native_char *filename, core_fs::file_mode mode, core_fs::file_access access, core_fs::file_share share);
         file_stream(const ref<ctx> &context, string_native &filename, core_fs::file_mode mode, core_fs::file_access access, core_fs::file_share share);
+        file_stream(const ref<ctx> &context, fd file);
         ~file_stream();
 
         virtual bool open() override;

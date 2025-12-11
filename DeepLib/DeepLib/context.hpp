@@ -4,10 +4,15 @@
 #include "DeepLib/deep_lib_export.h"
 #include "DeepCore/types.hpp"
 #include "DeepLib/memory/ref_counted.hpp"
+#include "DeepLib/stream/stream.hpp"
+#include "DeepLib/stream/text_writer.hpp"
 
 namespace deep
 {
     class memory_manager;
+
+    template class DEEP_LIB_API ref<stream>;
+    template class DEEP_LIB_API ref<text_writer>;
 
     /**
      * @class ctx
@@ -19,6 +24,7 @@ namespace deep
     {
       public:
         ctx();
+        ~ctx();
 
         static constexpr void *get_internal_ctx(ctx *from);
 
@@ -26,9 +32,15 @@ namespace deep
 
         bool destroy_internal_ctx();
 
+        text_writer &out();
+        text_writer &err();
+
         void *get_internal_ctx();
         void *get_internal_ctx() const;
         memory_manager *get_memory_manager();
+
+      protected:
+        bool init();
 
       private:
         friend class lib;
@@ -37,8 +49,12 @@ namespace deep
          * @brief Pointeur vers une zone de données contenant les données
          * internes propres au système d'exploitation.
          */
-        void *internal_data;
-        memory_manager *mem;
+        void *m_internal_data;
+        memory_manager *m_mem;
+        ref<stream> m_stdout;
+        ref<stream> m_stderr;
+        ref<text_writer> m_stdout_writer;
+        ref<text_writer> m_stderr_writer;
     };
 
     inline constexpr void *ctx::get_internal_ctx(ctx *from)
@@ -55,7 +71,7 @@ namespace deep
     {
         if (from != nullptr)
         {
-            return from->mem;
+            return from->m_mem;
         }
 
         return nullptr;
@@ -63,17 +79,17 @@ namespace deep
 
     inline void *ctx::get_internal_ctx()
     {
-        return internal_data;
+        return m_internal_data;
     }
 
     inline void *ctx::get_internal_ctx() const
     {
-        return internal_data;
+        return m_internal_data;
     }
 
     inline memory_manager *ctx::get_memory_manager()
     {
-        return mem;
+        return m_mem;
     }
 } // namespace deep
 

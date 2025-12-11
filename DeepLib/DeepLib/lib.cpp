@@ -23,25 +23,12 @@ namespace deep
 
         ctx *context = new (raw) ctx();
 
-        context->internal_data = core_ctx::create_internal_ctx();
-        if (context->internal_data == nullptr)
+        if (!context->init())
         {
-            context->~ctx();
             core_mem::dealloc(nullptr, raw);
 
             return ref<ctx>();
         }
-
-        context->mem = static_cast<memory_manager *>(core_mem::alloc(nullptr, sizeof(memory_manager)));
-        if (context->mem == nullptr)
-        {
-            core_ctx::destroy_internal_ctx(context->internal_data);
-            context->~ctx();
-            core_mem::dealloc(nullptr, raw);
-
-            return ref<ctx>();
-        }
-        context->mem->m_internal_context = context->internal_data;
 
         return ref<ctx>(context, context);
     }

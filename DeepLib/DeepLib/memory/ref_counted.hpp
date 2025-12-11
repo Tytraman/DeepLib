@@ -2,9 +2,9 @@
 #define DEEP_LIB_REF_COUNTED_HPP
 
 #include "DeepLib/deep_lib_export.h"
+#include "DeepCore/types.hpp"
 #include "DeepLib/memory/managed_ptr.hpp"
 #include "DeepLib/memory/buffer_ptr.hpp"
-#include "DeepCore/types.hpp"
 
 namespace deep
 {
@@ -70,6 +70,7 @@ namespace deep
         ref() = default;
         ref(const ref<ctx> &context, Type *ptr);
         ref(ctx *context, Type *ptr);
+        ref(memory_manager *mem, Type *ptr);
 
         /**
          * @brief Crée une nouvelle référence vers l'objet et ajoute 1 à son compteur.
@@ -119,6 +120,16 @@ namespace deep
     template <typename Type>
     inline ref<Type>::ref(ctx *context, Type *ptr)
             : managed_ptr<ref<Type>, Type>(context, ptr, sizeof(Type))
+    {
+        if (is_valid())
+        {
+            m_ptr->take();
+        }
+    }
+
+    template <typename Type>
+    inline ref<Type>::ref(memory_manager *mem, Type *ptr)
+            : managed_ptr<ref<Type>, Type>(mem, ptr, sizeof(Type))
     {
         if (is_valid())
         {
@@ -245,9 +256,9 @@ namespace deep
     }
 
     template <typename Type, typename Kype>
-    inline Type *ref_cast(const Kype &to_cast)
+    inline ref<Type> ref_cast(const ref<Kype> &to_cast)
     {
-        return reinterpret_cast<Type *>(to_cast.get());
+        return ref<Type>(to_cast.get_memory_manager(), reinterpret_cast<Type *>(to_cast.get()));
     }
 
     template <typename Type>
