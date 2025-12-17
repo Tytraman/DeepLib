@@ -9,7 +9,8 @@ add_library(DeepCore
         DeepCore/thread.cpp
         DeepCore/term.cpp
         DeepCore/string/unicode.cpp
-        DeepCore/string/utf8.cpp)
+        DeepCore/string/utf8.cpp
+        DeepCore/window.cpp)
 add_library(Deep::Core ALIAS DeepCore)
 
 set(DeepCoreExport "${CMAKE_CURRENT_BINARY_DIR}/export/DeepCore/deep_core_export.h")
@@ -51,6 +52,7 @@ elseif(WIN32)
             "${CMAKE_CURRENT_SOURCE_DIR}/DeepCore/windows/event.cpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/DeepCore/windows/thread.cpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/DeepCore/windows/term.cpp"
+            "${CMAKE_CURRENT_SOURCE_DIR}/DeepCore/windows/window.cpp"
         
     )
 endif()

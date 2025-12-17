@@ -46,12 +46,11 @@ target_link_libraries(targetName
     PRIVATE
         Deep::Core
         Deep::Lib)
-
-add_custom_command(TARGET targetName POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    $<TARGET_FILE:ZLIB::ZLIB>
-    $<TARGET_FILE:PNG::PNG>
-    $<TARGET_FILE:Deep::Core>
-    $<TARGET_FILE:Deep::Lib>
-    $<TARGET_FILE_DIR:targetName>)
+if (WIN32)
+    add_custom_command(TARGET targetName PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:Deep::Core>
+        $<TARGET_FILE:Deep::Lib>
+        $<TARGET_FILE_DIR:targetName>)
+endif()
 ```

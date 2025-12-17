@@ -368,6 +368,8 @@ namespace deep
 #if defined(DEEP_WINDOWS)
 #include <Windows.h>
 #define handle_d HANDLE
+#define window_handle_d HWND
+#define invalid_window_handle_d nullptr
 #endif
 #endif
 
@@ -397,12 +399,14 @@ namespace deep
 
 namespace deep
 {
-    using native_char  = native_char_d;
-    using native_error = native_error_d;
-    using handle       = handle_d;
-    using fd           = fd_d;
+    using native_char   = native_char_d;
+    using native_error  = native_error_d;
+    using handle        = handle_d;
+    using fd            = fd_d;
+    using window_handle = window_handle_d;
 #if defined(DEEP_WINDOWS)
-    static const fd invalid_fd = invalid_fd_d;
+    static const fd invalid_fd                           = invalid_fd_d;
+    static constexpr window_handle invalid_window_handle = invalid_window_handle_d;
 #else
     static constexpr fd invalid_fd = invalid_fd_d;
 #endif

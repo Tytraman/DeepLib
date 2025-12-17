@@ -5,6 +5,8 @@ project(DeepLibProject
     VERSION 0.0.1
     LANGUAGES C CXX)
 
+find_package(PNG REQUIRED)
+
 # Active la création et l'exécution de tests avec `ctest`.
 enable_testing()
 
@@ -15,10 +17,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 message(STATUS "Compiler ID: ${CMAKE_CXX_COMPILER_ID}")
 
-find_package(PNG REQUIRED)
-
-add_subdirectory(DeepCore)
-add_subdirectory(DeepLib)
+add_subdirectory("DeepCore")
+add_subdirectory("DeepLib")
 
 # Inclue la fonction 'deep_create_test'.
 include(cmake/CreateTest.cmake)
@@ -125,7 +125,8 @@ install(TARGETS DeepCore
     EXPORT DeepLib
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 install(DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/DeepCore/DeepCore"
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
@@ -142,7 +143,8 @@ install(TARGETS DeepLib
     EXPORT DeepLib
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 install(DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/DeepLib/DeepLib"
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}

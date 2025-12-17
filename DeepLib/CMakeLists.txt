@@ -17,6 +17,7 @@ add_library(DeepLib SHARED
     DeepLib/stream/stream_writer.cpp
     DeepLib/image/png.cpp
     DeepLib/image/image.cpp
+    DeepLib/window.cpp
 )
 add_library(Deep::Lib ALIAS DeepLib)
 
@@ -34,10 +35,6 @@ target_link_libraries(DeepLib
     PUBLIC
         Deep::Core
         PNG::PNG)
-
-target_include_directories(DeepLib
-    PRIVATE
-        "${PNG_INCLUDE_DIRS}")
 
 set_target_properties(DeepLib PROPERTIES
     OUTPUT_NAME DeepLib
