@@ -71,6 +71,14 @@ deep_create_test(NAME ImagePng
     SOURCES image/test_png.cpp
     LIBRARIES Deep::Lib)
 
+deep_create_test(NAME ImageApplyPalette
+    SOURCES image/test_apply_palette.cpp
+    LIBRARIES Deep::Lib)
+
+deep_create_test(NAME ImageApplyLuminance
+    SOURCES image/test_apply_luminance.cpp
+    LIBRARIES Deep::Lib)
+
 deep_create_test(NAME Math
     SOURCES maths/test_math.cpp
     LIBRARIES Deep::Lib)

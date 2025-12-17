@@ -80,6 +80,88 @@ namespace deep
         return true;
     }
 
+    bool image::apply_palette(const color_rgb *colors, usize number_of_colors)
+    {
+        if (!m_image.is_valid() || m_color_space != color_space::RGB || m_bit_depth != 8)
+        {
+            return false;
+        }
+
+        uint8 *raw = m_image.get();
+
+        uint32 x, y;
+        uint32 rows    = m_height;
+        uint32 columns = m_width;
+
+        for (y = 0; y < rows; ++y)
+        {
+            uint8 *row_ptr = raw + (y * m_row_bytes);
+
+            for (x = 0; x < columns; ++x)
+            {
+                uint8 *pixel_ptr = row_ptr + (x * m_channels);
+
+                color_rgb pixel = color_rgb(pixel_ptr[0], pixel_ptr[1], pixel_ptr[2]);
+
+                color_rgb closest = color::find_closest_color(pixel, colors, number_of_colors);
+
+                pixel_ptr[0] = closest.x;
+                pixel_ptr[1] = closest.y;
+                pixel_ptr[2] = closest.z;
+            }
+        }
+
+        return true;
+    }
+
+    bool image::apply_luminance()
+    {
+        if (!m_image.is_valid() || m_color_space != color_space::RGB || m_bit_depth != 8)
+        {
+            return false;
+        }
+
+        uint8 *raw = m_image.get();
+
+        uint32 x, y;
+        uint32 rows    = m_height;
+        uint32 columns = m_width;
+
+        for (y = 0; y < rows; ++y)
+        {
+            uint8 *row_ptr = raw + (y * m_row_bytes);
+
+            for (x = 0; x < columns; ++x)
+            {
+                uint8 *pixel_ptr = row_ptr + (x * m_channels);
+
+                color_rgb pixel = color_rgb(pixel_ptr[0], pixel_ptr[1], pixel_ptr[2]);
+
+                color_linearized_rgb linearized_pixel = color::linearise(pixel);
+                float luminance                       = color::calc_luminance(linearized_pixel);
+
+                color_linearized_rgb new_linearized;
+
+                if (luminance < 0.5f)
+                {
+                    new_linearized = color_linearized_rgb(0.0f, 0.0f, luminance * 2.0f);
+                }
+                else
+                {
+                    new_linearized = color_linearized_rgb(luminance, luminance, 0.0f);
+                }
+
+                color_rgb final_color = color::delinearise(new_linearized);
+
+                pixel_ptr[0] = final_color.x;
+                pixel_ptr[1] = final_color.y;
+                pixel_ptr[2] = final_color.z;
+            }
+        }
+
+        return true;
+    }
+
     bool image::resize(uint32 width, uint32 height)
     {
         if (!m_image.is_valid())

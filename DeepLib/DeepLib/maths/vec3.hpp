@@ -13,7 +13,7 @@ namespace deep
         Type x, y, z;
 
         vec3() = default;
-        vec3(const Type &x, const Type &y, const Type &z);
+        constexpr vec3(const Type &x, const Type &y, const Type &z);
 
         bool operator==(const vec3 &other) const;
         bool operator!=(const vec3 &other) const;
@@ -64,7 +64,7 @@ namespace deep
     };
 
     template <typename Type>
-    inline vec3<Type>::vec3(const Type &_x, const Type &_y, const Type &_z)
+    inline constexpr vec3<Type>::vec3(const Type &_x, const Type &_y, const Type &_z)
             : x(_x), y(_y), z(_z)
     {
     }
@@ -267,7 +267,7 @@ namespace deep
     template <typename Type>
     inline float vec3<Type>::magn(const vec3 &vec)
     {
-        return std::sqrtf(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
+        return std::sqrtf(static_cast<float>(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z));
     }
 
     template <typename Type>
@@ -276,9 +276,9 @@ namespace deep
         float length = magn(vec);
 
         return vec3<Type>(
-                vec.x / length,
-                vec.y / length,
-                vec.z / length);
+                static_cast<Type>(vec.x / length),
+                static_cast<Type>(vec.y / length),
+                static_cast<Type>(vec.z / length));
     }
 
     template <typename Type>
@@ -293,13 +293,13 @@ namespace deep
     template <typename Type>
     inline float vec3<Type>::dot(const vec3 &vec1, const vec3 &vec2)
     {
-        return vec1.x * vec2.x + vec1.y * vec2.y + vec1.z * vec2.z;
+        return static_cast<float>(vec1.x * vec2.x + vec1.y * vec2.y + vec1.z * vec2.z);
     }
 
     template <typename Type>
     inline vec3<Type> vec3<Type>::inv(const vec3 &vec)
     {
-        return scale(*this, static_cast<Type>(-1));
+        return scale(vec, static_cast<Type>(-1));
     }
 } // namespace deep
 

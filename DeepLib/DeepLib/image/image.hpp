@@ -4,6 +4,7 @@
 #include "DeepLib/deep_lib_export.h"
 #include "DeepCore/types.hpp"
 #include "DeepLib/memory/buffer_ptr.hpp"
+#include "DeepLib/maths/color.hpp"
 
 namespace deep
 {
@@ -41,6 +42,9 @@ namespace deep
 
         bool apply_horizontal_mirror_effect();
         bool apply_vertical_mirror_effect();
+
+        bool apply_palette(const color_rgb *colors, usize number_of_colors);
+        bool apply_luminance();
 
         bool resize(uint32 width, uint32 height);
 

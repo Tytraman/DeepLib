@@ -7,6 +7,7 @@ add_library(DeepLib SHARED
     DeepLib/object.cpp
     DeepLib/lib.cpp
     DeepLib/maths/math.cpp
+    DeepLib/maths/color.cpp
     DeepLib/string/string.cpp
     DeepLib/filesystem/filesystem.cpp
     DeepLib/multithreading/event.cpp
