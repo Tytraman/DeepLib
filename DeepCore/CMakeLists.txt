@@ -10,7 +10,8 @@ add_library(DeepCore
         DeepCore/term.cpp
         DeepCore/string/unicode.cpp
         DeepCore/string/utf8.cpp
-        DeepCore/window.cpp)
+        DeepCore/window.cpp
+        DeepCore/vkeys.cpp)
 add_library(Deep::Core ALIAS DeepCore)
 
 set(DeepCoreExport "${CMAKE_CURRENT_BINARY_DIR}/export/DeepCore/deep_core_export.h")
