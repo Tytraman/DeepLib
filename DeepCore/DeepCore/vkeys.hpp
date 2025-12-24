@@ -109,6 +109,10 @@ namespace deep
         DEEP_VKEYS_LIST(DEEP_GEN_CONST)
 #undef DEEP_GEN_CONST
 
+#if defined(DEEP_WINDOWS)
+        static constexpr uint8 KeyCount = 0xFF;
+#endif
+
         static const char *get_name(vkey key);
     };
 

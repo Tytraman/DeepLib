@@ -7,6 +7,11 @@ namespace deep
         return core_window_create(internal_context, class_name, title, x, y, width, height, call);
     }
 
+    bool core_window::destroy(void *internal_context, window_handle win)
+    {
+        return core_window_destroy(internal_context, win);
+    }
+
     void core_window::show(window_handle win)
     {
         core_window_show(win);

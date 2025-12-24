@@ -1,7 +1,6 @@
 ﻿#ifndef DEEP_LIB_BITMASK_HPP
 #define DEEP_LIB_BITMASK_HPP
 
-#include "DeepLib/deep_lib_export.h"
 #include "DeepCore/types.hpp"
 
 namespace deep

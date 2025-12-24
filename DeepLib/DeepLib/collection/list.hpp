@@ -15,6 +15,7 @@ namespace deep
     class list : public collection<Type>
     {
       public:
+        list(const ref<ctx> &context, uint32 capacity_step = 10);
         list(ctx *context, uint32 capacity_step = 10);
         ~list();
 
@@ -37,11 +38,17 @@ namespace deep
         void empty() override;
         bool free() override;
 
+        bool is_empty() const;
+
+        Type &get_first() const;
+        Type &get_last() const;
+
         usize get_capacity() const;
-        uint32 get_capacity_step() const;
+        usize get_capacity_step() const;
 
-        Type &operator[](usize index);
+        Type &operator[](usize index) const;
 
+        Type *get_data();
         Type *get_data() const;
 
         void set_count(usize count);
@@ -53,16 +60,22 @@ namespace deep
         /**
          * @brief Le nombre d'éléments que la liste peut stocker avec la mémoire allouée actuellement.
          */
-        size_t m_capacity;
+        usize m_capacity;
 
         /**
          * @brief La valeur à ajouter à la capacité quand elle est atteinte.
          */
-        uint32_t m_capacity_step;
+        usize m_capacity_step;
 
         bool grow_if_needed();
         bool grow_if_needed(usize index, usize count);
     };
+
+    template <typename Type>
+    inline list<Type>::list(const ref<ctx> &context, uint32 capacity_step)
+            : collection<Type>(), m_buffer(context.get(), nullptr, 0), m_capacity(0), m_capacity_step(capacity_step)
+    {
+    }
 
     template <typename Type>
     list<Type>::list(ctx *context, uint32 capacity_step)
@@ -277,19 +290,39 @@ namespace deep
     }
 
     template <typename Type>
+    inline bool list<Type>::is_empty() const
+    {
+        return m_number_of_elements == 0;
+    }
+
+    template <typename Type>
+    Type &list<Type>::get_first() const
+    {
+        return operator[](DEEP_U64(0));
+    }
+
+    template <typename Type>
+    Type &list<Type>::get_last() const
+    {
+        usize index = m_number_of_elements > 0 ? m_number_of_elements - 1 : 0;
+
+        return operator[](index);
+    }
+
+    template <typename Type>
     usize list<Type>::get_capacity() const
     {
         return m_capacity;
     }
 
     template <typename Type>
-    uint32 list<Type>::get_capacity_step() const
+    usize list<Type>::get_capacity_step() const
     {
         return m_capacity_step;
     }
 
     template <typename Type>
-    typename Type &list<Type>::operator[](usize index)
+    typename Type &list<Type>::operator[](usize index) const
     {
         return m_buffer.get()[index];
     }
@@ -339,9 +372,15 @@ namespace deep
     }
 
     template <typename Type>
+    inline Type *list<Type>::get_data()
+    {
+        return m_buffer.get();
+    }
+
+    template <typename Type>
     inline Type *list<Type>::get_data() const
     {
-        return m_buffer;
+        return m_buffer.get();
     }
 
     template <typename Type>

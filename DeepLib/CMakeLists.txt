@@ -18,7 +18,8 @@ add_library(DeepLib SHARED
     DeepLib/stream/stream_writer.cpp
     DeepLib/image/png.cpp
     DeepLib/image/image.cpp
-    DeepLib/window.cpp
+    DeepLib/window/window.cpp
+    DeepLib/window/keyboard.cpp
 )
 add_library(Deep::Lib ALIAS DeepLib)
 

@@ -32,7 +32,7 @@ deep_create_test(NAME AllocMem
     LIBRARIES Deep::Lib)
 
 deep_create_test(NAME List
-    SOURCES test_list.cpp
+    SOURCES collection/test_list.cpp
     LIBRARIES Deep::Lib)
 
 deep_create_test(NAME RefCounted
@@ -56,7 +56,7 @@ deep_create_test(NAME String2
     LIBRARIES Deep::Lib)
 
 deep_create_test(NAME HashMap
-    SOURCES test_hash_map.cpp
+    SOURCES collection/test_hash_map.cpp
     LIBRARIES Deep::Lib)
 
 deep_create_test(NAME MemoryStream
@@ -97,6 +97,14 @@ deep_create_test(NAME Thread
 
 deep_create_test(NAME Bitmask
     SOURCES utils/test_bitmask.cpp
+    LIBRARIES Deep::Lib)
+
+deep_create_test(NAME Bitset
+    SOURCES utils/test_bitset.cpp
+    LIBRARIES Deep::Lib)
+
+deep_create_test(NAME Queue
+    SOURCES collection/test_queue.cpp
     LIBRARIES Deep::Lib)
 
 # Crée un lien symbolique vers 'compile_commands.json' généré dans le dossier de Build.

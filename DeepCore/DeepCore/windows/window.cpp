@@ -2,6 +2,8 @@
 #include "../error.hpp"
 #include "internal_data.hpp"
 
+#include <windowsx.h>
+
 namespace deep
 {
     LRESULT CALLBACK window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -20,16 +22,18 @@ namespace deep
             case WM_CLOSE:
             {
                 PostQuitMessage(0);
+                return 0;
             }
-            break;
+            case WM_SYSKEYDOWN:
             case WM_KEYDOWN:
             {
                 if (call->keydown != nullptr)
                 {
-                    call->keydown(wparam, call->data);
+                    call->keydown(wparam, (lparam & 0x40000000) != 0, call->data);
                 }
             }
             break;
+            case WM_SYSKEYUP:
             case WM_KEYUP:
             {
                 if (call->keyup != nullptr)
@@ -43,6 +47,38 @@ namespace deep
                 if (call->text_input != nullptr)
                 {
                     call->text_input(static_cast<native_char>(wparam), call->data);
+                }
+            }
+            break;
+            case WM_LBUTTONDOWN:
+            {
+                if (call->mouse_button_down != nullptr)
+                {
+                    call->mouse_button_down(core_window::mouse_button::Left, GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam), call->data);
+                }
+            }
+            break;
+            case WM_RBUTTONDOWN:
+            {
+                if (call->mouse_button_down != nullptr)
+                {
+                    call->mouse_button_down(core_window::mouse_button::Right, GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam), call->data);
+                }
+            }
+            break;
+            case WM_MBUTTONDOWN:
+            {
+                if (call->mouse_button_down != nullptr)
+                {
+                    call->mouse_button_down(core_window::mouse_button::Middle, GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam), call->data);
+                }
+            }
+            break;
+            case WM_KILLFOCUS:
+            {
+                if (call->lose_focus != nullptr)
+                {
+                    call->lose_focus(call->data);
                 }
             }
             break;
@@ -93,12 +129,28 @@ namespace deep
             return nullptr;
         }
 
+        RECT wr;
+        wr.left   = 100;
+        wr.right  = width + wr.left;
+        wr.top    = 100;
+        wr.bottom = height + wr.top;
+
+        if (AdjustWindowRect(&wr, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE) == 0)
+        {
+            if (internal_data != nullptr)
+            {
+                internal_data->result = core_convert_error_code(GetLastError());
+            }
+
+            return nullptr;
+        }
+
         window_handle hwnd = CreateWindowExW(
                 0,
                 class_name,
                 title,
                 WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU,
-                x, y, width, height,
+                x, y, wr.right - wr.left, wr.bottom - wr.top,
                 nullptr,
                 nullptr,
                 instance,
@@ -130,6 +182,23 @@ namespace deep
         }
 
         return hwnd;
+    }
+
+    bool core_window_destroy(void *internal_context, window_handle win)
+    {
+        internal_data_win32 *internal_data = static_cast<internal_data_win32 *>(internal_context);
+
+        if (DestroyWindow(win) == 0)
+        {
+            if (internal_data != nullptr)
+            {
+                internal_data->result = core_convert_error_code(GetLastError());
+            }
+
+            return false;
+        }
+
+        return true;
     }
 
     void core_window_show(window_handle win)
