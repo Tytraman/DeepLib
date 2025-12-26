@@ -20,6 +20,7 @@ add_library(DeepLib SHARED
     DeepLib/image/image.cpp
     DeepLib/window/window.cpp
     DeepLib/window/keyboard.cpp
+    DeepLib/window/mouse.cpp
 )
 add_library(Deep::Lib ALIAS DeepLib)
 

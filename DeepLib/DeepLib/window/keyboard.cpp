@@ -38,8 +38,8 @@ namespace deep
 
     keyboard::keyboard(const ref<ctx> &context) noexcept
             : m_auto_repeat_enabled(false),
-              m_event_buffer(context.get()),
-              m_char_buffer(context.get())
+              m_event_buffer(context),
+              m_char_buffer(context)
     {
     }
 

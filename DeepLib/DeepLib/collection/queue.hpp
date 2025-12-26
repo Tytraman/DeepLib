@@ -14,6 +14,7 @@ namespace deep
     {
       public:
         queue(ctx *context, uint32 capacity_step = 10) noexcept;
+        queue(const ref<ctx> &context, uint32 capacity_step = 10) noexcept;
 
         bool add(const Type &element) noexcept;
         bool add(Type &&element) noexcept;
@@ -36,6 +37,12 @@ namespace deep
     template <typename Type>
     inline queue<Type>::queue(ctx *context, uint32 capacity_step) noexcept
             : m_data(context, capacity_step)
+    {
+    }
+
+    template <typename Type>
+    inline queue<Type>::queue(const ref<ctx> &context, uint32 capacity_step) noexcept
+            : m_data(context.get(), capacity_step)
     {
     }
 

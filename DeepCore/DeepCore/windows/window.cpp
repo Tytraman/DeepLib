@@ -74,6 +74,46 @@ namespace deep
                 }
             }
             break;
+            case WM_LBUTTONUP:
+            {
+                if (call->mouse_button_up != nullptr)
+                {
+                    call->mouse_button_up(core_window::mouse_button::Left, GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam), call->data);
+                }
+            }
+            break;
+            case WM_RBUTTONUP:
+            {
+                if (call->mouse_button_up != nullptr)
+                {
+                    call->mouse_button_up(core_window::mouse_button::Right, GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam), call->data);
+                }
+            }
+            break;
+            case WM_MBUTTONUP:
+            {
+                if (call->mouse_button_up != nullptr)
+                {
+                    call->mouse_button_up(core_window::mouse_button::Middle, GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam), call->data);
+                }
+            }
+            break;
+            case WM_MOUSEMOVE:
+            {
+                if (call->mouse_move != nullptr)
+                {
+                    call->mouse_move(GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam), call->data);
+                }
+            }
+            break;
+            case WM_MOUSEWHEEL:
+            {
+                if (call->mouse_wheel_delta != nullptr)
+                {
+                    call->mouse_wheel_delta(GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam), GET_WHEEL_DELTA_WPARAM(wparam), call->data);
+                }
+            }
+            break;
             case WM_KILLFOCUS:
             {
                 if (call->lose_focus != nullptr)
@@ -209,6 +249,45 @@ namespace deep
     void core_window_hide(window_handle win)
     {
         ShowWindow(win, SW_HIDE);
+    }
+
+    void core_window_set_capture(window_handle win) noexcept
+    {
+        SetCapture(win);
+    }
+
+    bool core_window_release_capture(void *internal_context, window_handle /*win*/) noexcept
+    {
+        internal_data_win32 *internal_data = static_cast<internal_data_win32 *>(internal_context);
+
+        if (ReleaseCapture() == 0)
+        {
+            if (internal_data != nullptr)
+            {
+                internal_data->result = core_convert_error_code(GetLastError());
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+
+    bool core_window_set_title(void *internal_context, window_handle win, const native_char *title) noexcept
+    {
+        internal_data_win32 *internal_data = static_cast<internal_data_win32 *>(internal_context);
+
+        if (SetWindowTextW(win, title) == 0)
+        {
+            if (internal_data != nullptr)
+            {
+                internal_data->result = core_convert_error_code(GetLastError());
+            }
+
+            return false;
+        }
+
+        return true;
     }
 
     bool core_window_process_message(void *internal_context, window_handle /*win*/)

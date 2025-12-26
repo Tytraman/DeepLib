@@ -9,6 +9,8 @@ namespace deep
 #if defined(DEEP_WINDOWS)
     using vkey = WPARAM;
 
+    static constexpr int32 WheelDelta = WHEEL_DELTA;
+
 #define DEEP_VKEYS_LIST(GEN)      \
     GEN(A, 'A')                   \
     GEN(B, 'B')                   \
