@@ -290,31 +290,22 @@ namespace deep
         return true;
     }
 
-    bool core_window_process_message(void *internal_context, window_handle /*win*/)
+    bool core_window_process_message(void * /*internal_context*/, window_handle /*win*/)
     {
-        internal_data_win32 *internal_data = static_cast<internal_data_win32 *>(internal_context);
+        MSG msg;
 
-        MSG message;
-
-        BOOL result = GetMessageW(&message, nullptr, 0, 0);
-
-        if (result == -1)
+        if (PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE) == 0)
         {
-            if (internal_data != nullptr)
-            {
-                internal_data->result = core_convert_error_code(GetLastError());
-            }
-
-            return false;
+            return true;
         }
 
-        if (result == 0)
+        if (msg.message == WM_QUIT)
         {
             return false;
         }
 
-        TranslateMessage(&message);
-        DispatchMessageW(&message);
+        TranslateMessage(&msg);
+        DispatchMessageW(&msg);
 
         return true;
     }

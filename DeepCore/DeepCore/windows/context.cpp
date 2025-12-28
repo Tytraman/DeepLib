@@ -1,4 +1,4 @@
-#include "../context.hpp"
+﻿#include "../context.hpp"
 #include "../memory.hpp"
 #include "internal_data.hpp"
 
@@ -7,6 +7,11 @@ namespace deep
     void *core_create_internal_ctx()
     {
         uint64 result;
+
+        if (CoInitializeEx(nullptr, COINIT_MULTITHREADED) != S_OK)
+        {
+            return nullptr;
+        }
 
         internal_data_win32 *internal_data = static_cast<internal_data_win32 *>(core_alloc(&result, sizeof(*internal_data)));
 
@@ -31,6 +36,8 @@ namespace deep
 
             return false;
         }
+
+        CoUninitialize();
 
         return true;
     }
