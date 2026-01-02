@@ -431,4 +431,52 @@ namespace deep
         return true;
     }
 
+    native_char *core_get_executable_path(void *internal_context, usize *path_bytes_size, usize *path_length)
+    {
+        DWORD nsize       = MAX_PATH;
+        usize total_size  = (static_cast<usize>(nsize) + 1) * sizeof(native_char);
+        native_char *path = static_cast<native_char *>(core_mem::alloc(internal_context, total_size));
+        native_char *temp_path;
+
+        if (path == nullptr)
+        {
+            return nullptr;
+        }
+
+        while (true)
+        {
+            nsize = GetModuleFileNameW(nullptr, path, nsize);
+
+            if (GetLastError() != ERROR_INSUFFICIENT_BUFFER)
+            {
+                break;
+            }
+
+            nsize += MAX_PATH;
+            total_size = (static_cast<usize>(nsize) + 1) * sizeof(native_char);
+
+            temp_path = static_cast<native_char *>(core_mem::realloc(internal_context, path, total_size));
+
+            if (temp_path == nullptr)
+            {
+                core_mem::dealloc(internal_context, path);
+
+                return nullptr;
+            }
+
+            path = temp_path;
+        }
+
+        if (path_bytes_size != nullptr)
+        {
+            *path_bytes_size = total_size;
+        }
+
+        if (path_length != nullptr)
+        {
+            *path_length = nsize;
+        }
+
+        return path;
+    }
 } // namespace deep

@@ -15,6 +15,7 @@ namespace deep
         string_base();
         string_base(const ref<ctx> &context);
         string_base(const ref<ctx> &context, const Type *str);
+        string_base(const ref<ctx> &context, Type *str, usize bytes_size, usize length);
 
         static usize calc_bytes_size(const Type *str);
         static usize calc_length(const Type *str);
@@ -31,6 +32,11 @@ namespace deep
 
         bool insert(Type character);
         bool insert(const Type *str);
+
+        bool shrink(usize length) noexcept;
+
+        bool find(Type character, usize *index) noexcept;
+        bool find_from_end(Type character, usize *index) noexcept;
 
         bool equals(const string_base &other) const;
         bool equals(const Type *str) const;
@@ -58,7 +64,7 @@ namespace deep
 
     template <typename Derived, typename Type>
     inline string_base<Derived, Type>::string_base()
-            : object()
+            : object(), m_length(0)
     {
     }
 
@@ -88,6 +94,16 @@ namespace deep
         m_data->take();
 
         m_length = length;
+    }
+
+    template <typename Derived, typename Type>
+    inline string_base<Derived, Type>::string_base(const ref<ctx> &context, Type *str, usize bytes_size, usize length)
+            : object(context), m_length(length)
+    {
+        *((Type *) (((uint8 *) str) + length * sizeof(Type))) = static_cast<Type>('\0');
+
+        m_data.set(context.get(), mem::alloc_type<buffer_primitive<Type>>(context.get(), context.get(), str, bytes_size), sizeof(buffer_primitive<Type>));
+        m_data->take();
     }
 
     template <typename Derived, typename Type>
@@ -237,6 +253,72 @@ namespace deep
         m_length += length;
 
         return true;
+    }
+
+    template <typename Derived, typename Type>
+    inline bool string_base<Derived, Type>::shrink(usize length) noexcept
+    {
+        if (length >= m_length)
+        {
+            return false;
+        }
+
+        usize new_bytes_size = (length + 1) * sizeof(Type);
+
+        if (!realloc(new_bytes_size))
+        {
+            return false;
+        }
+
+        *((Type *) (((uint8 *) m_data->get_buffer().get()) + new_bytes_size - sizeof(Type))) = static_cast<Type>('\0');
+
+        m_length = length;
+
+        return true;
+    }
+
+    template <typename Derived, typename Type>
+    inline bool string_base<Derived, Type>::find(Type character, usize *index) noexcept
+    {
+        usize length = m_length;
+
+        for (*index = 0; *index < length; ++(*index))
+        {
+            if (m_data->get_buffer()[*index] == character)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    template <typename Derived, typename Type>
+    inline bool string_base<Derived, Type>::find_from_end(Type character, usize *index) noexcept
+    {
+        if (m_length == 0)
+        {
+            return false;
+        }
+
+        *index = m_length - 1;
+
+        while (true)
+        {
+            if (m_data->get_buffer()[*index] == character)
+            {
+                return true;
+            }
+
+            if (*index == 0)
+            {
+                break;
+            }
+
+            (*index)--;
+        }
+
+        return false;
     }
 
     template <typename Derived, typename Type>

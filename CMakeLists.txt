@@ -55,6 +55,10 @@ deep_create_test(NAME String2
     SOURCES string/test_string2.cpp
     LIBRARIES Deep::Lib)
 
+deep_create_test(NAME ExecutablePath
+    SOURCES string/test_executable_path.cpp
+    LIBRARIES Deep::Lib)
+
 deep_create_test(NAME HashMap
     SOURCES collection/test_hash_map.cpp
     LIBRARIES Deep::Lib)

@@ -343,6 +343,9 @@ namespace deep
 
 #define DEEP_TEXT_NATIVE_BYTES_SIZE(__str) deep::core_unicode::calc_bytes_size(__str)
 #define DEEP_TEXT_NATIVE_LENGTH(__str) deep::core_unicode::calc_length(__str)
+
+#define DEEP_SEPARATOR '\\'
+#define DEEP_NATIVE_SEPARATOR DEEP_TEXT_NATIVE(DEEP_SEPARATOR)
 #elif defined(DEEP_UNIX)
 #include "string/utf8.hpp"
 #define native_char_d char

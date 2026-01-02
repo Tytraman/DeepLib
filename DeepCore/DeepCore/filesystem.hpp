@@ -133,6 +133,8 @@ namespace deep
         static bool set_file_size(void *internal_context, fd file_descriptor, usize size);
 
         static bool get_file_position(void *internal_context, fd file_descriptor, usize *dest);
+
+        static native_char *get_executable_path(void *internal_context, usize *path_bytes_size, usize *path_length);
     };
 
     extern const native_char *core_get_current_working_directory(void *internal_context);
@@ -146,6 +148,7 @@ namespace deep
     extern bool core_get_file_size(void *internal_context, fd file_descriptor, usize *dest);
     extern bool core_set_file_size(void *internal_context, fd file_descriptor, usize size);
     extern bool core_get_file_position(void *internal_context, fd file_descriptor, usize *dest);
+    extern native_char *core_get_executable_path(void *internal_context, usize *path_bytes_size, usize *path_length);
 
 } // namespace deep
 

@@ -60,21 +60,36 @@ int main(int /*argc*/, char * /*argv*/[])
             printf("Original: %ls\n", *str);
             printf("Copy ref: %ls\n", *other);
         }
-
-        deep::usize ref_count = str.get_ref()->get_ref_count();
-
-        if (ref_count != 2)
-        {
-            return 17;
-        }
     }
 
-    deep::usize ref_count = str.get_ref()->get_ref_count();
+    deep::usize character_index;
 
-    if (ref_count != 1)
+    if (!str.find(DEEP_TEXT_NATIVE('w'), &character_index))
     {
-        return 18;
+        return 20;
     }
+
+    if (character_index != 6)
+    {
+        return 21;
+    }
+
+    if (!str.find_from_end(DEEP_TEXT_NATIVE('l'), &character_index))
+    {
+        return 22;
+    }
+
+    if (character_index != 9)
+    {
+        return 23;
+    }
+
+    if (!str.shrink(character_index))
+    {
+        return 24;
+    }
+
+    printf("Shrink: %ls\n", *str);
 
     return 0;
 }

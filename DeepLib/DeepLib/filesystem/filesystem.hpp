@@ -10,6 +10,8 @@ namespace deep
     {
       public:
         static string_native get_cwd(const ref<ctx> &context);
+        static string_native get_executable_path(const ref<ctx> &context);
+        static string_native get_executable_directory(const ref<ctx> &context);
     };
 } // namespace deep
 

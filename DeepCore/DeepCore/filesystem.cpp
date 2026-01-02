@@ -86,4 +86,9 @@ namespace deep
     {
         return core_get_file_position(internal_context, file_descriptor, dest);
     }
+
+    native_char *core_fs::get_executable_path(void *internal_context, usize *path_bytes_size, usize *path_length)
+    {
+        return core_get_executable_path(internal_context, path_bytes_size, path_length);
+    }
 } // namespace deep
