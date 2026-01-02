@@ -213,6 +213,11 @@ namespace deep
         return m_height;
     }
 
+    window_handle window::get_handle() noexcept
+    {
+        return m_handle;
+    }
+
     keyboard &window::get_keyboard() noexcept
     {
         return m_keyboard;

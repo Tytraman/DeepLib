@@ -38,6 +38,8 @@ namespace deep
         int32 get_width() const noexcept;
         int32 get_height() const noexcept;
 
+        window_handle get_handle() noexcept;
+
         keyboard &get_keyboard() noexcept;
         mouse &get_mouse() noexcept;
 
