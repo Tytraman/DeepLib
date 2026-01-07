@@ -1,17 +1,19 @@
-﻿cmake_minimum_required(VERSION 3.15.7)
+cmake_minimum_required(VERSION 3.15.7)
 
 add_library(DeepCore
     SHARED
-        DeepCore/context.cpp
-        DeepCore/filesystem.cpp
-        DeepCore/memory.cpp
-        DeepCore/event.cpp
-        DeepCore/thread.cpp
-        DeepCore/term.cpp
-        DeepCore/string/unicode.cpp
-        DeepCore/string/utf8.cpp
-        DeepCore/window.cpp
-        DeepCore/vkeys.cpp)
+        "${CMAKE_CURRENT_LIST_DIR}/DeepCore/context.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/DeepCore/filesystem.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/DeepCore/memory.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/DeepCore/event.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/DeepCore/thread.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/DeepCore/term.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/DeepCore/string/unicode.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/DeepCore/string/utf8.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/DeepCore/window.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/DeepCore/vkeys.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/DeepCore/time.cpp"
+)
 add_library(Deep::Core ALIAS DeepCore)
 
 set(DeepCoreExport "${CMAKE_CURRENT_BINARY_DIR}/export/DeepCore/deep_core_export.h")
@@ -54,7 +56,7 @@ elseif(WIN32)
             "${CMAKE_CURRENT_SOURCE_DIR}/DeepCore/windows/thread.cpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/DeepCore/windows/term.cpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/DeepCore/windows/window.cpp"
-        
+            "${CMAKE_CURRENT_SOURCE_DIR}/DeepCore/windows/time.cpp"
     )
 endif()
 

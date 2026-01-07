@@ -1,4 +1,4 @@
-﻿#include "context.hpp"
+#include "context.hpp"
 #include "DeepCore/context.hpp"
 #include "DeepCore/term.hpp"
 
@@ -57,31 +57,42 @@ namespace deep
         fd stdout = core_term::get_std_handle(m_internal_data, core_term::std_handle::Output);
         if (stdout != invalid_fd)
         {
-            core_term::add_mode(m_internal_data, stdout, core_term::mode::EnableProcessedOutput);
-            core_term::add_mode(m_internal_data, stdout, core_term::mode::EnableVirtualTerminalProcessing);
+            if (!core_term::add_mode(m_internal_data, stdout, core_term::mode::EnableProcessedOutput) ||
+                !core_term::add_mode(m_internal_data, stdout, core_term::mode::EnableVirtualTerminalProcessing))
+            {
+                core_ctx::destroy_internal_ctx(m_internal_data);
+
+                return false;
+            }
+
             m_stdout        = ref_cast<stream>(ref<file_stream>(this, mem::alloc_type<file_stream>(m_mem, context, stdout)));
-            m_stdout_writer = ref_cast<text_writer>(ref<stream_writer>(this, mem::alloc_type<stream_writer>(m_mem, m_stdout.get())));
+            m_stdout_writer = ref_cast<text_writer>(ref<stream_writer>(this, mem::alloc_type<stream_writer>(m_mem, context, m_stdout.get())));
         }
 
         fd stderr = core_term::get_std_handle(m_internal_data, core_term::std_handle::Error);
         if (stderr != invalid_fd)
         {
-            core_term::add_mode(m_internal_data, stderr, core_term::mode::EnableProcessedOutput);
-            core_term::add_mode(m_internal_data, stderr, core_term::mode::EnableVirtualTerminalProcessing);
+            if (!core_term::add_mode(m_internal_data, stderr, core_term::mode::EnableProcessedOutput) ||
+                !core_term::add_mode(m_internal_data, stderr, core_term::mode::EnableVirtualTerminalProcessing))
+            {
+                core_ctx::destroy_internal_ctx(m_internal_data);
+
+                return false;
+            }
 
             m_stderr        = ref_cast<stream>(ref<file_stream>(this, mem::alloc_type<file_stream>(m_mem, context, stderr)));
-            m_stderr_writer = ref_cast<text_writer>(ref<stream_writer>(this, mem::alloc_type<stream_writer>(m_mem, m_stderr.get())));
+            m_stderr_writer = ref_cast<text_writer>(ref<stream_writer>(this, mem::alloc_type<stream_writer>(m_mem, context, m_stderr.get())));
         }
 
         return true;
     }
 
-    text_writer &ctx::out()
+    text_writer &ctx::out() const noexcept
     {
         return *m_stdout_writer;
     }
 
-    text_writer &ctx::err()
+    text_writer &ctx::err() const noexcept
     {
         return *m_stderr_writer;
     }

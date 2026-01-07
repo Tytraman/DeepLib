@@ -99,7 +99,8 @@ namespace deep
 
         Type *operator->();
         const Type *operator->() const;
-        Type &operator*();
+        Type &operator*() noexcept;
+        Type &operator*() const noexcept;
 
         bool operator==(const Type *ptr) const;
         bool operator!=(const Type *ptr) const;
@@ -226,7 +227,13 @@ namespace deep
     }
 
     template <typename Type>
-    Type &ref<Type>::operator*()
+    Type &ref<Type>::operator*() noexcept
+    {
+        return *m_ptr;
+    }
+
+    template <typename Type>
+    Type &ref<Type>::operator*() const noexcept
     {
         return *m_ptr;
     }

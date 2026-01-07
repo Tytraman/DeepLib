@@ -1,4 +1,4 @@
-﻿cmake_minimum_required(VERSION 3.15.7)
+cmake_minimum_required(VERSION 3.15.7)
 
 # Crée le projet auquel les cibles s'attacheront.
 project(DeepLibProject

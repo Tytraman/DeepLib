@@ -32,8 +32,8 @@ namespace deep
 
         bool destroy_internal_ctx();
 
-        text_writer &out();
-        text_writer &err();
+        text_writer &out() const noexcept;
+        text_writer &err() const noexcept;
 
         void *get_internal_ctx();
         void *get_internal_ctx() const;

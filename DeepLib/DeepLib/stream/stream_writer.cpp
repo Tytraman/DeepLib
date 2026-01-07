@@ -1,10 +1,10 @@
-﻿#include "stream_writer.hpp"
+#include "stream_writer.hpp"
 #include "DeepLib/string/string.hpp"
 
 namespace deep
 {
-    stream_writer::stream_writer(stream *s)
-            : text_writer(),
+    stream_writer::stream_writer(const ref<ctx> &context, stream *s)
+            : text_writer(context),
               m_stream(s != nullptr ? s->get_context() : ref<ctx>(), s)
     {
     }

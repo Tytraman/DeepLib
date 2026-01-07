@@ -1,26 +1,27 @@
-﻿cmake_minimum_required(VERSION 3.15.7)
+cmake_minimum_required(VERSION 3.15.7)
 
 # Crée une cible nommée 'DeepLib' qui se lie au projet précédemment créé.
 # Dans ce cas là, 'DeepLibProject'.
 add_library(DeepLib SHARED
-    DeepLib/context.cpp
-    DeepLib/object.cpp
-    DeepLib/lib.cpp
-    DeepLib/maths/math.cpp
-    DeepLib/maths/color.cpp
-    DeepLib/string/string.cpp
-    DeepLib/filesystem/filesystem.cpp
-    DeepLib/multithreading/event.cpp
-    DeepLib/multithreading/thread.cpp
-    DeepLib/stream/memory_stream.cpp
-    DeepLib/stream/file_stream.cpp
-    DeepLib/stream/text_writer.cpp
-    DeepLib/stream/stream_writer.cpp
-    DeepLib/image/png.cpp
-    DeepLib/image/image.cpp
-    DeepLib/window/window.cpp
-    DeepLib/window/keyboard.cpp
-    DeepLib/window/mouse.cpp
+    "${CMAKE_CURRENT_LIST_DIR}/DeepLib/context.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/DeepLib/object.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/DeepLib/lib.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/DeepLib/maths/math.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/DeepLib/maths/color.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/DeepLib/string/string.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/DeepLib/filesystem/filesystem.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/DeepLib/multithreading/event.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/DeepLib/multithreading/thread.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/DeepLib/stream/memory_stream.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/DeepLib/stream/file_stream.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/DeepLib/stream/text_writer.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/DeepLib/stream/stream_writer.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/DeepLib/image/png.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/DeepLib/image/image.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/DeepLib/window/window.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/DeepLib/window/keyboard.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/DeepLib/window/mouse.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/DeepLib/time/time.cpp"
 )
 add_library(Deep::Lib ALIAS DeepLib)
 
