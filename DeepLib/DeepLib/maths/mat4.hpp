@@ -1,4 +1,4 @@
-﻿#ifndef DEEP_LIB_MAT4_HPP
+#ifndef DEEP_LIB_MAT4_HPP
 #define DEEP_LIB_MAT4_HPP
 
 #include "DeepCore/types.hpp"
@@ -10,35 +10,25 @@
 
 namespace deep
 {
+    /**
+     * @brief Matrice 4x4 en 'Row-Major'.
+     * @tparam Type
+     */
     template <typename Type>
     struct mat4x4
     {
         static_assert(is_primitive<Type>, "Type must be primitive");
 
-        static constexpr usize x1 = 0;
-        static constexpr usize y1 = 1;
-        static constexpr usize z1 = 2;
-        static constexpr usize w1 = 3;
-        static constexpr usize x2 = 4;
-        static constexpr usize y2 = 5;
-        static constexpr usize z2 = 6;
-        static constexpr usize w2 = 7;
-        static constexpr usize x3 = 8;
-        static constexpr usize y3 = 9;
-        static constexpr usize z3 = 10;
-        static constexpr usize w3 = 11;
-        static constexpr usize x4 = 12;
-        static constexpr usize y4 = 13;
-        static constexpr usize z4 = 14;
-        static constexpr usize w4 = 15;
+        static constexpr Rows    = 4;
+        static constexpr Columns = 4;
 
-        Type data[4 * 4];
+        Type data[Rows][Columns];
 
         mat4x4(
-                Type x1 = 1, Type y1 = 0, Type z1 = 0, Type w1 = 0,
-                Type x2 = 0, Type y2 = 1, Type z2 = 0, Type w2 = 0,
-                Type x3 = 0, Type y3 = 0, Type z3 = 1, Type w3 = 0,
-                Type x4 = 0, Type y4 = 0, Type z4 = 0, Type w4 = 1);
+                Type m00 = 1, Type m01 = 0, Type m02 = 0, Type m03 = 0,
+                Type m10 = 0, Type m11 = 1, Type m12 = 0, Type m13 = 0,
+                Type m20 = 0, Type m21 = 0, Type m22 = 1, Type m23 = 0,
+                Type m30 = 0, Type m31 = 0, Type m32 = 0, Type m33 = 1);
 
         mat4x4<Type> operator*(const mat4x4<Type> &mat) const;
         mat4x4<Type> &operator*=(const mat4x4<Type> &mat);
@@ -48,42 +38,48 @@ namespace deep
 
         const Type *get() const;
 
+        static mat4x4<Type> mul(const mat4x4<Type> &matrix);
         static mat4x4<Type> mul(const mat4x4<Type> &mat1, const mat4x4<Type> &mat2);
 
-        static mat4x4<Type> translate(const mat4x4<Type> &mat, const vec3<Type> &vec);
+        static mat4x4<Type> row_translate(const mat4x4<Type> &mat, const vec3<Type> &vec);
+        static mat4x4<Type> column_translate(const mat4x4<Type> &mat, const vec3<Type> &vec);
         static mat4x4<Type> scale(const mat4x4<Type> &mat, const vec3<Type> &vec);
-        static mat4x4<Type> rotate_x(const mat4x4<Type> &mat, Type degrees);
-        static mat4x4<Type> rotate_y(const mat4x4<Type> &mat, Type degrees);
-        static mat4x4<Type> rotate_z(const mat4x4<Type> &mat, Type degrees);
+        static mat4x4<Type> row_rotate_x(const mat4x4<Type> &mat, Type degrees);
+        static mat4x4<Type> column_rotate_x(const mat4x4<Type> &mat, Type degrees);
+        static mat4x4<Type> row_rotate_y(const mat4x4<Type> &mat, Type degrees);
+        static mat4x4<Type> column_rotate_y(const mat4x4<Type> &mat, Type degrees);
+        static mat4x4<Type> row_rotate_z(const mat4x4<Type> &mat, Type degrees);
+        static mat4x4<Type> column_rotate_z(const mat4x4<Type> &mat, Type degrees);
         static mat4x4<Type> perspective(Type fov, Type aspect_ratio, Type z_near, Type z_far);
+        static mat4x4<Type> d3d_perspective_lh(Type width, Type height, Type z_near, Type z_far);
         static mat4x4<Type> transpose(const mat4x4<Type> &mat);
     };
 
     template <typename Type>
-    inline mat4x4<Type>::mat4x4(Type _x1, Type _y1, Type _z1, Type _w1,
-                                Type _x2, Type _y2, Type _z2, Type _w2,
-                                Type _x3, Type _y3, Type _z3, Type _w3,
-                                Type _x4, Type _y4, Type _z4, Type _w4)
+    inline mat4x4<Type>::mat4x4(Type m00, Type m01, Type m02, Type m03,
+                                Type m10, Type m11, Type m12, Type m13,
+                                Type m20, Type m21, Type m22, Type m23,
+                                Type m30, Type m31, Type m32, Type m33)
     {
-        data[x1] = _x1;
-        data[y1] = _y1;
-        data[z1] = _z1;
-        data[w1] = _w1;
+        data[0][0] = m00;
+        data[0][1] = m01;
+        data[0][2] = m02;
+        data[0][3] = m03;
 
-        data[x2] = _x2;
-        data[y2] = _y2;
-        data[z2] = _z2;
-        data[w2] = _w2;
+        data[1][0] = m10;
+        data[1][1] = m11;
+        data[1][2] = m12;
+        data[1][3] = m13;
 
-        data[x3] = _x3;
-        data[y3] = _y3;
-        data[z3] = _z3;
-        data[w3] = _w3;
+        data[2][0] = m20;
+        data[2][1] = m21;
+        data[2][2] = m22;
+        data[2][3] = m23;
 
-        data[x4] = _x4;
-        data[y4] = _y4;
-        data[z4] = _z4;
-        data[w4] = _w4;
+        data[3][0] = m30;
+        data[3][1] = m31;
+        data[3][2] = m32;
+        data[3][3] = m33;
     }
 
     template <typename Type>
@@ -221,14 +217,40 @@ namespace deep
     }
 
     template <typename Type>
-    inline mat4x4<Type> mat4x4<Type>::translate(const mat4x4<Type> &mat, const vec3<Type> &vec)
+    inline mat4x4<Type> mat4x4<Type>::row_translate(const mat4x4<Type> &mat, const vec3<Type> &vec)
     {
         return mul(mat,
                    mat4x4<Type>(
-                           static_cast<Type>(1), static_cast<Type>(0), static_cast<Type>(0), vec.x,
-                           static_cast<Type>(0), static_cast<Type>(1), static_cast<Type>(0), vec.y,
-                           static_cast<Type>(0), static_cast<Type>(0), static_cast<Type>(1), vec.z,
-                           static_cast<Type>(0), static_cast<Type>(0), static_cast<Type>(0), static_cast<Type>(1)));
+                           static_cast<Type>(1),
+                           static_cast<Type>(0),
+                           static_cast<Type>(0),
+                           vec.x,
+
+                           static_cast<Type>(0),
+                           static_cast<Type>(1),
+                           static_cast<Type>(0),
+                           vec.y,
+
+                           static_cast<Type>(0),
+                           static_cast<Type>(0),
+                           static_cast<Type>(1),
+                           vec.z,
+
+                           static_cast<Type>(0),
+                           static_cast<Type>(0),
+                           static_cast<Type>(0),
+                           static_cast<Type>(1)));
+    }
+
+    template <typename Type>
+    inline mat4x4<Type> mat4x4<Type>::column_translate(const mat4x4<Type> &mat, const vec3<Type> &vec)
+    {
+        return mul(mat,
+                   mat4x4<Type>(
+                           static_cast<Type>(1), static_cast<Type>(0), static_cast<Type>(0), static_cast<Type>(0),
+                           static_cast<Type>(0), static_cast<Type>(1), static_cast<Type>(0), static_cast<Type>(0),
+                           static_cast<Type>(0), static_cast<Type>(0), static_cast<Type>(1), static_cast<Type>(0),
+                           vec.x, vec.y, vec.z, static_cast<Type>(1)));
     }
 
     template <typename Type>
@@ -236,49 +258,193 @@ namespace deep
     {
         return mul(mat,
                    mat4x4<Type>(
-                           vec.x, static_cast<Type>(0), static_cast<Type>(0), static_cast<Type>(0),
-                           static_cast<Type>(0), vec.y, static_cast<Type>(0), static_cast<Type>(0),
-                           static_cast<Type>(0), static_cast<Type>(0), vec.z, static_cast<Type>(0),
-                           static_cast<Type>(0), static_cast<Type>(0), static_cast<Type>(0), static_cast<Type>(1)));
+                           vec.x,
+                           static_cast<Type>(0),
+                           static_cast<Type>(0),
+                           static_cast<Type>(0),
+
+                           static_cast<Type>(0),
+                           vec.y,
+                           static_cast<Type>(0),
+                           static_cast<Type>(0),
+
+                           static_cast<Type>(0),
+                           static_cast<Type>(0),
+                           vec.z,
+                           static_cast<Type>(0),
+
+                           static_cast<Type>(0),
+                           static_cast<Type>(0),
+                           static_cast<Type>(0),
+                           static_cast<Type>(1)));
     }
 
     template <typename Type>
-    inline mat4x4<Type> mat4x4<Type>::rotate_x(const mat4x4<Type> &mat, Type degrees)
+    inline mat4x4<Type> mat4x4<Type>::row_rotate_x(const mat4x4<Type> &mat, Type degrees)
     {
         Type rad = math::deg_to_rad(degrees);
 
         return mul(mat,
                    mat4x4<Type>(
-                           static_cast<Type>(1), static_cast<Type>(0), static_cast<Type>(0), static_cast<Type>(0),
-                           static_cast<Type>(0), std::cos(rad), -std::sin(rad), static_cast<Type>(0),
-                           static_cast<Type>(0), std::sin(rad), std::cos(rad), static_cast<Type>(0),
-                           static_cast<Type>(0), static_cast<Type>(0), static_cast<Type>(0), static_cast<Type>(1)));
+                           static_cast<Type>(1),
+                           static_cast<Type>(0),
+                           static_cast<Type>(0),
+                           static_cast<Type>(0),
+
+                           static_cast<Type>(0),
+                           std::cos(rad),
+                           -std::sin(rad),
+                           static_cast<Type>(0),
+
+                           static_cast<Type>(0),
+                           std::sin(rad),
+                           std::cos(rad),
+                           static_cast<Type>(0),
+
+                           static_cast<Type>(0),
+                           static_cast<Type>(0),
+                           static_cast<Type>(0),
+                           static_cast<Type>(1)));
     }
 
     template <typename Type>
-    inline mat4x4<Type> mat4x4<Type>::rotate_y(const mat4x4<Type> &mat, Type degrees)
+    inline mat4x4<Type> mat4x4<Type>::column_rotate_x(const mat4x4<Type> &mat, Type degrees)
     {
         Type rad = math::deg_to_rad(degrees);
 
         return mul(mat,
                    mat4x4<Type>(
-                           std::cos(rad), static_cast<Type>(0), std::sin(rad), static_cast<Type>(0),
-                           static_cast<Type>(0), static_cast<Type>(1), static_cast<Type>(0), static_cast<Type>(0),
-                           -std::sin(rad), static_cast<Type>(0), std::cos(rad), static_cast<Type>(0),
-                           static_cast<Type>(0), static_cast<Type>(0), static_cast<Type>(0), static_cast<Type>(1)));
+                           static_cast<Type>(1),
+                           static_cast<Type>(0),
+                           static_cast<Type>(0),
+                           static_cast<Type>(0),
+
+                           static_cast<Type>(0),
+                           std::cos(rad),
+                           std::sin(rad),
+                           static_cast<Type>(0),
+
+                           static_cast<Type>(0),
+                           -std::sin(rad),
+                           std::cos(rad),
+                           static_cast<Type>(0),
+
+                           static_cast<Type>(0),
+                           static_cast<Type>(0),
+                           static_cast<Type>(0),
+                           static_cast<Type>(1)));
     }
 
     template <typename Type>
-    inline mat4x4<Type> mat4x4<Type>::rotate_z(const mat4x4<Type> &mat, Type degrees)
+    inline mat4x4<Type> mat4x4<Type>::row_rotate_y(const mat4x4<Type> &mat, Type degrees)
     {
         Type rad = math::deg_to_rad(degrees);
 
         return mul(mat,
                    mat4x4<Type>(
-                           std::cos(rad), -std::sin(rad), static_cast<Type>(0), static_cast<Type>(0),
-                           std::sin(rad), std::cos(rad), static_cast<Type>(0), static_cast<Type>(0),
-                           static_cast<Type>(0), static_cast<Type>(0), static_cast<Type>(1), static_cast<Type>(0),
-                           static_cast<Type>(0), static_cast<Type>(0), static_cast<Type>(0), static_cast<Type>(1)));
+                           std::cos(rad),
+                           static_cast<Type>(0),
+                           std::sin(rad),
+                           static_cast<Type>(0),
+
+                           static_cast<Type>(0),
+                           static_cast<Type>(1),
+                           static_cast<Type>(0),
+                           static_cast<Type>(0),
+
+                           -std::sin(rad),
+                           static_cast<Type>(0),
+                           std::cos(rad),
+                           static_cast<Type>(0),
+
+                           static_cast<Type>(0),
+                           static_cast<Type>(0),
+                           static_cast<Type>(0),
+                           static_cast<Type>(1)));
+    }
+
+    template <typename Type>
+    inline mat4x4<Type> mat4x4<Type>::column_rotate_y(const mat4x4<Type> &mat, Type degrees)
+    {
+        Type rad = math::deg_to_rad(degrees);
+
+        return mul(mat,
+                   mat4x4<Type>(
+                           std::cos(rad),
+                           static_cast<Type>(0),
+                           -std::sin(rad),
+                           static_cast<Type>(0),
+
+                           static_cast<Type>(0),
+                           static_cast<Type>(1),
+                           static_cast<Type>(0),
+                           static_cast<Type>(0),
+
+                           std::sin(rad),
+                           static_cast<Type>(0),
+                           std::cos(rad),
+                           static_cast<Type>(0),
+
+                           static_cast<Type>(0),
+                           static_cast<Type>(0),
+                           static_cast<Type>(0),
+                           static_cast<Type>(1)));
+    }
+
+    template <typename Type>
+    inline mat4x4<Type> mat4x4<Type>::row_rotate_z(const mat4x4<Type> &mat, Type degrees)
+    {
+        Type rad = math::deg_to_rad(degrees);
+
+        return mul(mat,
+                   mat4x4<Type>(
+                           std::cos(rad),
+                           -std::sin(rad),
+                           static_cast<Type>(0),
+                           static_cast<Type>(0),
+
+                           std::sin(rad),
+                           std::cos(rad),
+                           static_cast<Type>(0),
+                           static_cast<Type>(0),
+
+                           static_cast<Type>(0),
+                           static_cast<Type>(0),
+                           static_cast<Type>(1),
+                           static_cast<Type>(0),
+
+                           static_cast<Type>(0),
+                           static_cast<Type>(0),
+                           static_cast<Type>(0),
+                           static_cast<Type>(1)));
+    }
+
+    template <typename Type>
+    inline mat4x4<Type> mat4x4<Type>::column_rotate_z(const mat4x4<Type> &mat, Type degrees)
+    {
+        Type rad = math::deg_to_rad(degrees);
+
+        return mul(mat,
+                   mat4x4<Type>(
+                           std::cos(rad),
+                           std::sin(rad),
+                           static_cast<Type>(0),
+                           static_cast<Type>(0),
+
+                           -std::sin(rad),
+                           std::cos(rad),
+                           static_cast<Type>(0),
+                           static_cast<Type>(0),
+
+                           static_cast<Type>(0),
+                           static_cast<Type>(0),
+                           static_cast<Type>(1),
+                           static_cast<Type>(0),
+
+                           static_cast<Type>(0),
+                           static_cast<Type>(0),
+                           static_cast<Type>(0),
+                           static_cast<Type>(1)));
     }
 
     template <typename Type>
@@ -292,6 +458,16 @@ namespace deep
                 static_cast<Type>(0), static_cast<Type>(1) / tan_half_fov, static_cast<Type>(0), static_cast<Type>(0),
                 static_cast<Type>(0), static_cast<Type>(0), -(z_far + z_near) / zr, -(static_cast<Type>(2) * z_far * z_near) / zr,
                 static_cast<Type>(0), static_cast<Type>(0), static_cast<Type>(-1), static_cast<Type>(0));
+    }
+
+    template <typename Type>
+    inline mat4x4<Type> mat4x4<Type>::d3d_perspective_lh(Type width, Type height, Type z_near, Type z_far)
+    {
+        return mat4x4<Type>(
+                static_cast<Type>(2) * z_near / width, static_cast<Type>(0), static_cast<Type>(0), static_cast<Type>(0),
+                static_cast<Type>(0), static_cast<Type>(2) * z_near / height, static_cast<Type>(0), static_cast<Type>(0),
+                static_cast<Type>(0), static_cast<Type>(0), z_far / (z_far - z_near), static_cast<Type>(1),
+                static_cast<Type>(0), static_cast<Type>(0), z_near * z_far / (z_near - z_far), static_cast<Type>(0));
     }
 
     template <typename Type>
