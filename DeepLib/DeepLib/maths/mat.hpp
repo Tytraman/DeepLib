@@ -1,4 +1,4 @@
-﻿#ifndef DEEP_LIB_MAT_HPP
+#ifndef DEEP_LIB_MAT_HPP
 #define DEEP_LIB_MAT_HPP
 
 #include "DeepLib/maths/mat4.hpp"

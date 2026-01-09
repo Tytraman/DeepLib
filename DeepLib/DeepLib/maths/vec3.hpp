@@ -20,6 +20,7 @@ namespace deep
 
         constexpr vec3 operator-(Type value) const noexcept;
         constexpr vec3 operator-(const vec3 &vec) const noexcept;
+        constexpr vec3<Type> operator-() const noexcept;
 
         constexpr vec3 &operator-=(Type value) noexcept;
         constexpr vec3 &operator-=(const vec3 &vec) noexcept;
@@ -56,7 +57,7 @@ namespace deep
         static constexpr vec3 div(const vec3 &vec, Type value) noexcept;
 
         static constexpr vec3 scale(const vec3 &vec, const Type &scalar) noexcept;
-        static constexpr float magn(const vec3 &vec) noexcept;
+        static constexpr Type magn(const vec3 &vec) noexcept;
         static constexpr vec3 norm(const vec3 &vec) noexcept;
         static constexpr vec3 cross(const vec3 &vec1, const vec3 &vec2) noexcept;
         static constexpr Type dot(const vec3 &vec1, const vec3 &vec2) noexcept;
@@ -91,6 +92,12 @@ namespace deep
     inline constexpr vec3<Type> vec3<Type>::operator-(const vec3 &vec) const noexcept
     {
         return sub(*this, vec);
+    }
+
+    template <typename Type>
+    inline constexpr vec3<Type> vec3<Type>::operator-() const noexcept
+    {
+        return inv(*this);
     }
 
     template <typename Type>
@@ -265,15 +272,15 @@ namespace deep
     }
 
     template <typename Type>
-    inline constexpr float vec3<Type>::magn(const vec3 &vec) noexcept
+    inline constexpr Type vec3<Type>::magn(const vec3 &vec) noexcept
     {
-        return std::sqrtf(static_cast<float>(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z));
+        return static_cast<Type>(std::sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z));
     }
 
     template <typename Type>
     inline constexpr vec3<Type> vec3<Type>::norm(const vec3 &vec) noexcept
     {
-        float length = magn(vec);
+        Type length = magn(vec);
 
         return vec3<Type>(
                 static_cast<Type>(vec.x / length),

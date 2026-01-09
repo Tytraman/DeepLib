@@ -15,6 +15,8 @@ namespace deep
         vec4() = default;
         constexpr vec4(Type x, Type y, Type z, Type w) noexcept;
 
+        constexpr Type operator[](uint8 index) const noexcept;
+
         constexpr bool operator==(const vec4<Type> &other) const noexcept;
         constexpr bool operator!=(const vec4<Type> &other) const noexcept;
 
@@ -69,6 +71,13 @@ namespace deep
     }
 
     template <typename Type>
+    inline constexpr Type vec4<Type>::operator[](uint8 index) const noexcept
+    {
+        // Cela fonctionne car x, y, z et w sont contigus.
+        return (&x)[index];
+    }
+
+    template <typename Type>
     inline constexpr bool vec4<Type>::operator==(const vec4<Type> &other) const noexcept
     {
         return x == other.x && y == other.y && z == other.z && w == other.w;
@@ -81,7 +90,7 @@ namespace deep
     }
 
     template <typename Type>
-    inline vec4<Type> vec4<Type>::operator-() const noexcept
+    inline constexpr vec4<Type> vec4<Type>::operator-() const noexcept
     {
         return inv(*this);
     }
@@ -239,7 +248,7 @@ namespace deep
     template <typename Type>
     inline constexpr Type vec4<Type>::magn(const vec4<Type> &vec) noexcept
     {
-        return std::sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z + vec.w * vec.w);
+        return static_cast<Type>(std::sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z + vec.w * vec.w));
     }
 
     template <typename Type>

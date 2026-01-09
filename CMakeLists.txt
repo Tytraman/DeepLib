@@ -95,6 +95,10 @@ deep_create_test(NAME Vec3
     SOURCES maths/test_vec3.cpp
     LIBRARIES Deep::Lib)
 
+deep_create_test(NAME Mat4
+    SOURCES maths/test_mat4.cpp
+    LIBRARIES Deep::Lib)
+
 deep_create_test(NAME Thread
     SOURCES multithreading/test_thread.cpp
     LIBRARIES Deep::Lib)

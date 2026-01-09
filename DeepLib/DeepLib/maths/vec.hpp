@@ -1,8 +1,9 @@
-﻿#ifndef DEEP_LIB_VEC_HPP
+#ifndef DEEP_LIB_VEC_HPP
 #define DEEP_LIB_VEC_HPP
 
 #include "DeepLib/maths/vec2.hpp"
 #include "DeepLib/maths/vec3.hpp"
+#include "DeepLib/maths/vec4.hpp"
 
 namespace deep
 {
@@ -13,6 +14,10 @@ namespace deep
     using fvec3 = vec3<float>;
     using ivec3 = vec3<int32>;
     using uvec3 = vec3<uint32>;
+
+    using fvec4 = vec4<float>;
+    using ivec4 = vec4<int32>;
+    using uvec4 = vec4<uint32>;
 } // namespace deep
 
 #endif
