@@ -1,4 +1,4 @@
-﻿#include "../window.hpp"
+#include "../window.hpp"
 #include "../error.hpp"
 #include "internal_data.hpp"
 
@@ -127,7 +127,7 @@ namespace deep
         return DefWindowProcW(hwnd, msg, wparam, lparam);
     }
 
-    window_handle core_window_create(void *internal_context, const native_char *class_name, const native_char *title, int32 x, int32 y, int32 width, int32 height, core_window::callbacks *call)
+    window_handle core_window_create(void *internal_context, const native_char *class_name, const native_char *title, core_window::style s, bool transparent, int32 x, int32 y, int32 width, int32 height, core_window::callbacks *call)
     {
         internal_data_win32 *internal_data = static_cast<internal_data_win32 *>(internal_context);
 
@@ -145,7 +145,7 @@ namespace deep
 
         WNDCLASSEXW wc   = { 0 };
         wc.cbSize        = sizeof(wc);
-        wc.style         = CS_OWNDC;
+        wc.style         = transparent ? (CS_HREDRAW | CS_VREDRAW) : CS_OWNDC;
         wc.lpfnWndProc   = window_proc;
         wc.cbClsExtra    = 0;
         wc.cbWndExtra    = 0;
@@ -170,26 +170,55 @@ namespace deep
         }
 
         RECT wr;
-        wr.left   = 100;
-        wr.right  = width + wr.left;
-        wr.top    = 100;
-        wr.bottom = height + wr.top;
 
-        if (AdjustWindowRect(&wr, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE) == 0)
+        DWORD win_style;
+        switch (s)
         {
-            if (internal_data != nullptr)
+            default:
+            case core_window::style::Windowed:
             {
-                internal_data->result = core_convert_error_code(GetLastError());
-            }
+                win_style = WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU;
 
-            return nullptr;
+                wr.left   = 100;
+                wr.right  = width + wr.left;
+                wr.top    = 100;
+                wr.bottom = height + wr.top;
+
+                if (AdjustWindowRect(&wr, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE) == 0)
+                {
+                    if (internal_data != nullptr)
+                    {
+                        internal_data->result = core_convert_error_code(GetLastError());
+                    }
+
+                    return nullptr;
+                }
+            }
+            break;
+            case core_window::style::Borderless:
+            {
+                win_style = WS_POPUP;
+
+                wr.left   = 0;
+                wr.right  = width;
+                wr.top    = 0;
+                wr.bottom = height;
+            }
+            break;
+        }
+
+        DWORD win_extra_style = 0;
+
+        if (transparent)
+        {
+            win_extra_style |= WS_EX_LAYERED;
         }
 
         window_handle hwnd = CreateWindowExW(
-                0,
+                win_extra_style,
                 class_name,
                 title,
-                WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU,
+                win_style,
                 x, y, wr.right - wr.left, wr.bottom - wr.top,
                 nullptr,
                 nullptr,
@@ -204,6 +233,11 @@ namespace deep
             }
 
             return nullptr;
+        }
+
+        if (transparent)
+        {
+            SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 0, LWA_COLORKEY);
         }
 
         if (call != nullptr)

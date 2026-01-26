@@ -1,4 +1,4 @@
-﻿#include "window.hpp"
+#include "window.hpp"
 #include "DeepLib/context.hpp"
 #include "DeepLib/memory/memory.hpp"
 
@@ -138,7 +138,7 @@ namespace deep
         core_window::destroy(ctx::get_internal_ctx(get_context_ptr()), m_handle);
     }
 
-    ref<window> window::create(const ref<ctx> &context, const native_char *class_name, const native_char *title, int32 x, int32 y, int32 width, int32 height) noexcept
+    ref<window> window::create(const ref<ctx> &context, const native_char *class_name, const native_char *title, core_window::style s, bool transparent, int32 x, int32 y, int32 width, int32 height) noexcept
     {
         ref<window> win = ref<window>(context, mem::alloc_type<window>(context.get(), context));
 
@@ -163,7 +163,7 @@ namespace deep
         win->m_callbacks.lose_focus        = lose_focus_callback;
         win->m_callbacks.data              = win.get();
 
-        win->m_handle = core_window::create(ctx::get_internal_ctx(context.get()), class_name, title, x, y, width, height, &win->m_callbacks);
+        win->m_handle = core_window::create(ctx::get_internal_ctx(context.get()), class_name, title, s, transparent, x, y, width, height, &win->m_callbacks);
 
         return win;
     }

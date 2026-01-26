@@ -1,4 +1,4 @@
-﻿#ifndef DEEP_CORE_WINDOW_HPP
+#ifndef DEEP_CORE_WINDOW_HPP
 #define DEEP_CORE_WINDOW_HPP
 
 #include "DeepCore/deep_core_export.h"
@@ -9,6 +9,12 @@ namespace deep
     class DEEP_CORE_API core_window
     {
       public:
+        enum class style
+        {
+            Windowed,
+            Borderless
+        };
+
         enum class mouse_button
         {
             Left,
@@ -39,7 +45,7 @@ namespace deep
         };
 
       public:
-        static window_handle create(void *internal_context, const native_char *class_name, const native_char *title, int32 x, int32 y, int32 width, int32 height, callbacks *call) noexcept;
+        static window_handle create(void *internal_context, const native_char *class_name, const native_char *title, style s, bool transparent, int32 x, int32 y, int32 width, int32 height, callbacks *call) noexcept;
         static bool destroy(void *internal_context, window_handle win) noexcept;
 
         static void show(window_handle win) noexcept;
@@ -52,7 +58,7 @@ namespace deep
         static bool process_message(void *internal_context, window_handle win) noexcept;
     };
 
-    extern window_handle core_window_create(void *internal_context, const native_char *class_name, const native_char *title, int32 x, int32 y, int32 width, int32 height, core_window::callbacks *call);
+    extern window_handle core_window_create(void *internal_context, const native_char *class_name, const native_char *title, core_window::style s, bool transparent, int32 x, int32 y, int32 width, int32 height, core_window::callbacks *call);
     extern bool core_window_destroy(void *internal_context, window_handle win);
     extern void core_window_show(window_handle win);
     extern void core_window_hide(window_handle win);

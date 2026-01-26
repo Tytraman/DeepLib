@@ -13,6 +13,7 @@ add_library(DeepCore
         "${CMAKE_CURRENT_LIST_DIR}/DeepCore/window.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/DeepCore/vkeys.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/DeepCore/time.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/DeepCore/display.cpp"
 )
 add_library(Deep::Core ALIAS DeepCore)
 
@@ -57,6 +58,7 @@ elseif(WIN32)
             "${CMAKE_CURRENT_SOURCE_DIR}/DeepCore/windows/term.cpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/DeepCore/windows/window.cpp"
             "${CMAKE_CURRENT_SOURCE_DIR}/DeepCore/windows/time.cpp"
+            "${CMAKE_CURRENT_SOURCE_DIR}/DeepCore/windows/display.cpp"
     )
 endif()
 

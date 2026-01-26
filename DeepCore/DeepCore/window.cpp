@@ -1,10 +1,10 @@
-﻿#include "window.hpp"
+#include "window.hpp"
 
 namespace deep
 {
-    window_handle core_window::create(void *internal_context, const native_char *class_name, const native_char *title, int32 x, int32 y, int32 width, int32 height, callbacks *call) noexcept
+    window_handle core_window::create(void *internal_context, const native_char *class_name, const native_char *title, style s, bool transparent, int32 x, int32 y, int32 width, int32 height, callbacks *call) noexcept
     {
-        return core_window_create(internal_context, class_name, title, x, y, width, height, call);
+        return core_window_create(internal_context, class_name, title, s, transparent, x, y, width, height, call);
     }
 
     bool core_window::destroy(void *internal_context, window_handle win) noexcept

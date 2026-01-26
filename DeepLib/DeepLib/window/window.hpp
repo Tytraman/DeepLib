@@ -1,4 +1,4 @@
-﻿#ifndef DEEP_LIB_WINDOW_HPP
+#ifndef DEEP_LIB_WINDOW_HPP
 #define DEEP_LIB_WINDOW_HPP
 
 #include "DeepLib/deep_lib_export.h"
@@ -20,7 +20,7 @@ namespace deep
         window() = delete;
         ~window() noexcept;
 
-        static ref<window> create(const ref<ctx> &context, const native_char *class_name, const native_char *title, int32 x, int32 y, int32 width, int32 height) noexcept;
+        static ref<window> create(const ref<ctx> &context, const native_char *class_name, const native_char *title, core_window::style s, bool transparent, int32 x, int32 y, int32 width, int32 height) noexcept;
 
         void show() noexcept;
         void hide() noexcept;
