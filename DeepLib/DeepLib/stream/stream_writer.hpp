@@ -19,6 +19,7 @@ namespace deep
 
         virtual bool write(bool value) override;
         virtual bool write(const char *str) override;
+        virtual bool write(const native_char *str) override;
         virtual bool write(int32 value) override;
         virtual bool write(uint32 value) override;
         virtual bool write(int64 value) override;

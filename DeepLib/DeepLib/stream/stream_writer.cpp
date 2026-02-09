@@ -1,5 +1,6 @@
 #include "stream_writer.hpp"
 #include "DeepLib/string/string.hpp"
+#include "DeepLib/string/string_native.hpp"
 
 namespace deep
 {
@@ -56,6 +57,19 @@ namespace deep
         return m_stream->write(str, length, &bytes_written);
     }
 
+    bool stream_writer::write(const native_char *str)
+    {
+        if (!m_stream.is_valid() || !m_stream->can_write())
+        {
+            return false;
+        }
+
+        usize length = string_native::calc_bytes_size(str);
+        usize bytes_written;
+
+        return m_stream->write(str, length, &bytes_written);
+    }
+
     bool stream_writer::write(int32 value)
     {
         return write(DEEP_I64(value));
@@ -101,7 +115,7 @@ namespace deep
             return false;
         }
 
-        string str = string::from(get_context(), value);
+        string str = string::from(get_context(), value, -1);
 
         usize bytes_written;
 

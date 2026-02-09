@@ -1,4 +1,4 @@
-﻿#include "DeepLib/lib.hpp"
+#include "DeepLib/lib.hpp"
 #include "DeepLib/string/string.hpp"
 
 #include <stdio.h>
@@ -105,8 +105,8 @@ int main(int /*argc*/, char * /*argv*/[])
 
     deep::string int_str1    = deep::string::from(context, static_cast<deep::int64>(32));
     deep::string int_str2    = deep::string::from(context, static_cast<deep::int64>(-64));
-    deep::string double_str1 = deep::string::from(context, 127.64);
-    deep::string double_str2 = deep::string::from(context, -5002.46);
+    deep::string double_str1 = deep::string::from(context, 127.64, 3);
+    deep::string double_str2 = deep::string::from(context, -5002.46, 3);
 
     if (!int_str1.equals(DEEP_TEXT_UTF8("32")))
     {

@@ -1,4 +1,4 @@
-﻿#ifndef DEEP_LIB_STRING_HPP
+#ifndef DEEP_LIB_STRING_HPP
 #define DEEP_LIB_STRING_HPP
 
 #include "DeepLib/deep_lib_export.h"
@@ -27,7 +27,7 @@ namespace deep
         static string from_impl(const ref<ctx> &context, bool value);
         static string from_impl(const ref<ctx> &context, int64 value);
         static string from_impl(const ref<ctx> &context, uint64 value);
-        static string from_impl(const ref<ctx> &context, double value);
+        static string from_impl(const ref<ctx> &context, double value, int16 digits);
     };
 
     inline usize deep::string::calc_bytes_size_impl(const char *str)
@@ -113,7 +113,7 @@ namespace deep
         return str;
     }
 
-    inline string string::from_impl(const ref<ctx> &context, double value)
+    inline string string::from_impl(const ref<ctx> &context, double value, int16 digits)
     {
         string str = string(context);
 
@@ -156,8 +156,20 @@ namespace deep
             return str;
         }
 
+        int16 counter = 0;
+
         while (decimal != 0.0)
         {
+            if (digits >= 0)
+            {
+                if (counter == digits)
+                {
+                    break;
+                }
+
+                counter++;
+            }
+
             decimal *= 10;
             decimal = std::modf(decimal, &integer);
             integer = std::abs(integer);

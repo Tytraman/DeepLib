@@ -1,4 +1,4 @@
-﻿#ifndef DEEP_LIB_STRING_NATIVE_HPP
+#ifndef DEEP_LIB_STRING_NATIVE_HPP
 #define DEEP_LIB_STRING_NATIVE_HPP
 
 #include "DeepLib/deep_lib_export.h"
@@ -24,7 +24,7 @@ namespace deep
         static string_native from_impl(const ref<ctx> &context, bool value);
         static string_native from_impl(const ref<ctx> &context, int64 value);
         static string_native from_impl(const ref<ctx> &context, uint64 value);
-        static string_native from_impl(const ref<ctx> &context, double value);
+        static string_native from_impl(const ref<ctx> &context, double value, int16 digits);
     };
 
     inline usize string_native::calc_bytes_size_impl(const native_char *str)
@@ -110,7 +110,7 @@ namespace deep
         return str;
     }
 
-    inline string_native string_native::from_impl(const ref<ctx> &context, double value)
+    inline string_native string_native::from_impl(const ref<ctx> &context, double value, int16 digits)
     {
         string_native str = string_native(context);
 
@@ -153,8 +153,20 @@ namespace deep
             return str;
         }
 
+        int16 counter = 0;
+
         while (decimal != 0.0)
         {
+            if (digits >= 0)
+            {
+                if (counter == digits)
+                {
+                    break;
+                }
+
+                counter++;
+            }
+
             decimal *= 10;
             decimal = std::modf(decimal, &integer);
             integer = std::abs(integer);

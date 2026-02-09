@@ -1,4 +1,4 @@
-﻿#include "text_writer.hpp"
+#include "text_writer.hpp"
 #include "DeepLib/context.hpp"
 
 namespace deep
@@ -12,6 +12,13 @@ namespace deep
     }
 
     text_writer &text_writer::operator<<(const char *str)
+    {
+        write(str);
+
+        return *this;
+    }
+
+    text_writer &text_writer::operator<<(const native_char *str)
     {
         write(str);
 

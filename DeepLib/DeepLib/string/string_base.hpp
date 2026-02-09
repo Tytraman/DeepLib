@@ -1,4 +1,4 @@
-﻿#ifndef DEEP_LIB_STRING_BASE_HPP
+#ifndef DEEP_LIB_STRING_BASE_HPP
 #define DEEP_LIB_STRING_BASE_HPP
 
 #include "DeepCore/types.hpp"
@@ -23,7 +23,7 @@ namespace deep
         static Derived from(const ref<ctx> &context, bool value);
         static Derived from(const ref<ctx> &context, int64 value);
         static Derived from(const ref<ctx> &context, uint64 value);
-        static Derived from(const ref<ctx> &context, double value);
+        static Derived from(const ref<ctx> &context, double value, int16 digits);
 
         static bool equals(const Type *first, const Type *second);
 
@@ -137,9 +137,9 @@ namespace deep
     }
 
     template <typename Derived, typename Type>
-    inline Derived string_base<Derived, Type>::from(const ref<ctx> &context, double value)
+    inline Derived string_base<Derived, Type>::from(const ref<ctx> &context, double value, int16 digits)
     {
-        return Derived::from_impl(context, value);
+        return Derived::from_impl(context, value, digits);
     }
 
     template <typename Derived, typename Type>
@@ -186,6 +186,12 @@ namespace deep
         usize length             = calc_length(str);
         usize current_bytes_size = get_bytes_size();
         usize new_bytes_size     = current_bytes_size + bytes_size;
+
+        if (current_bytes_size == 0)
+        {
+            current_bytes_size += sizeof(Type);
+            new_bytes_size += sizeof(Type);
+        }
 
         if (!realloc(new_bytes_size))
         {

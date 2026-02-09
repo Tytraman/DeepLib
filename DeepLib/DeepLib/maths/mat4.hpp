@@ -5,6 +5,7 @@
 #include "DeepLib/maths/math.hpp"
 #include "DeepLib/maths/vec3.hpp"
 #include "DeepLib/maths/vec4.hpp"
+#include "DeepLib/string/string.hpp"
 
 #include <cmath>
 #include <cstring>
@@ -47,6 +48,8 @@ namespace deep
 
         constexpr const Type *get() const noexcept;
 
+        string to_string(const ref<ctx> &context) const noexcept;
+
         constexpr static mat4x4<Type> mul(const mat4x4<Type> &m, const mat4x4<Type> &n) noexcept;
 
         constexpr static mat4x4<Type> translate(const mat4x4<Type> &mat, const vec3<Type> &vec) noexcept;
@@ -55,6 +58,8 @@ namespace deep
         /*constexpr*/ static mat4x4<Type> rotate_y(const mat4x4<Type> &mat, Type degrees) noexcept;
         /*constexpr*/ static mat4x4<Type> rotate_z(const mat4x4<Type> &mat, Type degrees) noexcept;
         constexpr static mat4x4<Type> d3d_perspective_lh(Type width, Type height, Type z_near, Type z_far) noexcept;
+        constexpr static mat4x4<Type> d3d_perspective_fov_lh(Type fov, Type aspect_ratio, Type z_near, Type z_far) noexcept;
+        constexpr static mat4x4<Type> d3d_look_at_lh(const fvec3 &from, const fvec3 &to, const fvec3 &up) noexcept;
         constexpr static mat4x4<Type> transpose(const mat4x4<Type> &m) noexcept;
     };
 
@@ -283,6 +288,35 @@ namespace deep
     }
 
     template <typename Type>
+    inline constexpr mat4x4<Type> mat4x4<Type>::d3d_perspective_fov_lh(Type fov, Type aspect_ratio, Type z_near, Type z_far) noexcept
+    {
+        fov = math::deg_to_rad(fov);
+
+        Type y_scale = static_cast<Type>(1) / std::tan(fov / static_cast<Type>(2));
+        Type x_scale = y_scale / aspect_ratio;
+
+        return mat4x4<Type>(
+                x_scale, static_cast<Type>(0), static_cast<Type>(0), static_cast<Type>(0),
+                static_cast<Type>(0), y_scale, static_cast<Type>(0), static_cast<Type>(0),
+                static_cast<Type>(0), static_cast<Type>(0), z_far / (z_far - z_near), -z_near * z_far / (z_far - z_near),
+                static_cast<Type>(0), static_cast<Type>(0), static_cast<Type>(1), static_cast<Type>(0));
+    }
+
+    template <typename Type>
+    inline constexpr mat4x4<Type> mat4x4<Type>::d3d_look_at_lh(const fvec3 &from, const fvec3 &to, const fvec3 &up) noexcept
+    {
+        fvec3 forward_axis = fvec3::norm(to - from);
+        fvec3 right_axis   = fvec3::norm(fvec3::cross(up, forward_axis));
+        fvec3 up_axis      = fvec3::cross(forward_axis, right_axis);
+
+        return mat4x4<Type>(
+                right_axis.x, right_axis.y, right_axis.z, -fvec3::dot(right_axis, from),
+                up_axis.x, up_axis.y, up_axis.z, -fvec3::dot(up_axis, from),
+                forward_axis.x, forward_axis.y, forward_axis.z, -fvec3::dot(forward_axis, from),
+                static_cast<Type>(0), static_cast<Type>(0), static_cast<Type>(0), static_cast<Type>(1));
+    }
+
+    template <typename Type>
     inline constexpr mat4x4<Type> mat4x4<Type>::transpose(const mat4x4<Type> &m) noexcept
     {
         return mat4x4<Type>(
@@ -296,6 +330,35 @@ namespace deep
     inline constexpr const Type *mat4x4<Type>::get() const noexcept
     {
         return &(rows[0].x);
+    }
+
+    template <typename Type>
+    string mat4x4<Type>::to_string(const ref<ctx> &context) const noexcept
+    {
+        string s = string(context);
+
+        uint8 row, col;
+
+        for (row = 0; row < RowCount; ++row)
+        {
+            s.append("[ ");
+
+            for (col = 0; col < ColumnCount - 1; ++col)
+            {
+                string value = string::from(context, rows[row][col], 3);
+
+                s.append(*value);
+                s.append(", ");
+            }
+
+            string value = string::from(context, rows[row][col], 3);
+
+            s.append(*value);
+
+            s.append(" ]\r\n");
+        }
+
+        return s;
     }
 } // namespace deep
 
