@@ -1,4 +1,4 @@
-﻿#ifndef DEEP_CORE_TYPES_HPP
+#ifndef DEEP_CORE_TYPES_HPP
 #define DEEP_CORE_TYPES_HPP
 
 #include <stdint.h>
@@ -344,8 +344,12 @@ namespace deep
 #define DEEP_TEXT_NATIVE_BYTES_SIZE(__str) deep::core_unicode::calc_bytes_size(__str)
 #define DEEP_TEXT_NATIVE_LENGTH(__str) deep::core_unicode::calc_length(__str)
 
-#define DEEP_SEPARATOR '\\'
+#define DEEP_SEPARATOR_CHAR '\\'
+#define DEEP_NATIVE_SEPARATOR_CHAR DEEP_TEXT_NATIVE(DEEP_SEPARATOR_CHAR)
+
+#define DEEP_SEPARATOR "\\"
 #define DEEP_NATIVE_SEPARATOR DEEP_TEXT_NATIVE(DEEP_SEPARATOR)
+
 #elif defined(DEEP_UNIX)
 #include "string/utf8.hpp"
 #define native_char_d char

@@ -1,4 +1,4 @@
-﻿#include "png.hpp"
+#include "png.hpp"
 
 namespace deep
 {
@@ -184,9 +184,31 @@ namespace deep
         return true;
     }
 
-    image png::read_image()
+    image png::read_image(image::color_space convert_to)
     {
         image img;
+
+        if (convert_to != image::color_space::None)
+        {
+            switch (convert_to)
+            {
+                // TODO: implémenter les autres conversions.
+                default:
+                    break;
+                case image::color_space::RGBA:
+                {
+                    if (m_color_type == PNG_COLOR_TYPE_RGB)
+                    {
+                        png_set_add_alpha(m_png, 0xFF, PNG_FILLER_AFTER);
+
+                        png_read_update_info(m_png, m_info);
+
+                        m_color_type = PNG_COLOR_TYPE_RGBA;
+                    }
+                }
+                break;
+            }
+        }
 
         size_t row_bytes = png_get_rowbytes(m_png, m_info);
         uint8 channels   = png_get_channels(m_png, m_info);

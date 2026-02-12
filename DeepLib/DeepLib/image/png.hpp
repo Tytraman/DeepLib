@@ -1,4 +1,4 @@
-﻿#ifndef DEEP_LIB_PNG_HPP
+#ifndef DEEP_LIB_PNG_HPP
 #define DEEP_LIB_PNG_HPP
 
 #include "DeepLib/deep_lib_export.h"
@@ -24,7 +24,7 @@ namespace deep
 
         bool check() const;
         bool read_info();
-        image read_image();
+        image read_image(image::color_space convert_to = image::color_space::None);
 
         usize get_position() const;
         usize get_bytes_size() const;

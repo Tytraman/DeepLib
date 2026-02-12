@@ -76,12 +76,12 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(DeepLib PRIVATE
         /WX     # Considère les warning comme des erreurs.
         /W4     # Niveau d'avertissement élevé.
-        ${FSANITIZE_ADDR}
+        #${FSANITIZE_ADDR}
     )
 
-    target_link_options(DeepLib PRIVATE
-        ${FSANITIZE_ADDR}
-    )
+    #target_link_options(DeepLib PRIVATE
+    #    ${FSANITIZE_ADDR}
+    #)
 endif()
 
 # Récupère la liste des définitions du fichier 'deep.cpp'.

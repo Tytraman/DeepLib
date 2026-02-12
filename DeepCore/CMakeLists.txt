@@ -96,12 +96,12 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(DeepCore PRIVATE
         /WX     # Considère les warning comme des erreurs.
         /W4     # Niveau d'avertissement élevé.
-        ${FSANITIZE_ADDR}
+        #${FSANITIZE_ADDR}
     )
 
-    target_link_options(DeepCore PRIVATE
-        ${FSANITIZE_ADDR}
-    )
+    #target_link_options(DeepCore PRIVATE
+    #    ${FSANITIZE_ADDR}
+    #)
 endif()
 
 

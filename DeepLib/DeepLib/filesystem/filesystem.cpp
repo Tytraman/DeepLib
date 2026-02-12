@@ -1,4 +1,4 @@
-﻿#include "filesystem.hpp"
+#include "filesystem.hpp"
 #include "DeepCore/filesystem.hpp"
 
 namespace deep
@@ -29,7 +29,7 @@ namespace deep
 
         usize last_separator;
 
-        if (!path.find_from_end(DEEP_NATIVE_SEPARATOR, &last_separator))
+        if (!path.find_from_end(DEEP_NATIVE_SEPARATOR_CHAR, &last_separator))
         {
             return string_native();
         }
