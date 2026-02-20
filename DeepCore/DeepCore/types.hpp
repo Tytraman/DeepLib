@@ -55,10 +55,37 @@ namespace deep
 {
     using null_ptr = decltype(nullptr);
 
+    template <typename Type>
+    struct rm_const_volatile_s
+    {
+        using type = Type;
+    };
+
+    template <typename Type>
+    struct rm_const_volatile_s<const Type>
+    {
+        using type = Type;
+    };
+
+    template <typename Type>
+    struct rm_const_volatile_s<volatile Type>
+    {
+        using type = Type;
+    };
+
+    template <typename Type>
+    struct rm_const_volatile_s<const volatile Type>
+    {
+        using type = Type;
+    };
+
+    template <typename Type>
+    using rm_const_volatile = typename rm_const_volatile_s<Type>::type;
+
     /**
      * @brief Vérifie à la compilation si le type passé est une énumération.
      *
-     * @tparam Type
+     * @tparam Type Le type à tester.
      */
     template <typename Type>
     inline constexpr bool is_enum = __is_enum(Type);
@@ -75,8 +102,8 @@ namespace deep
     /**
      * @brief Vérifie à la compilation si un type hérite bien du type spécifié.
      *
-     * @tparam Base
-     * @tparam Derived
+     * @tparam Base Le type de base à tester.
+     * @tparam Derived Le type dérivé à tester.
      */
     template <typename Base, typename Derived>
     inline constexpr bool is_base_of = __is_base_of(Base, Derived);
@@ -87,17 +114,17 @@ namespace deep
 
     /**
      * @brief Vérifie à la compilation qu'un type soit bien une classe.
-     * @tparam Type Le type à vérifier.
+     * @tparam Type Le type à tester.
      */
     template <typename Type>
     inline constexpr bool is_class = __is_class(Type);
 
     /**
      * @brief Vérifie à la compilation que deux types soient les mêmes.
-     * @tparam Le premier type à vérifier.
-     * @tparam Le deuxième type à vérifier.
+     * @tparam Type Le premier type à tester.
+     * @tparam Kype Le deuxième type à tester.
      */
-    template <typename, typename>
+    template <typename Type, typename Kype>
     inline constexpr bool is_same = false;
 
     template <typename Type>
@@ -105,7 +132,7 @@ namespace deep
 
     /**
      * @brief Vérifie à la compilation qu'un type est void.
-     * @tparam Type Le type de donnée à vérifier.
+     * @tparam Type Le type de donnée à tester.
      */
     template <typename Type>
     inline constexpr bool is_void = is_same<rm_const_volatile<Type>, void>;
@@ -146,10 +173,40 @@ namespace deep
     /**
      * @brief Crée une version signée d'un type non signé.
      *
-     * @tparam Type
+     * @tparam Type Le type à rendre signé.
      */
     template <typename Type>
     using make_signed = typename mk_signed<sizeof(Type)>::type;
+
+    template <int64_d>
+    struct mk_unsigned;
+
+    template <>
+    struct mk_unsigned<1>
+    {
+        using type = uint8_d;
+    };
+
+    template <>
+    struct mk_unsigned<2>
+    {
+        using type = uint16_d;
+    };
+
+    template <>
+    struct mk_unsigned<4>
+    {
+        using type = uint32_d;
+    };
+
+    template <>
+    struct mk_unsigned<8>
+    {
+        using type = uint64_d;
+    };
+
+    template <typename Type>
+    using make_unsigned = typename mk_unsigned<sizeof(Type)>::type;
 
     template <typename Type>
     struct rm_ref_s
@@ -174,7 +231,7 @@ namespace deep
 
     /**
      * @brief Retire la référence d'un type.
-     * @tparam Type
+     * @tparam Type Le type auquel retirer la référence.
      */
     template <class Type>
     using rm_ref = typename rm_ref_s<Type>::type;
@@ -209,42 +266,15 @@ namespace deep
         using type = Type;
     };
 
-    template <typename Type>
-    struct rm_const_volatile_s
-    {
-        using type = Type;
-    };
-
-    template <typename Type>
-    struct rm_const_volatile_s<const Type>
-    {
-        using type = Type;
-    };
-
-    template <typename Type>
-    struct rm_const_volatile_s<volatile Type>
-    {
-        using type = Type;
-    };
-
-    template <typename Type>
-    struct rm_const_volatile_s<const volatile Type>
-    {
-        using type = Type;
-    };
-
     /**
      * @brief Retire la constance d'un type.
-     * @tparam Type
+     * @tparam Type Le type auquel retirer la constance.
      */
     template <typename Type>
     using rm_const = typename rm_const_s<Type>::type;
 
     template <typename Type>
     using rm_volatile = typename rm_volatile_s<Type>::type;
-
-    template <typename Type>
-    using rm_const_volatile = typename rm_const_volatile_s<Type>::type;
 
     template <typename Type>
     constexpr rm_ref<Type> &&move(Type &&value) noexcept
@@ -364,7 +394,8 @@ namespace deep
 #endif
 
 #ifndef DEEP_TEXT_UTF8
-#define DEEP_TEXT_UTF8(__value) DEEP_CONCAT(u8, __value)
+#define DEEP_TEXT_UTF8(__value) __value
+// DEEP_CONCAT(u8, __value)
 #endif
 
 #ifndef DEEP_STRING
@@ -472,6 +503,18 @@ namespace deep
 
 #ifndef DEEP_U64
 #define DEEP_U64(__value) static_cast<deep::uint64>(__value)
+#endif
+
+#if defined(_MSC_VER)
+#define DEEP_COMPILER_MSVC 1
+#elif defined(__clang__)
+#define DEEP_COMPILER_CLANG 1
+#elif defined(__GNUC__)
+#define DEEP_COMPILER_GCC 1
+#endif
+
+#if defined(_DEBUG) || !defined(NDEBUG)
+#define DEEP_DEBUG 1
 #endif
 
 // undef

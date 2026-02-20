@@ -29,6 +29,7 @@ set_target_properties(DeepCore PROPERTIES
 
 set_target_properties(DeepCore PROPERTIES
     OUTPUT_NAME DeepCore
+    DEBUG_POSTFIX "_d"
     EXPORT_NAME Core
     VERSION ${PROJECT_VERSION}
     SOVERSION ${PROJECT_VERSION_MAJOR}
@@ -76,32 +77,4 @@ target_include_directories(DeepCore
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(FSANITIZE_ADDR $<$<CONFIG:Debug>:-fsanitize=address>)
-    
-    target_compile_options(DeepCore PRIVATE
-        -Werror            
-        -Wall
-        -Wextra            
-        ${FSANITIZE_ADDR}
-    )
-
-    target_link_options(DeepCore PRIVATE
-        ${FSANITIZE_ADDR}
-    )
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    # Active l'outil de détection d'erreurs liées à la mémoire.
-    set(FSANITIZE_ADDR $<$<CONFIG:Debug>:/fsanitize=address>)
-
-    target_compile_options(DeepCore PRIVATE
-        /WX     # Considère les warning comme des erreurs.
-        /W4     # Niveau d'avertissement élevé.
-        #${FSANITIZE_ADDR}
-    )
-
-    #target_link_options(DeepCore PRIVATE
-    #    ${FSANITIZE_ADDR}
-    #)
-endif()
-
-
+deep_add_compile_options(TARGET DeepCore)

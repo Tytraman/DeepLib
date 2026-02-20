@@ -22,6 +22,12 @@ namespace deep
             Middle
         };
 
+#if defined(DEEP_WINDOWS)
+        using pre_callback = LRESULT (*)(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+#else
+#error Need implementation
+#endif
+
         using keydown_callback           = bool (*)(vkey key, bool repeated, void *data);
         using keyup_callback             = bool (*)(vkey key, void *data);
         using text_input_callback        = bool (*)(native_char character, void *data);
@@ -34,6 +40,7 @@ namespace deep
         struct callbacks
         {
             void *data;
+            pre_callback pre;
             keydown_callback keydown;
             keyup_callback keyup;
             text_input_callback text_input;
@@ -53,6 +60,9 @@ namespace deep
         static void set_capture(window_handle win) noexcept;
         static bool release_capture(void *internal_context, window_handle win) noexcept;
 
+        static void hide_cursor() noexcept;
+        static void show_cursor() noexcept;
+
         static bool set_title(void *internal_context, window_handle win, const native_char *title) noexcept;
 
         static bool process_message(void *internal_context, window_handle win) noexcept;
@@ -64,6 +74,8 @@ namespace deep
     extern void core_window_hide(window_handle win);
     extern void core_window_set_capture(window_handle win) noexcept;
     extern bool core_window_release_capture(void *internal_context, window_handle win) noexcept;
+    extern void core_window_hide_cursor() noexcept;
+    extern void core_window_show_cursor() noexcept;
     extern bool core_window_set_title(void *internal_context, window_handle win, const native_char *title) noexcept;
     extern bool core_window_process_message(void *internal_context, window_handle win);
 } // namespace deep

@@ -1,4 +1,4 @@
-﻿#ifndef DEEP_LIB_MEM_PTR_HPP
+#ifndef DEEP_LIB_MEM_PTR_HPP
 #define DEEP_LIB_MEM_PTR_HPP
 
 #include "DeepLib/memory/managed_ptr.hpp"
@@ -20,18 +20,18 @@ namespace deep
     template <typename Type>
     inline bool mem_ptr<Type>::destroy_impl()
     {
-        if (m_memory_manager == nullptr)
+        if (this->m_memory_manager == nullptr)
         {
             return false;
         }
 
-        if (!m_memory_manager->dealloc(m_ptr))
+        if (!this->m_memory_manager->dealloc(this->m_ptr))
         {
             return false;
         }
 
-        m_ptr        = nullptr;
-        m_bytes_size = 0;
+        this->m_ptr        = nullptr;
+        this->m_bytes_size = 0;
 
         return true;
     }
@@ -39,13 +39,13 @@ namespace deep
     template <typename Type>
     inline Type *mem_ptr<Type>::operator->()
     {
-        return m_ptr;
+        return this->m_ptr;
     }
 
     template <typename Type>
     inline Type &mem_ptr<Type>::operator*()
     {
-        return *m_ptr;
+        return *this->m_ptr;
     }
 } // namespace deep
 

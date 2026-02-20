@@ -1,4 +1,4 @@
-﻿#ifndef DEEP_LIB_REF_COUNTED_HPP
+#ifndef DEEP_LIB_REF_COUNTED_HPP
 #define DEEP_LIB_REF_COUNTED_HPP
 
 #include "DeepLib/deep_lib_export.h"
@@ -16,7 +16,13 @@ namespace deep
     class DEEP_LIB_API ref_counted
     {
       public:
+        ref_counted(const ref_counted &)            = delete;
+        ref_counted &operator=(const ref_counted &) = delete;
+
         ref_counted();
+        ref_counted(ref_counted &&) noexcept            = default;
+        ref_counted &operator=(ref_counted &&) noexcept = default;
+
         virtual ~ref_counted() = default;
 
         /**
@@ -112,9 +118,9 @@ namespace deep
     inline ref<Type>::ref(const ref<ctx> &context, Type *ptr)
             : managed_ptr<ref<Type>, Type>(context.get(), ptr, sizeof(Type))
     {
-        if (is_valid())
+        if (this->is_valid())
         {
-            m_ptr->take();
+            this->m_ptr->take();
         }
     }
 
@@ -122,9 +128,9 @@ namespace deep
     inline ref<Type>::ref(ctx *context, Type *ptr)
             : managed_ptr<ref<Type>, Type>(context, ptr, sizeof(Type))
     {
-        if (is_valid())
+        if (this->is_valid())
         {
-            m_ptr->take();
+            this->m_ptr->take();
         }
     }
 
@@ -132,9 +138,9 @@ namespace deep
     inline ref<Type>::ref(memory_manager *mem, Type *ptr)
             : managed_ptr<ref<Type>, Type>(mem, ptr, sizeof(Type))
     {
-        if (is_valid())
+        if (this->is_valid())
         {
-            m_ptr->take();
+            this->m_ptr->take();
         }
     }
 
@@ -142,9 +148,9 @@ namespace deep
     inline ref<Type>::ref(const ref<Type> &other)
             : managed_ptr<ref<Type>, Type>(other.get_memory_manager(), other.get(), other.get_bytes_size())
     {
-        if (is_valid())
+        if (this->is_valid())
         {
-            m_ptr->take();
+            this->m_ptr->take();
         }
     }
 
@@ -157,17 +163,17 @@ namespace deep
     template <typename Type>
     inline bool ref<Type>::destroy_impl()
     {
-        if (m_memory_manager == nullptr)
+        if (this->m_memory_manager == nullptr)
         {
             return false;
         }
 
-        if (!m_memory_manager->dealloc(m_ptr))
+        if (!this->m_memory_manager->dealloc(this->m_ptr))
         {
             return false;
         }
 
-        m_ptr = nullptr;
+        this->m_ptr = nullptr;
 
         return true;
     }
@@ -175,26 +181,26 @@ namespace deep
     template <typename Type>
     inline void ref<Type>::reference(const ref &from)
     {
-        if (m_ptr == from.m_ptr)
+        if (this->m_ptr == from.m_ptr)
         {
             return;
         }
 
         unreference();
 
-        set(from.m_ptr, from.m_bytes_size);
-        if (is_valid())
+        this->set(from.m_ptr, from.m_bytes_size);
+        if (this->is_valid())
         {
-            m_ptr->take();
+            this->m_ptr->take();
         }
     }
 
     template <typename Type>
     inline void ref<Type>::unreference()
     {
-        if (is_valid() && m_ptr->drop())
+        if (this->is_valid() && this->m_ptr->drop())
         {
-            destroy();
+            this->destroy();
         }
     }
 
@@ -217,49 +223,49 @@ namespace deep
     template <typename Type>
     Type *ref<Type>::operator->()
     {
-        return m_ptr;
+        return this->m_ptr;
     }
 
     template <typename Type>
     inline const Type *ref<Type>::operator->() const
     {
-        return m_ptr;
+        return this->m_ptr;
     }
 
     template <typename Type>
     Type &ref<Type>::operator*() noexcept
     {
-        return *m_ptr;
+        return *this->m_ptr;
     }
 
     template <typename Type>
     Type &ref<Type>::operator*() const noexcept
     {
-        return *m_ptr;
+        return *this->m_ptr;
     }
 
     template <typename Type>
     inline bool ref<Type>::operator==(const Type *ptr) const
     {
-        return m_ptr == ptr;
+        return this->m_ptr == ptr;
     }
 
     template <typename Type>
     inline bool ref<Type>::operator!=(const Type *ptr) const
     {
-        return m_ptr != ptr;
+        return this->m_ptr != ptr;
     }
 
     template <typename Type>
     bool ref<Type>::operator==(const ref<Type> &other) const
     {
-        return m_ptr == other.m_ptr;
+        return this->m_ptr == other.m_ptr;
     }
 
     template <typename Type>
     inline bool ref<Type>::operator!=(const ref<Type> &other) const
     {
-        return m_ptr != other.m_ptr;
+        return this->m_ptr != other.m_ptr;
     }
 
     template <typename Type, typename Kype>
@@ -302,5 +308,16 @@ namespace deep
     }
 
 } // namespace deep
+
+#if defined(_MSC_VER)
+
+#define DEEP_REF(__type, __var_name)          \
+    __pragma(warning(push))                   \
+            __pragma(warning(disable : 4251)) \
+                    deep::ref<__type>         \
+                            __var_name;       \
+    __pragma(warning(pop))
+
+#endif
 
 #endif

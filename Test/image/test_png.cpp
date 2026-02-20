@@ -1,4 +1,4 @@
-﻿#include "DeepLib/lib.hpp"
+#include "DeepLib/lib.hpp"
 #include "DeepLib/image/png.hpp"
 #include "DeepLib/image/image.hpp"
 #include "DeepLib/stream/file_stream.hpp"

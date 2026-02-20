@@ -28,7 +28,7 @@ namespace deep
 
         if (addr == nullptr)
         {
-            // TODO: récupérer le code d'erreur en cas d'échec
+            // TODO: rÃ©cupÃ©rer le code d'erreur en cas d'Ã©chec
             return nullptr;
         }
 
@@ -69,7 +69,7 @@ namespace deep
 
         if (addr == nullptr)
         {
-            // TODO: récupérer le code d'erreur en cas d'échec
+            // TODO: rÃ©cupÃ©rer le code d'erreur en cas d'Ã©chec
             return nullptr;
         }
 
@@ -94,7 +94,7 @@ namespace deep
                 internal_data->result = core_convert_error_code(GetLastError());
             }
 
-            return nullptr;
+            return false;
         }
 
         if (HeapFree(process_heap, 0, address) == 0)

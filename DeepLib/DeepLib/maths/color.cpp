@@ -1,11 +1,11 @@
-﻿#include "color.hpp"
+#include "color.hpp"
 
 #include <algorithm>
 #include <cmath>
 
 namespace deep
 {
-    float srgb_to_linear_channel(float norm_value)
+    float color::srgb_to_linear_channel(float norm_value)
     {
         if (norm_value <= 0.04045f)
         {
@@ -17,7 +17,7 @@ namespace deep
         }
     }
 
-    uint8 linear_to_srgb_channel(float value)
+    uint8 color::linear_to_srgb_channel(float value)
     {
         float val = 0.0f;
 

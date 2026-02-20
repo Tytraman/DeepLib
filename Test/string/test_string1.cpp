@@ -1,4 +1,4 @@
-﻿#include "DeepLib/lib.hpp"
+#include "DeepLib/lib.hpp"
 #include "DeepLib/string/string.hpp"
 
 int main(int /*argc*/, char * /*argv*/[])
@@ -10,7 +10,7 @@ int main(int /*argc*/, char * /*argv*/[])
         return 1;
     }
 
-    deep::string str = deep::string(context, DEEP_STRING("Hello "));
+    deep::string str = deep::string(context, DEEP_TEXT_UTF8("Hello "));
 
     if (!str.is_valid())
     {
@@ -22,14 +22,15 @@ int main(int /*argc*/, char * /*argv*/[])
         return 11;
     }
 
-    str += DEEP_STRING("wérld");
+    str += DEEP_TEXT_UTF8("wérld");
 
+    // Si la chaîne ne fait pas précisemment 11 caractères c'est qu'il y a un problème dans l'encodage.
     if (str.get_length() != 11)
     {
         return 12;
     }
 
-    context->out() << *str << DEEP_STRING("\n");
+    context->out() << *str << DEEP_TEXT_UTF8("\n");
 
     return 0;
 }

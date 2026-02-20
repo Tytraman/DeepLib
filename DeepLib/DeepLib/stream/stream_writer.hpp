@@ -7,8 +7,6 @@
 
 namespace deep
 {
-    template class DEEP_LIB_API ref<stream>;
-
     class DEEP_LIB_API stream_writer : public text_writer
     {
       public:
@@ -29,7 +27,7 @@ namespace deep
         virtual bool is_opened() override;
 
       protected:
-        ref<stream> m_stream;
+        DEEP_REF(stream, m_stream)
     };
 } // namespace deep
 

@@ -1,4 +1,4 @@
-﻿#ifndef DEEP_LIB_MEMORY_MANAGER_HPP
+#ifndef DEEP_LIB_MEMORY_MANAGER_HPP
 #define DEEP_LIB_MEMORY_MANAGER_HPP
 
 #include "DeepLib/deep_lib_export.h"
@@ -38,6 +38,9 @@ namespace deep
         bool realloc(buffer_ptr<Type> &buffer, usize bytes_size);
 
         template <typename Type>
+        Type **realloc_table(Type **address, usize new_number_of_elements) noexcept;
+
+        template <typename Type>
         bool dealloc(Type *ptr);
 
         template <typename Type>
@@ -60,7 +63,7 @@ namespace deep
     template <typename Type, typename... Args>
     inline Type *memory_manager::alloc(Args &&...args)
     {
-        Type *obj = (Type *) core_mem::alloc(m_internal_context, sizeof(Type));
+        Type *obj = reinterpret_cast<Type *>(core_mem::alloc(m_internal_context, sizeof(Type)));
 
         if (obj == nullptr)
         {
@@ -75,7 +78,7 @@ namespace deep
     template <typename Type>
     inline Type *memory_manager::alloc(usize bytes_size)
     {
-        Type *obj = (Type *) core_mem::alloc(m_internal_context, bytes_size);
+        Type *obj = reinterpret_cast<Type *>(core_mem::alloc(m_internal_context, bytes_size));
 
         if (obj == nullptr)
         {
@@ -110,6 +113,12 @@ namespace deep
         buffer.set(ptr, bytes_size);
 
         return true;
+    }
+
+    template <typename Type>
+    inline Type **memory_manager::realloc_table(Type **address, usize new_number_of_elements) noexcept
+    {
+        return static_cast<Type **>(core_mem::realloc(m_internal_context, address, sizeof(Type) * new_number_of_elements));
     }
 
     template <typename Type>

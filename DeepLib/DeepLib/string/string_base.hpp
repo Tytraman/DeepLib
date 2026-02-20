@@ -87,8 +87,10 @@ namespace deep
             return;
         }
 
+        uint8 *raw_ptr = reinterpret_cast<uint8 *>(ptr);
+
         memcpy(ptr, str, bytes_size);
-        *((Type *) (((uint8 *) ptr) + bytes_size)) = static_cast<Type>('\0');
+        *(reinterpret_cast<Type *>(raw_ptr + bytes_size)) = static_cast<Type>('\0');
 
         m_data.set(context.get(), mem::alloc_type<buffer_primitive<Type>>(context.get(), context.get(), ptr, bytes_size + sizeof(Type)), sizeof(buffer_primitive<Type>));
         m_data->take();
@@ -100,7 +102,9 @@ namespace deep
     inline string_base<Derived, Type>::string_base(const ref<ctx> &context, Type *str, usize bytes_size, usize length)
             : object(context), m_length(length)
     {
-        *((Type *) (((uint8 *) str) + length * sizeof(Type))) = static_cast<Type>('\0');
+        uint8 *raw_ptr = reinterpret_cast<uint8 *>(str);
+
+        *(reinterpret_cast<Type *>(raw_ptr + length * sizeof(Type))) = static_cast<Type>('\0');
 
         m_data.set(context.get(), mem::alloc_type<buffer_primitive<Type>>(context.get(), context.get(), str, bytes_size), sizeof(buffer_primitive<Type>));
         m_data->take();
@@ -171,8 +175,10 @@ namespace deep
             return false;
         }
 
-        *((Type *) (((uint8 *) m_data->get_buffer().get()) + new_bytes_size - (sizeof(Type) * 2))) = character;
-        *((Type *) (((uint8 *) m_data->get_buffer().get()) + new_bytes_size - sizeof(Type)))       = static_cast<Type>('\0');
+        uint8 *raw_ptr = reinterpret_cast<uint8 *>(m_data->get_buffer().get());
+
+        *(reinterpret_cast<Type *>(raw_ptr + new_bytes_size - (sizeof(Type) * 2))) = character;
+        *(reinterpret_cast<Type *>(raw_ptr + new_bytes_size - sizeof(Type)))       = static_cast<Type>('\0');
 
         m_length++;
 
@@ -198,8 +204,10 @@ namespace deep
             return false;
         }
 
-        memcpy(((uint8 *) m_data->get_buffer().get()) + current_bytes_size - sizeof(Type), str, bytes_size);
-        *((Type *) (((uint8 *) m_data->get_buffer().get()) + new_bytes_size - sizeof(Type))) = static_cast<Type>('\0');
+        uint8 *raw_ptr = reinterpret_cast<uint8 *>(m_data->get_buffer().get());
+
+        memcpy(raw_ptr + current_bytes_size - sizeof(Type), str, bytes_size);
+        *(reinterpret_cast<Type *>(raw_ptr + new_bytes_size - sizeof(Type))) = static_cast<Type>('\0');
 
         m_length += length;
 
@@ -227,8 +235,10 @@ namespace deep
             memmove(m_data->get_buffer().get() + 1, m_data->get_buffer().get(), current_bytes_size - sizeof(Type));
         }
 
-        *((Type *) (((uint8 *) m_data->get_buffer().get())))                                 = character;
-        *((Type *) (((uint8 *) m_data->get_buffer().get()) + new_bytes_size - sizeof(Type))) = static_cast<Type>('\0');
+        uint8 *raw_ptr = reinterpret_cast<uint8 *>(m_data->get_buffer().get());
+
+        *(reinterpret_cast<Type *>(raw_ptr))                                 = character;
+        *(reinterpret_cast<Type *>(raw_ptr + new_bytes_size - sizeof(Type))) = static_cast<Type>('\0');
 
         m_length++;
 
@@ -253,8 +263,10 @@ namespace deep
             memmove(m_data->get_buffer().get() + bytes_size, m_data->get_buffer().get(), current_bytes_size - sizeof(Type));
         }
 
-        memcpy(m_data->get_buffer().get(), str, bytes_size);
-        *((Type *) (((uint8 *) m_data->get_buffer().get()) + new_bytes_size - sizeof(Type))) = static_cast<Type>('\0');
+        uint8 *raw_ptr = reinterpret_cast<uint8 *>(m_data->get_buffer().get());
+
+        memcpy(raw_ptr, str, bytes_size);
+        *(reinterpret_cast<Type *>(raw_ptr + new_bytes_size - sizeof(Type))) = static_cast<Type>('\0');
 
         m_length += length;
 
@@ -276,7 +288,9 @@ namespace deep
             return false;
         }
 
-        *((Type *) (((uint8 *) m_data->get_buffer().get()) + new_bytes_size - sizeof(Type))) = static_cast<Type>('\0');
+        uint8 *raw_ptr = reinterpret_cast<uint8 *>(m_data->get_buffer().get());
+
+        *(reinterpret_cast<Type *>(raw_ptr + new_bytes_size - sizeof(Type))) = static_cast<Type>('\0');
 
         m_length = length;
 

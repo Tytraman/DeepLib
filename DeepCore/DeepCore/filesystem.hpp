@@ -1,4 +1,4 @@
-﻿#ifndef DEEP_CORE_FILESYSTEM_HPP
+#ifndef DEEP_CORE_FILESYSTEM_HPP
 #define DEEP_CORE_FILESYSTEM_HPP
 
 #include "DeepCore/deep_core_export.h"
@@ -13,7 +13,7 @@ namespace deep
          * @enum file_mode
          * @brief Détermine la façon d'ouvrir un fichier.
          */
-        enum class DEEP_CORE_API file_mode
+        enum class file_mode
         {
             None = 0,
             /**
@@ -54,7 +54,7 @@ namespace deep
          * @enum file_access
          * @brief Détermine le niveau d'accès à un fichier.
          */
-        enum class DEEP_CORE_API file_access
+        enum class file_access
         {
             None = 0,
             /**
@@ -76,7 +76,7 @@ namespace deep
          * @brief Détermine le niveau de partage du fichier avec les autres
          * processus.
          */
-        enum class DEEP_CORE_API file_share
+        enum class file_share
         {
             None = 0,
             /**
@@ -98,7 +98,7 @@ namespace deep
             ReadWrite = 4
         };
 
-        enum class DEEP_CORE_API seek_origin
+        enum class seek_origin
         {
             Begin,
             Current,

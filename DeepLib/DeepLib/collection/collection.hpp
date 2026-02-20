@@ -1,4 +1,4 @@
-﻿#ifndef DEEP_LIB_COLLECTION_HPP
+#ifndef DEEP_LIB_COLLECTION_HPP
 #define DEEP_LIB_COLLECTION_HPP
 
 #include "DeepCore/types.hpp"
@@ -14,6 +14,7 @@ namespace deep
 
       public:
         collection();
+        virtual ~collection() = default;
 
         virtual bool add()                    = 0;
         virtual bool add(const Type &element) = 0;

@@ -1,4 +1,4 @@
-﻿#include "file_stream.hpp"
+#include "file_stream.hpp"
 
 namespace deep
 {
@@ -15,7 +15,7 @@ namespace deep
 
     file_stream::file_stream(const ref<ctx> &context, string_native &filename, core_fs::file_mode mode, core_fs::file_access access, core_fs::file_share share)
             : stream(context),
-              m_filename(filename),
+              m_filename(move(filename)),
               m_mode(mode),
               m_access(access),
               m_share(share),
@@ -178,7 +178,7 @@ namespace deep
             return 0;
         }
 
-        core_fs::seek_origin or ;
+        core_fs::seek_origin my_origin;
 
         switch (origin)
         {
@@ -186,24 +186,24 @@ namespace deep
                 return false;
             case seek_origin::Begin:
             {
-                or = core_fs::seek_origin::Begin;
+                my_origin = core_fs::seek_origin::Begin;
             }
             break;
             case seek_origin::Current:
             {
-                or = core_fs::seek_origin::Current;
+                my_origin = core_fs::seek_origin::Current;
             }
             break;
             case seek_origin::End:
             {
-                or = core_fs::seek_origin::End;
+                my_origin = core_fs::seek_origin::End;
             }
             break;
         }
 
         usize new_size;
 
-        if (!core_fs::seek_file(ctx::get_internal_ctx(get_context_ptr()), m_fd, offset, or, &new_size))
+        if (!core_fs::seek_file(ctx::get_internal_ctx(get_context_ptr()), m_fd, offset, my_origin, &new_size))
         {
             return 0;
         }
@@ -233,8 +233,6 @@ namespace deep
 
     bool file_stream::copy_to(stream &other)
     {
-        static constexpr usize max_bytes = 4096;
-
         usize position = 0;
         usize length   = 0;
         usize diff;

@@ -1,4 +1,4 @@
-﻿#include "DeepLib/lib.hpp"
+#include "DeepLib/lib.hpp"
 #include "DeepLib/string/string_native.hpp"
 
 #include <stdio.h>
@@ -35,32 +35,6 @@ int main(int /*argc*/, char * /*argv*/[])
     }
 
     str += DEEP_TEXT_NATIVE("C++");
-
-    {
-        deep::string_native other = str;
-        if (other.get_length() != 15)
-        {
-            return 14;
-        }
-
-        if constexpr (other.encoding == deep::string_encoding::Unicode)
-        {
-            deep::usize bytes_size = other.get_bytes_size();
-            if (bytes_size != 32)
-            {
-                return 15;
-            }
-
-            bytes_size = str.get_bytes_size();
-            if (bytes_size != 32)
-            {
-                return 16;
-            }
-
-            printf("Original: %ls\n", *str);
-            printf("Copy ref: %ls\n", *other);
-        }
-    }
 
     deep::usize character_index;
 

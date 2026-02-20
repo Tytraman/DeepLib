@@ -1,4 +1,4 @@
-﻿#ifndef DEEP_LIB_MOUSE_HPP
+#ifndef DEEP_LIB_MOUSE_HPP
 #define DEEP_LIB_MOUSE_HPP
 
 #include "DeepLib/deep_lib_export.h"
@@ -52,10 +52,6 @@ namespace deep
         bool m_is_right_pressed;
         bool m_is_middle_pressed;
     };
-
-    template class DEEP_LIB_API buffer_ptr<mouse_event>;
-    template class DEEP_LIB_API list<mouse_event>;
-    template class DEEP_LIB_API queue<mouse_event>;
 
     class DEEP_LIB_API mouse
     {

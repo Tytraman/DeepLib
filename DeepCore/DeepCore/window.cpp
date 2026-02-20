@@ -32,6 +32,16 @@ namespace deep
         return core_window_release_capture(internal_context, win);
     }
 
+    void core_window::hide_cursor() noexcept
+    {
+        core_window_hide_cursor();
+    }
+
+    void core_window::show_cursor() noexcept
+    {
+        core_window_show_cursor();
+    }
+
     bool core_window::set_title(void *internal_context, window_handle win, const native_char *title) noexcept
     {
         return core_window_set_title(internal_context, win, title);

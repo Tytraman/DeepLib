@@ -1,4 +1,4 @@
-﻿#ifndef DEEP_LIB_STREAM_HPP
+#ifndef DEEP_LIB_STREAM_HPP
 #define DEEP_LIB_STREAM_HPP
 
 #include "DeepLib/deep_lib_export.h"
@@ -19,8 +19,6 @@ namespace deep
 
       public:
         using object::object;
-
-        virtual ~stream() = default;
 
         virtual bool open()  = 0;
         virtual bool close() = 0;

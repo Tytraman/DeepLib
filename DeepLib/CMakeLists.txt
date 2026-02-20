@@ -8,7 +8,7 @@ add_library(DeepLib SHARED
     "${CMAKE_CURRENT_LIST_DIR}/DeepLib/lib.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/DeepLib/maths/math.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/DeepLib/maths/color.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/DeepLib/string/string.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/DeepLib/string/string_utils.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/DeepLib/filesystem/filesystem.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/DeepLib/multithreading/event.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/DeepLib/multithreading/thread.cpp"
@@ -42,6 +42,7 @@ target_link_libraries(DeepLib
 
 set_target_properties(DeepLib PROPERTIES
     OUTPUT_NAME DeepLib
+    DEBUG_POSTFIX "_d"
     EXPORT_NAME Lib
     VERSION ${PROJECT_VERSION}
     SOVERSION ${PROJECT_VERSION_MAJOR}
@@ -54,35 +55,7 @@ set_target_properties(DeepLib PROPERTIES
     # du fichier généré lors de l'utilisation de templates en C++.
     VISIBILITY_INLINES_HIDDEN TRUE)
 
-# Ajoute des options de compilation et de link selon le compilateur utilisé.
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    # Active l'outil de détection d'erreurs liées à la mémoire.
-    set(FSANITIZE_ADDR $<$<CONFIG:Debug>:-fsanitize=address>)
-
-    target_compile_options(DeepLib PRIVATE
-        -Werror                                 # Considère les warning comme des erreurs.
-        -Wall                                   # Active plusieurs warning.
-        -Wextra                                 # Active encore plus de warning.
-        ${FSANITIZE_ADDR}
-    )
-
-    target_link_options(DeepLib PRIVATE
-        ${FSANITIZE_ADDR}
-    )
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    # Active l'outil de détection d'erreurs liées à la mémoire.
-    set(FSANITIZE_ADDR $<$<CONFIG:Debug>:/fsanitize=address>)
-
-    target_compile_options(DeepLib PRIVATE
-        /WX     # Considère les warning comme des erreurs.
-        /W4     # Niveau d'avertissement élevé.
-        #${FSANITIZE_ADDR}
-    )
-
-    #target_link_options(DeepLib PRIVATE
-    #    ${FSANITIZE_ADDR}
-    #)
-endif()
+deep_add_compile_options(TARGET DeepLib)
 
 # Récupère la liste des définitions du fichier 'deep.cpp'.
 get_source_file_property(defs lib.cpp COMPILE_DEFINITIONS)

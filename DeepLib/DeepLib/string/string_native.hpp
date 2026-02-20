@@ -39,23 +39,7 @@ namespace deep
 
     inline string_native string_native::from_impl(const ref<ctx> &context, bool value)
     {
-        string_native str = string_native(context);
-
-        switch (value)
-        {
-            case false:
-            {
-                str = string_native(context, DEEP_TEXT_NATIVE("false"));
-            }
-            break;
-            case true:
-            {
-                str = string_native(context, DEEP_TEXT_NATIVE("true"));
-            }
-            break;
-        }
-
-        return str;
+        return string_native(context, value ? DEEP_TEXT_NATIVE("true") : DEEP_TEXT_NATIVE("false"));
     }
 
     inline string_native string_native::from_impl(const ref<ctx> &context, int64 value)

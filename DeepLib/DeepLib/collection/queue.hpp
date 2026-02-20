@@ -1,4 +1,4 @@
-﻿#ifndef DEEP_LIB_QUEUE_HPP
+#ifndef DEEP_LIB_QUEUE_HPP
 #define DEEP_LIB_QUEUE_HPP
 
 #include "DeepCore/types.hpp"
@@ -93,6 +93,18 @@ namespace deep
     {
         return m_data.count();
     }
+
 } // namespace deep
+
+#if defined(_MSC_VER)
+
+#define DEEP_QUEUE(__type, __var_name)        \
+    __pragma(warning(push))                   \
+            __pragma(warning(disable : 4251)) \
+                    deep::queue<__type>       \
+                            __var_name;       \
+    __pragma(warning(pop))
+
+#endif
 
 #endif

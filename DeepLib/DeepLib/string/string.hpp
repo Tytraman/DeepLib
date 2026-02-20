@@ -19,8 +19,6 @@ namespace deep
 
         static constexpr string_encoding encoding = string_encoding::UTF8;
 
-        static uint64 hash(const char *str);
-
         static usize calc_bytes_size_impl(const char *str);
         static usize calc_length_impl(const char *str);
 
@@ -42,23 +40,7 @@ namespace deep
 
     inline string string::from_impl(const ref<ctx> &context, bool value)
     {
-        string str = string(context);
-
-        switch (value)
-        {
-            case false:
-            {
-                str = string(context, DEEP_TEXT_UTF8("false"));
-            }
-            break;
-            case true:
-            {
-                str = string(context, DEEP_TEXT_UTF8("true"));
-            }
-            break;
-        }
-
-        return str;
+        return string(context, value ? DEEP_TEXT_UTF8("true") : DEEP_TEXT_UTF8("false"));
     }
 
     inline string string::from_impl(const ref<ctx> &context, int64 value)

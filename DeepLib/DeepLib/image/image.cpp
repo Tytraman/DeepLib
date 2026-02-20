@@ -1,4 +1,4 @@
-﻿#include "image.hpp"
+#include "image.hpp"
 
 #include "DeepLib/memory/memory.hpp"
 #include "DeepLib/maths/math.hpp"
@@ -24,7 +24,7 @@ namespace deep
         uint32 rows    = m_height;
         uint32 columns = m_width / 2;
 
-        uint32 pixel_size = m_channels * (m_bit_depth / 8);
+        uint32 pixel_size = m_channels * make_unsigned<int32>((m_bit_depth / 8));
 
         for (row = 0; row < rows; ++row)
         {
@@ -60,7 +60,7 @@ namespace deep
         uint32 rows    = m_height / 2;
         uint32 columns = m_width;
 
-        uint32 pixel_size = m_channels * (m_bit_depth / 8);
+        uint32 pixel_size = m_channels * make_unsigned<int32>((m_bit_depth / 8));
 
         for (row = 0; row < rows; ++row)
         {
@@ -169,7 +169,7 @@ namespace deep
             return false;
         }
 
-        uint32 pixel_size = m_channels * (m_bit_depth / 8);
+        uint32 pixel_size = m_channels * make_unsigned<int32>((m_bit_depth / 8));
 
         usize new_bytes_size = width * height * pixel_size;
 

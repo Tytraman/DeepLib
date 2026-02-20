@@ -14,6 +14,8 @@ namespace deep
 
     namespace color
     {
+        DEEP_LIB_API float srgb_to_linear_channel(float norm_value);
+        DEEP_LIB_API uint8 linear_to_srgb_channel(float value);
         DEEP_LIB_API color_rgb find_closest_color(const color_rgb &color, const color_rgb *colors, usize number_of_colors);
         DEEP_LIB_API color_linearized_rgb linearise(const color_rgb &color);
         DEEP_LIB_API color_rgb delinearise(const color_linearized_rgb &color);

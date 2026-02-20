@@ -1,4 +1,4 @@
-﻿#ifndef DEEP_LIB_BUFFER_PTR_HPP
+#ifndef DEEP_LIB_BUFFER_PTR_HPP
 #define DEEP_LIB_BUFFER_PTR_HPP
 
 #include "DeepLib/memory/mem_ptr.hpp"
@@ -22,13 +22,13 @@ namespace deep
     template <typename Type>
     inline Type buffer_ptr<Type>::operator[](usize index) const
     {
-        return m_ptr[index];
+        return this->m_ptr[index];
     }
 
     template <typename Type>
     inline Type &buffer_ptr<Type>::operator[](usize index)
     {
-        return m_ptr[index];
+        return this->m_ptr[index];
     }
 } // namespace deep
 

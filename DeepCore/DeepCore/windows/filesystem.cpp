@@ -1,4 +1,4 @@
-﻿#include "../filesystem.hpp"
+#include "../filesystem.hpp"
 #include "../error.hpp"
 #include "../memory.hpp"
 #include "internal_data.hpp"
@@ -236,7 +236,7 @@ namespace deep
 
         if (new_size != nullptr)
         {
-            *new_size = linteger.QuadPart;
+            *new_size = make_unsigned<LONGLONG>(linteger.QuadPart);
         }
 
         return true;
@@ -361,7 +361,7 @@ namespace deep
 
         if (dest != nullptr)
         {
-            *dest = linteger.QuadPart;
+            *dest = make_unsigned<LONGLONG>(linteger.QuadPart);
         }
 
         return true;
@@ -381,7 +381,7 @@ namespace deep
         }
 
         // Met la position à la taille souhaitée.
-        if (!core_seek_file(internal_context, file_descriptor, static_cast<usize>(size), core_fs::seek_origin::Begin, nullptr))
+        if (!core_seek_file(internal_context, file_descriptor, make_signed<usize>(size), core_fs::seek_origin::Begin, nullptr))
         {
             return false;
         }
@@ -398,7 +398,7 @@ namespace deep
         }
 
         // Remet la position à là où elle était à l'origine.
-        if (!core_seek_file(internal_context, file_descriptor, current_position, core_fs::seek_origin::Begin, nullptr))
+        if (!core_seek_file(internal_context, file_descriptor, make_signed<usize>(current_position), core_fs::seek_origin::Begin, nullptr))
         {
             return false;
         }
@@ -425,7 +425,7 @@ namespace deep
 
         if (dest != nullptr)
         {
-            *dest = linteger.QuadPart;
+            *dest = make_unsigned<LONGLONG>(linteger.QuadPart);
         }
 
         return true;

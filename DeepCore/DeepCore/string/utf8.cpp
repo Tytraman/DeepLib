@@ -26,24 +26,24 @@ namespace deep
         {
             length++;
 
-            if (*byte < 0x80) // Caractère ASCII
+            if (*byte < 0x80) // CaractÃ¨re ASCII
             {
-                // Un caractère ASCII est TOUJOURS sur 1 seul octet.
+                // Un caractÃ¨re ASCII est TOUJOURS sur 1 seul octet.
                 byte += 1;
             }
-            else if ((*byte & 0xE0) == 0xC0) // Début de séquence de 2 octets.
+            else if ((*byte & 0xE0) == 0xC0) // DÃ©but de sÃ©quence de 2 octets.
             {
                 byte += 2;
             }
-            else if ((*byte & 0xF0) == 0xE0) // Début de séquence de 3 octets.
+            else if ((*byte & 0xF0) == 0xE0) // DÃ©but de sÃ©quence de 3 octets.
             {
                 byte += 3;
             }
-            else if ((*byte & 0xF8) == 0xF0) // Début de séquence de 4 octets.
+            else if ((*byte & 0xF8) == 0xF0) // DÃ©but de sÃ©quence de 4 octets.
             {
                 byte += 4;
             }
-            else // Séquence invalide.
+            else // SÃ©quence invalide.
             {
                 byte += 1;
             }

@@ -55,8 +55,8 @@ namespace deep
         static constexpr Type magn(const vec4<Type> &vec) noexcept;
         /**
          * @brief Le vecteur ne doit pas être nul (composants à 0).
-         * @param vec
-         * @return
+         * @param vec Le vecteur à normaliser.
+         * @return Le vecteur normalisé.
          */
         static constexpr vec4<Type> norm(const vec4<Type> &vec) noexcept;
         static constexpr Type dot(const vec4<Type> &vec1, const vec4<Type> &vec2) noexcept;

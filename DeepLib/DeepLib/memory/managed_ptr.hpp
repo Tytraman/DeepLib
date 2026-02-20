@@ -1,4 +1,4 @@
-﻿#ifndef DEEP_LIB_MANAGED_PTR_HPP
+#ifndef DEEP_LIB_MANAGED_PTR_HPP
 #define DEEP_LIB_MANAGED_PTR_HPP
 
 #include "DeepCore/types.hpp"
@@ -10,18 +10,23 @@ namespace deep
 
     /**
      * @brief Classe qui utilise le CRTP (Curiously Recurring Template Pattern) afin de créer une interface statique pour la gestion des pointeurs.
-     * @tparam Derived
-     * @tparam Type
+     * @tparam Derived Le type dérivé.
+     * @tparam Type Le type de base.
      */
     template <typename Derived, typename Type>
     class managed_ptr
     {
       public:
+        managed_ptr(const managed_ptr &)            = delete;
+        managed_ptr &operator=(const managed_ptr &) = delete;
+
         managed_ptr();
         managed_ptr(ctx *context, Type *ptr, usize bytes_size);
         managed_ptr(const ctx *context, const Type *ptr, usize bytes_size);
         managed_ptr(memory_manager *manager, Type *ptr, usize bytes_size);
         managed_ptr(const memory_manager *manager, const Type *ptr, usize bytes_size);
+        managed_ptr(managed_ptr &&) noexcept            = default;
+        managed_ptr &operator=(managed_ptr &&) noexcept = default;
 
         bool destroy();
 
@@ -95,43 +100,43 @@ namespace deep
     template <typename Derived, typename Type>
     inline bool managed_ptr<Derived, Type>::is_valid() const
     {
-        return m_ptr != nullptr;
+        return this->m_ptr != nullptr;
     }
 
     template <typename Derived, typename Type>
     inline bool managed_ptr<Derived, Type>::is_null() const
     {
-        return m_ptr == nullptr;
+        return this->m_ptr == nullptr;
     }
 
     template <typename Derived, typename Type>
     inline Type *managed_ptr<Derived, Type>::get()
     {
-        return m_ptr;
+        return this->m_ptr;
     }
 
     template <typename Derived, typename Type>
     inline Type *managed_ptr<Derived, Type>::get() const
     {
-        return m_ptr;
+        return this->m_ptr;
     }
 
     template <typename Derived, typename Type>
     inline memory_manager *managed_ptr<Derived, Type>::get_memory_manager()
     {
-        return m_memory_manager;
+        return this->m_memory_manager;
     }
 
     template <typename Derived, typename Type>
     inline memory_manager *managed_ptr<Derived, Type>::get_memory_manager() const
     {
-        return m_memory_manager;
+        return this->m_memory_manager;
     }
 
     template <typename Derived, typename Type>
     inline usize managed_ptr<Derived, Type>::get_bytes_size() const
     {
-        return m_bytes_size;
+        return this->m_bytes_size;
     }
 
     template <typename Derived, typename Type>
@@ -139,32 +144,32 @@ namespace deep
     {
         if (context != nullptr)
         {
-            m_memory_manager = context->get_memory_manager();
+            this->m_memory_manager = context->get_memory_manager();
         }
 
-        m_ptr        = ptr;
-        m_bytes_size = bytes_size;
+        this->m_ptr        = ptr;
+        this->m_bytes_size = bytes_size;
     }
 
     template <typename Derived, typename Type>
     inline void managed_ptr<Derived, Type>::set(memory_manager *manager, Type *ptr, usize bytes_size)
     {
-        m_memory_manager = manager;
-        m_ptr            = ptr;
-        m_bytes_size     = bytes_size;
+        this->m_memory_manager = manager;
+        this->m_ptr            = ptr;
+        this->m_bytes_size     = bytes_size;
     }
 
     template <typename Derived, typename Type>
     inline void managed_ptr<Derived, Type>::set(Type *ptr, usize bytes_size)
     {
-        m_ptr        = ptr;
-        m_bytes_size = bytes_size;
+        this->m_ptr        = ptr;
+        this->m_bytes_size = bytes_size;
     }
 
     template <typename Derived, typename Type>
     inline void managed_ptr<Derived, Type>::set(memory_manager *manager)
     {
-        m_memory_manager = manager;
+        this->m_memory_manager = manager;
     }
 } // namespace deep
 

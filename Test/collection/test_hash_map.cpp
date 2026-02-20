@@ -1,5 +1,19 @@
-﻿#include "DeepLib/lib.hpp"
+#include "DeepLib/lib.hpp"
 #include "DeepLib/collection/hash_map.hpp"
+
+class test_object : public deep::object
+{
+  public:
+    test_object(const deep::ref<deep::ctx> &context, deep::uint32 value) noexcept;
+
+    deep::uint32 get_value() const noexcept;
+
+  private:
+    deep::uint32 m_value;
+
+  public:
+    friend deep::memory_manager;
+};
 
 int main(int /*argc*/, char * /*argv*/[])
 {
@@ -98,5 +112,37 @@ int main(int /*argc*/, char * /*argv*/[])
         return 17;
     }
 
+    test_object *tobj = deep::mem::alloc_type<test_object>(context.get(), context, 52);
+    if (tobj == nullptr)
+    {
+        return 100;
+    }
+
+    deep::ref<test_object> rtobj = deep::ref<test_object>(context, tobj);
+
+    context->set_object("rtobj", rtobj);
+
+    deep::ref<test_object> grtobj = context->get_object<test_object>("rtobj");
+    if (!grtobj.is_valid())
+    {
+        return 101;
+    }
+
+    if (grtobj->get_value() != 52)
+    {
+        return 102;
+    }
+
     return 0;
+}
+
+test_object::test_object(const deep::ref<deep::ctx> &context, deep::uint32 value) noexcept
+        : deep::object(context),
+          m_value(value)
+{
+}
+
+deep::uint32 test_object::get_value() const noexcept
+{
+    return m_value;
 }

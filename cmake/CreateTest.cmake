@@ -1,4 +1,4 @@
-﻿function(deep_create_test)
+function(deep_create_test)
     # La variable ARGN est pré-définie par CMake et contient la liste des tous les arguments qui n'ont pas de noms.
     # 'test_name' est un argument possédant un nom et n'est donc pas présent dans la liste ARGN.
 
@@ -11,7 +11,8 @@
 
     cmake_parse_arguments(${prefix}
         "${no_values}" "${single_values}" "${multi_values}"
-        ${ARGN})
+        ${ARGN}
+    )
 
     # Ajoute automatiquement le dossier "Test" dans le chemin du fichier source,
     # permettant d'éviter de l'écrire à chaque appel de 'deep_create_test'.
@@ -28,13 +29,9 @@
     target_link_libraries("${test_target}"
         PRIVATE
             ${ARG_LIBRARIES}
-            ${FSANITIZE_ADDR})
+    )
 
-    target_compile_options("${test_target}"
-        PRIVATE
-            ${FSANITIZE_ADDR}
-            $<$<CXX_COMPILER_ID:MSVC>:/W4>
-            $<$<CXX_COMPILER_ID:GNU,Clang>:-Wall -Wextra>)
+    deep_add_compile_options(TARGET "${test_target}")
 
     add_test(NAME "${test_target}"
             COMMAND "${test_target}")

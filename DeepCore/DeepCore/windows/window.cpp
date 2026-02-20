@@ -4,15 +4,23 @@
 
 #include <windowsx.h>
 
-namespace deep
+namespace
 {
     LRESULT CALLBACK window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     {
-        core_window::callbacks *call = reinterpret_cast<core_window::callbacks *>(GetWindowLongPtrW(hwnd, GWLP_USERDATA));
+        deep::core_window::callbacks *call = reinterpret_cast<deep::core_window::callbacks *>(GetWindowLongPtrW(hwnd, GWLP_USERDATA));
 
         if (call == nullptr)
         {
             return DefWindowProcW(hwnd, msg, wparam, lparam);
+        }
+
+        if (call->pre != nullptr)
+        {
+            if (call->pre(hwnd, msg, wparam, lparam))
+            {
+                return true;
+            }
         }
 
         switch (msg)
@@ -46,7 +54,7 @@ namespace deep
             {
                 if (call->text_input != nullptr)
                 {
-                    call->text_input(static_cast<native_char>(wparam), call->data);
+                    call->text_input(static_cast<deep::native_char>(wparam), call->data);
                 }
             }
             break;
@@ -54,7 +62,7 @@ namespace deep
             {
                 if (call->mouse_button_down != nullptr)
                 {
-                    call->mouse_button_down(core_window::mouse_button::Left, GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam), call->data);
+                    call->mouse_button_down(deep::core_window::mouse_button::Left, GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam), call->data);
                 }
             }
             break;
@@ -62,7 +70,7 @@ namespace deep
             {
                 if (call->mouse_button_down != nullptr)
                 {
-                    call->mouse_button_down(core_window::mouse_button::Right, GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam), call->data);
+                    call->mouse_button_down(deep::core_window::mouse_button::Right, GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam), call->data);
                 }
             }
             break;
@@ -70,7 +78,7 @@ namespace deep
             {
                 if (call->mouse_button_down != nullptr)
                 {
-                    call->mouse_button_down(core_window::mouse_button::Middle, GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam), call->data);
+                    call->mouse_button_down(deep::core_window::mouse_button::Middle, GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam), call->data);
                 }
             }
             break;
@@ -78,7 +86,7 @@ namespace deep
             {
                 if (call->mouse_button_up != nullptr)
                 {
-                    call->mouse_button_up(core_window::mouse_button::Left, GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam), call->data);
+                    call->mouse_button_up(deep::core_window::mouse_button::Left, GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam), call->data);
                 }
             }
             break;
@@ -86,7 +94,7 @@ namespace deep
             {
                 if (call->mouse_button_up != nullptr)
                 {
-                    call->mouse_button_up(core_window::mouse_button::Right, GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam), call->data);
+                    call->mouse_button_up(deep::core_window::mouse_button::Right, GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam), call->data);
                 }
             }
             break;
@@ -94,7 +102,7 @@ namespace deep
             {
                 if (call->mouse_button_up != nullptr)
                 {
-                    call->mouse_button_up(core_window::mouse_button::Middle, GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam), call->data);
+                    call->mouse_button_up(deep::core_window::mouse_button::Middle, GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam), call->data);
                 }
             }
             break;
@@ -126,7 +134,10 @@ namespace deep
 
         return DefWindowProcW(hwnd, msg, wparam, lparam);
     }
+} // namespace
 
+namespace deep
+{
     window_handle core_window_create(void *internal_context, const native_char *class_name, const native_char *title, core_window::style s, bool transparent, int32 x, int32 y, int32 width, int32 height, core_window::callbacks *call)
     {
         internal_data_win32 *internal_data = static_cast<internal_data_win32 *>(internal_context);
@@ -143,7 +154,7 @@ namespace deep
             return nullptr;
         }
 
-        WNDCLASSEXW wc   = { 0 };
+        WNDCLASSEXW wc   = {};
         wc.cbSize        = sizeof(wc);
         wc.style         = transparent ? (CS_HREDRAW | CS_VREDRAW) : CS_OWNDC;
         wc.lpfnWndProc   = window_proc;
@@ -305,6 +316,24 @@ namespace deep
         }
 
         return true;
+    }
+
+    void core_window_hide_cursor() noexcept
+    {
+        int counter;
+
+        while ((counter = ShowCursor(FALSE)) >= 0)
+        {
+        }
+    }
+
+    void core_window_show_cursor() noexcept
+    {
+        int counter;
+
+        while ((counter = ShowCursor(TRUE)) < 0)
+        {
+        }
     }
 
     bool core_window_set_title(void *internal_context, window_handle win, const native_char *title) noexcept

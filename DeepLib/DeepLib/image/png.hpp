@@ -12,8 +12,6 @@
 
 namespace deep
 {
-    template class DEEP_LIB_API buffer_ptr<uint8>;
-
     class DEEP_LIB_API png
     {
       public:

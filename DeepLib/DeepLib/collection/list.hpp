@@ -1,4 +1,4 @@
-﻿#ifndef DEEP_LIB_LIST_HPP
+#ifndef DEEP_LIB_LIST_HPP
 #define DEEP_LIB_LIST_HPP
 
 #include "DeepCore/types.hpp"
@@ -17,7 +17,7 @@ namespace deep
       public:
         list(const ref<ctx> &context, uint32 capacity_step = 10);
         list(ctx *context, uint32 capacity_step = 10);
-        ~list();
+        virtual ~list() override;
 
         void init(uint32 capacity_step = 10);
 
@@ -90,12 +90,12 @@ namespace deep
         {
             if (!is_trivially_destructible<Type>)
             {
-                usize len = m_number_of_elements;
+                usize len = this->m_number_of_elements;
                 usize i;
 
                 for (i = 0; i < len; ++i)
                 {
-                    (m_buffer.get() + i)->~Type();
+                    (this->m_buffer.get() + i)->~Type();
                 }
             }
 
@@ -106,10 +106,10 @@ namespace deep
     template <typename Type>
     void list<Type>::init(uint32 capacity_step)
     {
-        m_buffer.set(nullptr);
-        m_capacity           = 0;
-        m_capacity_step      = capacity_step;
-        m_number_of_elements = 0;
+        this->m_buffer.set(nullptr);
+        this->m_capacity           = 0;
+        this->m_capacity_step      = capacity_step;
+        this->m_number_of_elements = 0;
     }
 
     template <typename Type>
@@ -120,7 +120,7 @@ namespace deep
             return false;
         }
 
-        m_number_of_elements++;
+        this->m_number_of_elements++;
 
         return true;
     }
@@ -135,8 +135,8 @@ namespace deep
         }
 
         // Déplace ou copie l'élément dans la case mémoire.
-        m_buffer.get()[m_number_of_elements] = element;
-        m_number_of_elements++;
+        this->m_buffer.get()[this->m_number_of_elements] = element;
+        this->m_number_of_elements++;
 
         return true;
     }
@@ -151,8 +151,8 @@ namespace deep
         }
 
         // Déplace ou copie l'élément dans la case mémoire.
-        m_buffer.get()[m_number_of_elements] = rvalue_cast(element);
-        m_number_of_elements++;
+        this->m_buffer.get()[this->m_number_of_elements] = rvalue_cast(element);
+        this->m_number_of_elements++;
 
         return true;
     }
@@ -165,7 +165,7 @@ namespace deep
             return false;
         }
 
-        memcpy(m_buffer.get() + index, buffer, count * sizeof(Type));
+        memcpy(this->m_buffer.get() + index, buffer, count * sizeof(Type));
 
         return true;
     }
@@ -195,20 +195,20 @@ namespace deep
         usize size;
         usize number_of_bytes_to_move;
 
-        if (index >= m_number_of_elements)
+        if (index >= this->m_number_of_elements)
         {
             return false;
         }
 
         // Obtient le nombre d'éléments pour atteindre la fin de la liste.
-        diff                    = m_number_of_elements - index - 1;
+        diff                    = this->m_number_of_elements - index - 1;
         size                    = sizeof(Type);
         number_of_bytes_to_move = diff * size;
 
-        Type *data = m_buffer.get();
+        Type *data = this->m_buffer.get();
         memmove(data + index, data + (index + 1), number_of_bytes_to_move);
 
-        m_number_of_elements--;
+        this->m_number_of_elements--;
 
         return true;
     }
@@ -218,7 +218,7 @@ namespace deep
     {
         // Pointeur vers le tableau des éléments de la liste.
         uint8 *ptr               = (uint8 *) m_buffer.get();
-        usize number_of_elements = m_number_of_elements;
+        usize number_of_elements = this->m_number_of_elements;
         usize index              = 0;
         usize element_size       = sizeof(Type);
         const Type *element      = &to_search;
@@ -246,20 +246,20 @@ namespace deep
     template <typename Type>
     bool list<Type>::reserve(usize number_of_elements)
     {
-        if (number_of_elements == m_number_of_elements)
+        if (number_of_elements == this->m_number_of_elements)
         {
             return true;
         }
 
         size_t new_capacity = (number_of_elements / m_capacity_step + 1) * m_capacity_step;
 
-        if (!mem::realloc(m_buffer, new_capacity))
+        if (!mem::realloc(this->m_buffer, new_capacity))
         {
             return false;
         }
 
-        m_capacity           = new_capacity;
-        m_number_of_elements = number_of_elements;
+        this->m_capacity           = new_capacity;
+        this->m_number_of_elements = number_of_elements;
 
         return true;
     }
@@ -267,24 +267,24 @@ namespace deep
     template <typename Type>
     void list<Type>::fill_with_byte(uint8 value)
     {
-        memset(m_buffer.get(), value, m_number_of_elements * sizeof(Type));
+        memset(this->m_buffer.get(), value, this->m_number_of_elements * sizeof(Type));
     }
 
     template <typename Type>
     void list<Type>::empty()
     {
-        m_buffer.set(nullptr, 0);
-        m_number_of_elements = 0;
-        m_capacity           = 0;
+        this->m_buffer.set(nullptr, 0);
+        this->m_number_of_elements = 0;
+        this->m_capacity           = 0;
     }
 
     template <typename Type>
     bool list<Type>::free()
     {
-        m_buffer.destroy();
+        this->m_buffer.destroy();
 
-        m_number_of_elements = 0;
-        m_capacity           = 0;
+        this->m_number_of_elements = 0;
+        this->m_capacity           = 0;
 
         return true;
     }
@@ -292,7 +292,7 @@ namespace deep
     template <typename Type>
     inline bool list<Type>::is_empty() const
     {
-        return m_number_of_elements == 0;
+        return this->m_number_of_elements == 0;
     }
 
     template <typename Type>
@@ -304,7 +304,7 @@ namespace deep
     template <typename Type>
     Type &list<Type>::get_last() const
     {
-        usize index = m_number_of_elements > 0 ? m_number_of_elements - 1 : 0;
+        usize index = this->m_number_of_elements > 0 ? this->m_number_of_elements - 1 : 0;
 
         return operator[](index);
     }
@@ -312,19 +312,19 @@ namespace deep
     template <typename Type>
     usize list<Type>::get_capacity() const
     {
-        return m_capacity;
+        return this->m_capacity;
     }
 
     template <typename Type>
     usize list<Type>::get_capacity_step() const
     {
-        return m_capacity_step;
+        return this->m_capacity_step;
     }
 
     template <typename Type>
-    typename Type &list<Type>::operator[](usize index) const
+    Type &list<Type>::operator[](usize index) const
     {
-        return m_buffer.get()[index];
+        return this->m_buffer.get()[index];
     }
 
     template <typename Type>
@@ -332,19 +332,19 @@ namespace deep
     {
         // Si le nombre d'éléments présents dans la liste est supérieur à la capacité,
         // on augmente celle-ci du pas attribué.
-        if (m_number_of_elements >= m_capacity)
+        if (this->m_number_of_elements >= this->m_capacity)
         {
-            usize new_capacity = m_number_of_elements + m_capacity;
-            usize mul          = (new_capacity / m_capacity_step) + 1;
+            usize new_capacity = this->m_number_of_elements + this->m_capacity;
+            usize mul          = (new_capacity / this->m_capacity_step) + 1;
 
-            new_capacity = mul * m_capacity_step;
+            new_capacity = mul * this->m_capacity_step;
 
-            if (!mem::realloc(m_buffer, new_capacity * sizeof(Type)))
+            if (!mem::realloc(this->m_buffer, new_capacity * sizeof(Type)))
             {
                 return false;
             }
 
-            m_capacity = new_capacity;
+            this->m_capacity = new_capacity;
         }
 
         return true;
@@ -353,16 +353,16 @@ namespace deep
     template <typename Type>
     bool list<Type>::grow_if_needed(usize index, usize count)
     {
-        if (index >= m_number_of_elements)
+        if (index >= this->m_number_of_elements)
         {
-            usize number_of_elements = m_number_of_elements;
+            usize number_of_elements = this->m_number_of_elements;
             usize diff               = index + count - number_of_elements;
 
-            m_number_of_elements += diff;
+            this->m_number_of_elements += diff;
 
             if (!grow_if_needed())
             {
-                m_number_of_elements = number_of_elements;
+                this->m_number_of_elements = number_of_elements;
 
                 return false;
             }
@@ -374,25 +374,25 @@ namespace deep
     template <typename Type>
     inline Type *list<Type>::get_data()
     {
-        return m_buffer.get();
+        return this->m_buffer.get();
     }
 
     template <typename Type>
     inline Type *list<Type>::get_data() const
     {
-        return m_buffer.get();
+        return this->m_buffer.get();
     }
 
     template <typename Type>
     inline void list<Type>::set_count(usize count)
     {
-        m_number_of_elements = count;
+        this->m_number_of_elements = count;
     }
 
     template <typename Type>
     inline void list<Type>::set_capacity_step(usize size)
     {
-        m_capacity_step = size;
+        this->m_capacity_step = size;
     }
 } // namespace deep
 

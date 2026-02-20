@@ -1,4 +1,4 @@
-﻿#include "DeepCore/context.hpp"
+#include "DeepCore/context.hpp"
 #include "DeepCore/memory.hpp"
 #include "DeepCore/error.hpp"
 #include "DeepLib/lib.hpp"
@@ -23,14 +23,16 @@ namespace deep
 
         ctx *context = new (raw) ctx();
 
+        ref<ctx> rctx = ref<ctx>(context, context);
+
         if (!context->init())
         {
-            core_mem::dealloc(nullptr, raw);
+            // core_mem::dealloc(nullptr, raw);
 
             return ref<ctx>();
         }
 
-        return ref<ctx>(context, context);
+        return rctx;
     }
 
     bool lib::destroy_ctx(ctx *context)

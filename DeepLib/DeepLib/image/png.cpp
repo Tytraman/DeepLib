@@ -1,26 +1,24 @@
 #include "png.hpp"
 
-namespace deep
+namespace
 {
     void png_user_read_data(png_structp png_ptr, png_bytep data, png_size_t length)
     {
         // Permet de récupérer le pointeur de données lié à la structure PNG.
-        png *mypng      = reinterpret_cast<png *>(png_get_io_ptr(png_ptr));
-        size_t position = mypng->get_position();
+        deep::png *mypng = reinterpret_cast<deep::png *>(png_get_io_ptr(png_ptr));
+        size_t position  = mypng->get_position();
 
         // Vérifie qu'il y a suffisamment d'octets à lire.
         if (position + length > mypng->get_bytes_size())
         {
             png_error(png_ptr, "png_user_read_data: cannot read more data");
-            return;
         }
 
-        buffer_ptr<uint8> &buffer = mypng->get_buffer();
+        deep::buffer_ptr<deep::uint8> &buffer = mypng->get_buffer();
 
         if (!buffer.is_valid())
         {
             png_error(png_ptr, "png_user_read_data: buffer is not valid");
-            return;
         }
 
         memcpy(data, buffer.get() + position, length);
@@ -30,18 +28,21 @@ namespace deep
 
     void png_user_write_data_to_stream(png_structp png_ptr, png_bytep data, png_size_t length)
     {
-        stream *output = reinterpret_cast<stream *>(png_get_io_ptr(png_ptr));
+        deep::stream *output = reinterpret_cast<deep::stream *>(png_get_io_ptr(png_ptr));
 
         if (!output->write(data, length, nullptr))
         {
             png_error(png_ptr, "png_user_write_data_to_stream: error writting to stream");
-            return;
         }
     }
 
     void png_user_flush_memory(png_structp /* png_ptr */)
     {
     }
+} // namespace
+
+namespace deep
+{
 
     png png::load(const ref<ctx> &context, stream *input)
     {
@@ -187,6 +188,40 @@ namespace deep
     image png::read_image(image::color_space convert_to)
     {
         image img;
+        bool updated = false;
+
+        // On ne veut pas de l'espace de couleur 'Palette'.
+        if (m_color_type == PNG_COLOR_TYPE_PALETTE)
+        {
+            png_set_palette_to_rgb(m_png);
+
+            m_color_type = PNG_COLOR_TYPE_RGB;
+
+            updated = true;
+        }
+
+        if (m_color_type == PNG_COLOR_TYPE_GRAY && m_bit_depth < 8)
+        {
+            png_set_expand_gray_1_2_4_to_8(m_png);
+
+            m_bit_depth = 8;
+        }
+
+        if (m_color_type == PNG_COLOR_TYPE_GRAY || m_color_type == PNG_COLOR_TYPE_GA)
+        {
+            png_set_gray_to_rgb(m_png);
+
+            m_color_type = PNG_COLOR_TYPE_RGB;
+
+            updated = true;
+        }
+
+        if (png_get_valid(m_png, m_info, PNG_INFO_tRNS))
+        {
+            png_set_tRNS_to_alpha(m_png);
+
+            convert_to = image::color_space::RGBA;
+        }
 
         if (convert_to != image::color_space::None)
         {
@@ -201,13 +236,18 @@ namespace deep
                     {
                         png_set_add_alpha(m_png, 0xFF, PNG_FILLER_AFTER);
 
-                        png_read_update_info(m_png, m_info);
-
                         m_color_type = PNG_COLOR_TYPE_RGBA;
+
+                        updated = true;
                     }
                 }
                 break;
             }
+        }
+
+        if (updated)
+        {
+            png_read_update_info(m_png, m_info);
         }
 
         size_t row_bytes = png_get_rowbytes(m_png, m_info);

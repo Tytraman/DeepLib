@@ -1,4 +1,4 @@
-﻿#ifndef DEEP_LIB_KEYBOARD_HPP
+#ifndef DEEP_LIB_KEYBOARD_HPP
 #define DEEP_LIB_KEYBOARD_HPP
 
 #include "DeepLib/deep_lib_export.h"
@@ -36,14 +36,6 @@ namespace deep
         action m_action;
         vkey m_key;
     };
-
-    template class DEEP_LIB_API buffer_ptr<native_char>;
-    template class DEEP_LIB_API list<native_char>;
-    template class DEEP_LIB_API queue<native_char>;
-
-    template class DEEP_LIB_API buffer_ptr<keyboard_event>;
-    template class DEEP_LIB_API list<keyboard_event>;
-    template class DEEP_LIB_API queue<keyboard_event>;
 
     class DEEP_LIB_API keyboard
     {
@@ -87,8 +79,8 @@ namespace deep
 
         bool m_auto_repeat_enabled;
         bitset<vkeys::KeyCount> m_key_states;
-        queue<event> m_event_buffer;
-        queue<native_char> m_char_buffer;
+        DEEP_QUEUE(event, m_event_buffer)
+        DEEP_QUEUE(native_char, m_char_buffer)
     };
 
     template <typename Type>

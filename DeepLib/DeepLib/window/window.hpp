@@ -18,7 +18,7 @@ namespace deep
 
       public:
         window() = delete;
-        ~window() noexcept;
+        virtual ~window() noexcept override;
 
         static ref<window> create(const ref<ctx> &context, const native_char *class_name, const native_char *title, core_window::style s, bool transparent, int32 x, int32 y, int32 width, int32 height) noexcept;
 
@@ -32,6 +32,8 @@ namespace deep
 
         bool set_title(const native_char *title) noexcept;
         bool set_title(const string_native &title) noexcept;
+
+        void set_pre_callback(core_window::pre_callback callback) noexcept;
 
         bool is_valid() const noexcept;
 

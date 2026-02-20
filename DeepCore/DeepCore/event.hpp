@@ -1,4 +1,4 @@
-﻿#ifndef DEEP_CORE_EVENT_HPP
+#ifndef DEEP_CORE_EVENT_HPP
 #define DEEP_CORE_EVENT_HPP
 
 #include "DeepCore/deep_core_export.h"
@@ -10,9 +10,9 @@ namespace deep
     {
       public:
         /**
-         * @brief
-         * @param manual_reset
-         * @param initial_state
+         * @brief Crée un évènement système.
+         * @param manual_reset Indique si l'évènement doit être réinitialisé manuellement.
+         * @param initial_state L'état initial de l'évènement.
          * @return `nullptr` en cas d'erreur.
          */
         static handle create(bool manual_reset, bool initial_state);
@@ -21,8 +21,8 @@ namespace deep
         static bool reset(handle ev);
 
         /**
-         * @brief
-         * @param ev
+         * @brief Attend la fin de l'évènement système.
+         * @param ev Le pointeur vers l'évènement.
          * @param milliseconds `infinite` pour attendre à l'infini.
          */
         static void wait(handle ev, uint32 milliseconds);

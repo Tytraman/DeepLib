@@ -31,7 +31,7 @@ namespace deep
 
       private:
         /**
-         * @brief Libère la mémoire et réinitialise le pointeur.
+         * @brief LibÃ¨re la mÃ©moire et rÃ©initialise le pointeur.
          * @return nullptr
          */
         Type *release();
@@ -65,24 +65,24 @@ namespace deep
     template <typename Type>
     inline owned_ptr<Type>::~owned_ptr()
     {
-        destroy();
+        this->destroy();
     }
 
     template <typename Type>
     inline bool owned_ptr<Type>::destroy_impl()
     {
-        if (m_memory_manager == nullptr)
+        if (this->m_memory_manager == nullptr)
         {
             return false;
         }
 
-        if (!m_memory_manager->dealloc(m_ptr))
+        if (!this->m_memory_manager->dealloc(this->m_ptr))
         {
             return false;
         }
 
-        m_ptr        = nullptr;
-        m_bytes_size = 0;
+        this->m_ptr        = nullptr;
+        this->m_bytes_size = 0;
 
         return true;
     }
@@ -90,21 +90,21 @@ namespace deep
     template <typename Type>
     inline Type *owned_ptr<Type>::operator->()
     {
-        return m_ptr;
+        return this->m_ptr;
     }
 
     template <typename Type>
     Type &owned_ptr<Type>::operator*()
     {
-        return *m_ptr;
+        return *this->m_ptr;
     }
 
     template <typename Type>
     inline Type *owned_ptr<Type>::release()
     {
-        Type *ret = exchange(m_ptr, nullptr);
+        Type *ret = exchange(this->m_ptr, nullptr);
 
-        m_bytes_size = 0;
+        this->m_bytes_size = 0;
 
         return ret;
     }
@@ -112,18 +112,18 @@ namespace deep
     template <typename Type>
     inline void owned_ptr<Type>::reset(owned_ptr &&other)
     {
-        destroy();
+        this->destroy();
 
-        m_memory_manager = other.m_memory_manager;
-        m_ptr            = other.m_ptr;
+        this->m_memory_manager = other.m_memory_manager;
+        this->m_ptr            = other.m_ptr;
     }
 
     template <typename Type>
     inline void owned_ptr<Type>::reset(Type *ptr)
     {
-        destroy();
+        this->destroy();
 
-        m_ptr = ptr;
+        this->m_ptr = ptr;
     }
 } // namespace deep
 

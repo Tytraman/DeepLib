@@ -1,11 +1,11 @@
-﻿#ifndef DEEP_LIB_HASH_MAP_HPP
+#ifndef DEEP_LIB_HASH_MAP_HPP
 #define DEEP_LIB_HASH_MAP_HPP
 
 #include "DeepCore/types.hpp"
 #include "DeepLib/memory/memory.hpp"
 #include "DeepLib/context.hpp"
 #include "DeepLib/memory/memory_manager.hpp"
-#include "DeepLib/string/string.hpp"
+#include "DeepLib/string/string_utils.hpp"
 
 namespace deep
 {
@@ -21,15 +21,20 @@ namespace deep
     };
 
     /**
-     * @brief
+     * @brief Structure clé / valeur.
      * @tparam Type Le type de donnée à stocker dans la hash_map.
      */
     template <typename Type>
     class hash_map
     {
       public:
-        hash_map() = delete;
+        hash_map()                            = delete;
+        hash_map(const hash_map &)            = delete;
+        hash_map &operator=(const hash_map &) = delete;
+
         hash_map(ctx *context, usize size = 10);
+
+        void set_memory_manager(memory_manager *manager) noexcept;
 
         /**
          * @brief Récupère l'entrée correspondante à la clé spécifiée.
@@ -51,7 +56,7 @@ namespace deep
         /**
          * @brief Supprime l'entrée liée à la clé spécifiée.
          * @param key La clé à laquelle supprimer l'entrée.
-         * @return
+         * @return `true` en cas de succès.
          */
         bool remove(const char *key);
         bool remove(uint64 key);
@@ -82,9 +87,17 @@ namespace deep
     }
 
     template <typename Type>
+    inline void hash_map<Type>::set_memory_manager(memory_manager *manager) noexcept
+    {
+        m_memory_manager = manager;
+
+        m_map = mem::realloc_table<hash_entry<Type>>(manager, m_map, m_size);
+    }
+
+    template <typename Type>
     inline hash_entry<Type> *hash_map<Type>::operator[](const char *key)
     {
-        return operator[](string::hash(key));
+        return operator[](string_utils::hash(key));
     }
 
     template <typename Type>
@@ -116,7 +129,7 @@ namespace deep
     template <typename Type>
     inline hash_entry<Type> *hash_map<Type>::insert(const char *key, const Type &value)
     {
-        return insert(string::hash(key), value);
+        return insert(string_utils::hash(key), value);
     }
 
     template <typename Type>
@@ -185,7 +198,7 @@ namespace deep
     template <typename Type>
     inline bool hash_map<Type>::remove(const char *key)
     {
-        return remove(string::hash(key));
+        return remove(string_utils::hash(key));
     }
 
     template <typename Type>
@@ -233,5 +246,16 @@ namespace deep
         return m_number_of_elements;
     }
 } // namespace deep
+
+#if defined(_MSC_VER)
+
+#define DEEP_HASHMAP(__type, __var_name)      \
+    __pragma(warning(push))                   \
+            __pragma(warning(disable : 4251)) \
+                    deep::hash_map<__type>    \
+                            __var_name;       \
+    __pragma(warning(pop))
+
+#endif
 
 #endif

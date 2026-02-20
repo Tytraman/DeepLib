@@ -1,4 +1,4 @@
-﻿#include "memory_stream.hpp"
+#include "memory_stream.hpp"
 #include "DeepLib/memory/memory.hpp"
 #include "DeepLib/maths/math.hpp"
 
@@ -121,7 +121,7 @@ namespace deep
                     }
                 }
 
-                m_position += offset;
+                m_position += make_unsigned<isize>(offset);
             }
             break;
             case seek_origin::End:
@@ -139,7 +139,7 @@ namespace deep
                 }
                 else
                 {
-                    m_position += offset;
+                    m_position += make_unsigned<isize>(offset);
                 }
             }
             break;

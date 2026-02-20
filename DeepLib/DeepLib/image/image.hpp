@@ -1,4 +1,4 @@
-﻿#ifndef DEEP_LIB_IMAGE_HPP
+#ifndef DEEP_LIB_IMAGE_HPP
 #define DEEP_LIB_IMAGE_HPP
 
 #include "DeepLib/deep_lib_export.h"
@@ -34,7 +34,12 @@ namespace deep
         };
 
       public:
-        image() = default;
+        image(const image &)            = delete;
+        image &operator=(const image &) = delete;
+
+        image()                                  = default;
+        image(image &&other) noexcept            = default;
+        image &operator=(image &&other) noexcept = default;
 
         static uint8 get_channels(color_space space);
 

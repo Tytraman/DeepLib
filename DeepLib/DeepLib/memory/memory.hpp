@@ -1,4 +1,4 @@
-﻿#ifndef DEEP_LIB_MEMORY_HPP
+#ifndef DEEP_LIB_MEMORY_HPP
 #define DEEP_LIB_MEMORY_HPP
 
 #include "DeepLib/deep_lib_export.h"
@@ -41,6 +41,12 @@ namespace deep
 
         template <typename Type>
         static bool realloc(buffer_ptr<Type> &buffer, usize bytes_size);
+
+        template <typename Type>
+        static Type **realloc_table(memory_manager *manager, Type **address, usize new_number_of_elements) noexcept;
+
+        template <typename Type>
+        static bool dealloc(memory_manager *manager, Type *address) noexcept;
 
         template <typename Type>
         static bool dealloc(ctx *context, Type *address);
@@ -166,6 +172,28 @@ namespace deep
         }
 
         return mem->realloc(buffer, bytes_size);
+    }
+
+    template <typename Type>
+    inline Type **mem::realloc_table(memory_manager *manager, Type **address, usize new_number_of_elements) noexcept
+    {
+        if (manager == nullptr)
+        {
+            return nullptr;
+        }
+
+        return manager->realloc_table<Type>(address, new_number_of_elements);
+    }
+
+    template <typename Type>
+    inline bool mem::dealloc(memory_manager *manager, Type *address) noexcept
+    {
+        if (manager == nullptr)
+        {
+            return false;
+        }
+
+        return manager->dealloc(address);
     }
 
     template <typename Type>

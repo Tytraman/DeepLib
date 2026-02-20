@@ -17,6 +17,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 message(STATUS "Compiler ID: ${CMAKE_CXX_COMPILER_ID}")
 
+include(cmake/AddCompileOptions.cmake)
+
 add_subdirectory("DeepCore")
 add_subdirectory("DeepLib")
 
@@ -146,10 +148,10 @@ configure_package_config_file(
 # --- Installation ---
 
 install(TARGETS DeepCore
-    EXPORT DeepLib
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    EXPORT DeepLib-targets
+    RUNTIME DESTINATION $<CONFIG>/${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION $<CONFIG>/${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION $<CONFIG>/${CMAKE_INSTALL_LIBDIR}
     INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 install(DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/DeepCore/DeepCore"
@@ -164,10 +166,10 @@ install(FILES "${DeepCoreExport}"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/DeepCore")
 
 install(TARGETS DeepLib
-    EXPORT DeepLib
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    EXPORT DeepLib-targets
+    RUNTIME DESTINATION $<CONFIG>/${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION $<CONFIG>/${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION $<CONFIG>/${CMAKE_INSTALL_LIBDIR}
     INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 install(DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/DeepLib/DeepLib"
@@ -181,15 +183,17 @@ get_target_property(DeepLibExport DeepLib DEEP_EXPORT_HEADER_FILE)
 install(FILES "${DeepLibExport}"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/DeepLib")
 
+install(EXPORT DeepLib-targets
+    FILE DeepLibTargets.cmake
+    NAMESPACE Deep::
+    DESTINATION share/cmake/DeepLib
+)
+
 install(FILES
     "${DeepLibConfigVersion}"
     "${DeepLibConfig}"
-    DESTINATION "${DeepInstallConfigDir}")
-
-install(EXPORT DeepLib
-    DESTINATION "${DeepInstallConfigDir}"
-    NAMESPACE Deep::
-    FILE DeepLibTargets.cmake)
+    DESTINATION share/cmake/DeepLib
+)
 
 # --- Packaging ---
 

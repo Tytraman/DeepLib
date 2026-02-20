@@ -152,7 +152,7 @@ namespace deep
         win->m_width  = width;
         win->m_height = height;
 
-        win->m_callbacks                   = { 0 };
+        win->m_callbacks                   = {};
         win->m_callbacks.keydown           = keydown_callback;
         win->m_callbacks.keyup             = keyup_callback;
         win->m_callbacks.text_input        = text_input_callback;
@@ -201,6 +201,11 @@ namespace deep
     bool window::set_title(const string_native &title) noexcept
     {
         return core_window::set_title(ctx::get_internal_ctx(get_context_ptr()), m_handle, *title);
+    }
+
+    void window::set_pre_callback(core_window::pre_callback callback) noexcept
+    {
+        m_callbacks.pre = callback;
     }
 
     int32 window::get_width() const noexcept

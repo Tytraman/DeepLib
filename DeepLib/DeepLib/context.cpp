@@ -1,4 +1,4 @@
-#include "context.hpp"
+#include "DeepLib/context.hpp"
 #include "DeepCore/context.hpp"
 #include "DeepCore/term.hpp"
 
@@ -9,7 +9,9 @@ namespace deep
 {
 
     ctx::ctx()
-            : m_internal_data(nullptr), m_mem(nullptr)
+            : m_internal_data(nullptr),
+              m_mem(nullptr),
+              m_objects(nullptr)
     {
     }
 
@@ -41,12 +43,14 @@ namespace deep
         m_mem = static_cast<memory_manager *>(core_mem::alloc(nullptr, sizeof(memory_manager)));
         if (m_mem == nullptr)
         {
-            core_ctx::destroy_internal_ctx(m_internal_data);
+            // core_ctx::destroy_internal_ctx(m_internal_data);
 
             return false;
         }
 
         m_mem->m_internal_context = m_internal_data;
+
+        m_objects.set_memory_manager(m_mem);
 
         ref<ctx> context = ref<ctx>(this, this);
 
@@ -57,13 +61,8 @@ namespace deep
         fd stdout = core_term::get_std_handle(m_internal_data, core_term::std_handle::Output);
         if (stdout != invalid_fd)
         {
-            if (!core_term::add_mode(m_internal_data, stdout, core_term::mode::EnableProcessedOutput) ||
-                !core_term::add_mode(m_internal_data, stdout, core_term::mode::EnableVirtualTerminalProcessing))
-            {
-                core_ctx::destroy_internal_ctx(m_internal_data);
-
-                return false;
-            }
+            core_term::add_mode(m_internal_data, stdout, core_term::mode::EnableProcessedOutput);
+            core_term::add_mode(m_internal_data, stdout, core_term::mode::EnableVirtualTerminalProcessing);
 
             m_stdout        = ref_cast<stream>(ref<file_stream>(this, mem::alloc_type<file_stream>(m_mem, context, stdout)));
             m_stdout_writer = ref_cast<text_writer>(ref<stream_writer>(this, mem::alloc_type<stream_writer>(m_mem, context, m_stdout.get())));
@@ -72,13 +71,8 @@ namespace deep
         fd stderr = core_term::get_std_handle(m_internal_data, core_term::std_handle::Error);
         if (stderr != invalid_fd)
         {
-            if (!core_term::add_mode(m_internal_data, stderr, core_term::mode::EnableProcessedOutput) ||
-                !core_term::add_mode(m_internal_data, stderr, core_term::mode::EnableVirtualTerminalProcessing))
-            {
-                core_ctx::destroy_internal_ctx(m_internal_data);
-
-                return false;
-            }
+            core_term::add_mode(m_internal_data, stderr, core_term::mode::EnableProcessedOutput);
+            core_term::add_mode(m_internal_data, stderr, core_term::mode::EnableVirtualTerminalProcessing);
 
             m_stderr        = ref_cast<stream>(ref<file_stream>(this, mem::alloc_type<file_stream>(m_mem, context, stderr)));
             m_stderr_writer = ref_cast<text_writer>(ref<stream_writer>(this, mem::alloc_type<stream_writer>(m_mem, context, m_stderr.get())));

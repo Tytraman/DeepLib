@@ -1,4 +1,4 @@
-﻿#ifndef DEEP_LIB_OBJECT_HPP
+#ifndef DEEP_LIB_OBJECT_HPP
 #define DEEP_LIB_OBJECT_HPP
 
 #include "DeepLib/deep_lib_export.h"
@@ -18,7 +18,6 @@ namespace deep
       public:
         object();
         explicit object(const ref<ctx> &context);
-        virtual ~object() = default;
 
         const ref<ctx> &get_context() const;
         ctx *get_context_ptr();

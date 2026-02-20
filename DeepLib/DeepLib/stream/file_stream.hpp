@@ -1,4 +1,4 @@
-﻿#ifndef DEEP_LIB_FILE_STREAM_HPP
+#ifndef DEEP_LIB_FILE_STREAM_HPP
 #define DEEP_LIB_FILE_STREAM_HPP
 
 #include "DeepLib/deep_lib_export.h"
@@ -15,7 +15,7 @@ namespace deep
         file_stream(const ref<ctx> &context, const native_char *filename, core_fs::file_mode mode, core_fs::file_access access, core_fs::file_share share);
         file_stream(const ref<ctx> &context, string_native &filename, core_fs::file_mode mode, core_fs::file_access access, core_fs::file_share share);
         file_stream(const ref<ctx> &context, fd file);
-        ~file_stream();
+        virtual ~file_stream() override;
 
         virtual bool open() override;
         virtual bool close() override;
