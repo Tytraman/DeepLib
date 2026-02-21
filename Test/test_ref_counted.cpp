@@ -1,9 +1,11 @@
-﻿#include "DeepLib/lib.hpp"
+#include "DeepLib/lib.hpp"
 #include "DeepLib/memory/memory.hpp"
 #include "DeepLib/memory/ref_counted.hpp"
 
 class test_ref_counted : public deep::ref_counted
 {
+  private:
+    deep::uint32 m_value;
 };
 
 int main(int /*argc*/, char * /*argv*/[])

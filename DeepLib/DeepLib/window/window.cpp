@@ -178,6 +178,16 @@ namespace deep
         core_window::hide(m_handle);
     }
 
+    bool window::confine_cursor() noexcept
+    {
+        return core_window::confine_cursor(ctx::get_internal_ctx(get_context_ptr()), m_handle);
+    }
+
+    bool window::free_cursor() noexcept
+    {
+        return core_window::free_cursor(ctx::get_internal_ctx(get_context_ptr()));
+    }
+
     bool window::process_message() noexcept
     {
         return core_window::process_message(ctx::get_internal_ctx(get_context_ptr()), m_handle);
@@ -206,6 +216,16 @@ namespace deep
     void window::set_pre_callback(core_window::pre_callback callback) noexcept
     {
         m_callbacks.pre = callback;
+    }
+
+    void window::set_activate_callback(core_window::activate_callback callback) noexcept
+    {
+        m_callbacks.activate = callback;
+    }
+
+    void window::set_deactivate_callback(core_window::deactivate_callback callback) noexcept
+    {
+        m_callbacks.deactivate = callback;
     }
 
     int32 window::get_width() const noexcept

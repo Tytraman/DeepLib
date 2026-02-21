@@ -42,6 +42,16 @@ namespace deep
         core_window_show_cursor();
     }
 
+    bool core_window::confine_cursor(void *internal_context, window_handle win) noexcept
+    {
+        return core_window_confine_cursor(internal_context, win);
+    }
+
+    bool core_window::free_cursor(void *internal_context) noexcept
+    {
+        return core_window_free_cursor(internal_context);
+    }
+
     bool core_window::set_title(void *internal_context, window_handle win, const native_char *title) noexcept
     {
         return core_window_set_title(internal_context, win, title);

@@ -130,6 +130,19 @@ namespace
                 }
             }
             break;
+            case WM_ACTIVATE:
+            {
+                if (call->activate != nullptr &&
+                    ((wparam & WA_ACTIVE) || (wparam & WA_CLICKACTIVE)))
+                {
+                    call->activate(call->data);
+                }
+                else if (call->deactivate != nullptr)
+                {
+                    call->deactivate(call->data);
+                }
+            }
+            break;
         }
 
         return DefWindowProcW(hwnd, msg, wparam, lparam);
@@ -334,6 +347,64 @@ namespace deep
         while ((counter = ShowCursor(TRUE)) < 0)
         {
         }
+    }
+
+    bool core_window_confine_cursor(void *internal_context, window_handle win) noexcept
+    {
+        internal_data_win32 *internal_data = static_cast<internal_data_win32 *>(internal_context);
+
+        RECT rect;
+
+        if (GetClientRect(win, &rect) == 0)
+        {
+            if (internal_data != nullptr)
+            {
+                internal_data->result = core_convert_error_code(GetLastError());
+            }
+
+            return false;
+        }
+
+        SetLastError(0);
+        DWORD last_error;
+        if (MapWindowPoints(win, nullptr, reinterpret_cast<POINT *>(&rect), 2) == 0 && (last_error = GetLastError()) != 0)
+        {
+            if (internal_data != nullptr)
+            {
+                internal_data->result = core_convert_error_code(last_error);
+            }
+
+            return false;
+        }
+
+        if (ClipCursor(&rect) == 0)
+        {
+            if (internal_data != nullptr)
+            {
+                internal_data->result = core_convert_error_code(GetLastError());
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+
+    bool core_window_free_cursor(void *internal_context) noexcept
+    {
+        internal_data_win32 *internal_data = static_cast<internal_data_win32 *>(internal_context);
+
+        if (ClipCursor(nullptr) == 0)
+        {
+            if (internal_data != nullptr)
+            {
+                internal_data->result = core_convert_error_code(GetLastError());
+            }
+
+            return false;
+        }
+
+        return true;
     }
 
     bool core_window_set_title(void *internal_context, window_handle win, const native_char *title) noexcept

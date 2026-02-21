@@ -16,10 +16,9 @@ namespace deep
     class DEEP_LIB_API ref_counted
     {
       public:
-        ref_counted(const ref_counted &)            = delete;
-        ref_counted &operator=(const ref_counted &) = delete;
-
         ref_counted();
+        ref_counted(const ref_counted &)                = default;
+        ref_counted &operator=(const ref_counted &)     = default;
         ref_counted(ref_counted &&) noexcept            = default;
         ref_counted &operator=(ref_counted &&) noexcept = default;
 

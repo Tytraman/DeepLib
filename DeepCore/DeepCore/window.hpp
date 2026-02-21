@@ -36,6 +36,8 @@ namespace deep
         using mouse_move_callback        = bool (*)(int32 relative_position_x, int32 relative_position_y, void *data);
         using mouse_wheel_delta_callback = bool (*)(int32 relative_position_x, int32 relative_position_y, int32 delta, void *data);
         using lose_focus_callback        = bool (*)(void *data);
+        using activate_callback          = bool (*)(void *data);
+        using deactivate_callback        = bool (*)(void *data);
 
         struct callbacks
         {
@@ -49,6 +51,8 @@ namespace deep
             mouse_move_callback mouse_move;
             mouse_wheel_delta_callback mouse_wheel_delta;
             lose_focus_callback lose_focus;
+            activate_callback activate;
+            deactivate_callback deactivate;
         };
 
       public:
@@ -63,6 +67,9 @@ namespace deep
         static void hide_cursor() noexcept;
         static void show_cursor() noexcept;
 
+        static bool confine_cursor(void *internal_context, window_handle win) noexcept;
+        static bool free_cursor(void *internal_context) noexcept;
+
         static bool set_title(void *internal_context, window_handle win, const native_char *title) noexcept;
 
         static bool process_message(void *internal_context, window_handle win) noexcept;
@@ -76,6 +83,8 @@ namespace deep
     extern bool core_window_release_capture(void *internal_context, window_handle win) noexcept;
     extern void core_window_hide_cursor() noexcept;
     extern void core_window_show_cursor() noexcept;
+    extern bool core_window_confine_cursor(void *internal_context, window_handle win) noexcept;
+    extern bool core_window_free_cursor(void *internal_context) noexcept;
     extern bool core_window_set_title(void *internal_context, window_handle win, const native_char *title) noexcept;
     extern bool core_window_process_message(void *internal_context, window_handle win);
 } // namespace deep

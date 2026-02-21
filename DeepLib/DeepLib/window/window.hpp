@@ -25,6 +25,9 @@ namespace deep
         void show() noexcept;
         void hide() noexcept;
 
+        bool confine_cursor() noexcept;
+        bool free_cursor() noexcept;
+
         bool process_message() noexcept;
 
         void set_capture() noexcept;
@@ -34,6 +37,8 @@ namespace deep
         bool set_title(const string_native &title) noexcept;
 
         void set_pre_callback(core_window::pre_callback callback) noexcept;
+        void set_activate_callback(core_window::activate_callback callback) noexcept;
+        void set_deactivate_callback(core_window::deactivate_callback callback) noexcept;
 
         bool is_valid() const noexcept;
 
