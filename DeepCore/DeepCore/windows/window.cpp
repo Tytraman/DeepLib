@@ -2,12 +2,16 @@
 #include "../error.hpp"
 #include "internal_data.hpp"
 
+#include "DeepCore/memory.hpp"
+
 #include <windowsx.h>
 
 namespace
 {
     LRESULT CALLBACK window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     {
+        static deep::core_buffer_ptr buffer;
+
         deep::core_window::callbacks *call = reinterpret_cast<deep::core_window::callbacks *>(GetWindowLongPtrW(hwnd, GWLP_USERDATA));
 
         if (call == nullptr)
@@ -119,6 +123,41 @@ namespace
                 if (call->mouse_wheel_delta != nullptr)
                 {
                     call->mouse_wheel_delta(GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam), GET_WHEEL_DELTA_WPARAM(wparam), call->data);
+                }
+            }
+            break;
+            case WM_INPUT:
+            {
+                HRAWINPUT handle_raw_input = reinterpret_cast<HRAWINPUT>(lparam);
+                UINT raw_input_size        = 0;
+
+                UINT ret = GetRawInputData(handle_raw_input, RID_INPUT, nullptr, &raw_input_size, sizeof(RAWINPUTHEADER));
+
+                if (ret == -1)
+                {
+                    break;
+                }
+
+                if (!buffer.grow(raw_input_size))
+                {
+                    break;
+                }
+
+                ret = GetRawInputData(handle_raw_input, RID_INPUT, buffer.get(), &raw_input_size, sizeof(RAWINPUTHEADER));
+                if (ret != raw_input_size)
+                {
+                    break;
+                }
+
+                const RAWINPUT *raw_input = reinterpret_cast<const RAWINPUT *>(buffer.get());
+
+                if (raw_input->header.dwType == RIM_TYPEMOUSE &&
+                    (raw_input->data.mouse.lLastX != 0 || raw_input->data.mouse.lLastY != 0))
+                {
+                    if (call->mouse_raw_delta != nullptr)
+                    {
+                        call->mouse_raw_delta(raw_input->data.mouse.lLastX, raw_input->data.mouse.lLastY, call->data);
+                    }
                 }
             }
             break;
@@ -428,18 +467,39 @@ namespace deep
     {
         MSG msg;
 
-        if (PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE) == 0)
+        while (PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE) != 0)
         {
-            return true;
+            if (msg.message == WM_QUIT)
+            {
+                return false;
+            }
+
+            TranslateMessage(&msg);
+            DispatchMessageW(&msg);
         }
 
-        if (msg.message == WM_QUIT)
+        return true;
+    }
+
+    bool core_window_register_raw_mouse_input(void *internal_context) noexcept
+    {
+        internal_data_win32 *internal_data = static_cast<internal_data_win32 *>(internal_context);
+
+        RAWINPUTDEVICE rid;
+        rid.usUsagePage = 0x01;
+        rid.usUsage     = 0x02;
+        rid.dwFlags     = 0;
+        rid.hwndTarget  = nullptr;
+
+        if (RegisterRawInputDevices(&rid, 1, sizeof(rid)) == FALSE)
         {
+            if (internal_data != nullptr)
+            {
+                internal_data->result = core_convert_error_code(GetLastError());
+            }
+
             return false;
         }
-
-        TranslateMessage(&msg);
-        DispatchMessageW(&msg);
 
         return true;
     }

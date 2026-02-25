@@ -1,5 +1,5 @@
-﻿#include "DeepLib/lib.hpp"
-#include "DeepLib/collection/list.hpp"
+#include "DeepLib/lib.hpp"
+#include "DeepLib/collection/array_list.hpp"
 
 int main(int /*argc*/, char * /*argv*/[])
 {
@@ -10,7 +10,7 @@ int main(int /*argc*/, char * /*argv*/[])
         return 1;
     }
 
-    deep::list<int> test_list = deep::list<int>(context.get());
+    deep::array_list<int> test_list = deep::array_list<int>(context.get());
 
     if (!test_list.add(105))
     {

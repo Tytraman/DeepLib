@@ -1,4 +1,4 @@
-﻿#include "mouse.hpp"
+#include "DeepLib/window/mouse.hpp"
 #include "DeepLib/window/window.hpp"
 
 namespace deep
@@ -58,23 +58,22 @@ namespace deep
         return m_y;
     }
 
-    mouse::mouse(const ref<ctx> &context) noexcept
+    mouse::mouse() noexcept
             : m_x(0),
               m_y(0),
               m_is_left_pressed(false),
               m_is_right_pressed(false),
               m_is_middle_pressed(false),
               m_is_in_window(false),
-              m_wheel_delta_carry(0),
-              m_event_buffer(context)
+              m_wheel_delta_carry(0)
     {
     }
 
     mouse::event mouse::read() noexcept
     {
-        if (!m_event_buffer.is_empty())
+        if (!m_event_buffer.empty())
         {
-            event e = m_event_buffer.get_front();
+            event e = m_event_buffer.front();
             m_event_buffer.pop();
 
             return e;
@@ -85,7 +84,25 @@ namespace deep
 
     bool mouse::is_empty() const noexcept
     {
-        return m_event_buffer.is_empty();
+        return m_event_buffer.empty();
+    }
+
+    raw_mouse_delta mouse::read_raw_delta() noexcept
+    {
+        if (!m_raw_delta.empty())
+        {
+            raw_mouse_delta e = m_raw_delta.front();
+            m_raw_delta.pop();
+
+            return e;
+        }
+
+        return raw_mouse_delta();
+    }
+
+    bool mouse::is_raw_delta_empty() const noexcept
+    {
+        return m_raw_delta.empty();
     }
 
     ivec2 mouse::get_position() const noexcept
@@ -139,7 +156,7 @@ namespace deep
         // Si le curseur est à l'intérieur de la fenêtre.
         if (x >= 0 && x < width && y >= 0 && y < height)
         {
-            m_event_buffer.add(event(event::action::Move, *this));
+            m_event_buffer.push(event(event::action::Move, *this));
 
             // Si le curseur vient d'entrer dans la fenêtre.
             if (!m_is_in_window)
@@ -153,7 +170,7 @@ namespace deep
             // Ajoute le "drag capture" à la fenêtre.
             if (m_is_left_pressed || m_is_right_pressed || m_is_middle_pressed)
             {
-                m_event_buffer.add(event(event::action::Move, *this));
+                m_event_buffer.push(event(event::action::Move, *this));
             }
             else
             {
@@ -173,7 +190,7 @@ namespace deep
     {
         m_is_left_pressed = true;
 
-        m_event_buffer.add(event(event::action::LeftPress, *this, x, y));
+        m_event_buffer.push(event(event::action::LeftPress, *this, x, y));
 
         trim_buffer(m_event_buffer);
 
@@ -184,7 +201,7 @@ namespace deep
     {
         m_is_left_pressed = false;
 
-        m_event_buffer.add(event(event::action::LeftRelease, *this, x, y));
+        m_event_buffer.push(event(event::action::LeftRelease, *this, x, y));
 
         trim_buffer(m_event_buffer);
 
@@ -195,7 +212,7 @@ namespace deep
     {
         m_is_right_pressed = true;
 
-        m_event_buffer.add(event(event::action::RightPress, *this, x, y));
+        m_event_buffer.push(event(event::action::RightPress, *this, x, y));
 
         trim_buffer(m_event_buffer);
 
@@ -206,7 +223,7 @@ namespace deep
     {
         m_is_right_pressed = false;
 
-        m_event_buffer.add(event(event::action::RightRelease, *this, x, y));
+        m_event_buffer.push(event(event::action::RightRelease, *this, x, y));
 
         trim_buffer(m_event_buffer);
 
@@ -217,7 +234,7 @@ namespace deep
     {
         m_is_middle_pressed = true;
 
-        m_event_buffer.add(event(event::action::MiddlePress, *this, x, y));
+        m_event_buffer.push(event(event::action::MiddlePress, *this, x, y));
 
         trim_buffer(m_event_buffer);
 
@@ -228,7 +245,7 @@ namespace deep
     {
         m_is_middle_pressed = false;
 
-        m_event_buffer.add(event(event::action::MiddleRelease, *this, x, y));
+        m_event_buffer.push(event(event::action::MiddleRelease, *this, x, y));
 
         trim_buffer(m_event_buffer);
 
@@ -237,7 +254,7 @@ namespace deep
 
     bool mouse::on_wheel_up(int32 x, int32 y, window * /*win*/) noexcept
     {
-        m_event_buffer.add(event(event::action::WheelUp, *this, x, y));
+        m_event_buffer.push(event(event::action::WheelUp, *this, x, y));
 
         trim_buffer(m_event_buffer);
 
@@ -246,7 +263,7 @@ namespace deep
 
     bool mouse::on_wheel_down(int32 x, int32 y, window * /*win*/) noexcept
     {
-        m_event_buffer.add(event(event::action::WheelDown, *this, x, y));
+        m_event_buffer.push(event(event::action::WheelDown, *this, x, y));
 
         trim_buffer(m_event_buffer);
 
@@ -274,11 +291,19 @@ namespace deep
         return true;
     }
 
+    bool mouse::on_raw_delta(int32 x, int32 y, window * /*win*/) noexcept
+    {
+        m_raw_delta.push({ x, y });
+        trim_buffer(m_raw_delta);
+
+        return true;
+    }
+
     bool mouse::on_leave(window *win) noexcept
     {
         m_is_in_window = false;
 
-        m_event_buffer.add(event(event::action::Leave, *this));
+        m_event_buffer.push(event(event::action::Leave, *this));
 
         if (win != nullptr)
         {
@@ -292,7 +317,7 @@ namespace deep
     {
         m_is_in_window = true;
 
-        m_event_buffer.add(event(event::action::Enter, *this));
+        m_event_buffer.push(event(event::action::Enter, *this));
 
         if (win != nullptr)
         {

@@ -61,4 +61,9 @@ namespace deep
     {
         return core_window_process_message(internal_context, win);
     }
+
+    bool core_window::register_raw_mouse_input(void *internal_context) noexcept
+    {
+        return core_window_register_raw_mouse_input(internal_context);
+    }
 } // namespace deep

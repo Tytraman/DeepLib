@@ -40,10 +40,10 @@ function(deep_add_compile_options)
             /WX     # Considère les warning comme des erreurs.
             /W4     # Niveau d'avertissement élevé.
             /utf-8  # Considère les chaînes de caractères en UTF-8 par défaut.
-            ${AddressSanitizer}
+            # ${AddressSanitizer}
         )
 
-        target_link_options(${ARG_TARGET} PRIVATE ${AddressSanitizer})
+        # target_link_options(${ARG_TARGET} PRIVATE ${AddressSanitizer})
     endif()
 
 endfunction() #deep_add_compile_options

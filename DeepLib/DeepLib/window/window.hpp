@@ -61,6 +61,7 @@ namespace deep
         static bool mouse_button_up_callback(core_window::mouse_button released, int32 relative_position_x, int32 relative_position_y, void *data) noexcept;
         static bool mouse_move_callback(int32 relative_position_x, int32 relative_position_y, void *data) noexcept;
         static bool mouse_wheel_delta_callback(int32 relative_position_x, int32 relative_position_y, int32 delta, void *data) noexcept;
+        static bool mouse_raw_delta_callback(int32 x, int32 y, void *data) noexcept;
 
       protected:
         window_handle m_handle;

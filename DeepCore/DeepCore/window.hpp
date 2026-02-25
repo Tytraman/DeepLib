@@ -35,6 +35,7 @@ namespace deep
         using mouse_button_up_callback   = bool (*)(mouse_button released, int32 relative_position_x, int32 relative_position_y, void *data);
         using mouse_move_callback        = bool (*)(int32 relative_position_x, int32 relative_position_y, void *data);
         using mouse_wheel_delta_callback = bool (*)(int32 relative_position_x, int32 relative_position_y, int32 delta, void *data);
+        using mouse_raw_delta            = bool (*)(int32 delta_x, int32 delta_y, void *data);
         using lose_focus_callback        = bool (*)(void *data);
         using activate_callback          = bool (*)(void *data);
         using deactivate_callback        = bool (*)(void *data);
@@ -50,6 +51,7 @@ namespace deep
             mouse_button_up_callback mouse_button_up;
             mouse_move_callback mouse_move;
             mouse_wheel_delta_callback mouse_wheel_delta;
+            mouse_raw_delta mouse_raw_delta;
             lose_focus_callback lose_focus;
             activate_callback activate;
             deactivate_callback deactivate;
@@ -73,6 +75,8 @@ namespace deep
         static bool set_title(void *internal_context, window_handle win, const native_char *title) noexcept;
 
         static bool process_message(void *internal_context, window_handle win) noexcept;
+
+        static bool register_raw_mouse_input(void *internal_context) noexcept;
     };
 
     extern window_handle core_window_create(void *internal_context, const native_char *class_name, const native_char *title, core_window::style s, bool transparent, int32 x, int32 y, int32 width, int32 height, core_window::callbacks *call);
@@ -87,6 +91,7 @@ namespace deep
     extern bool core_window_free_cursor(void *internal_context) noexcept;
     extern bool core_window_set_title(void *internal_context, window_handle win, const native_char *title) noexcept;
     extern bool core_window_process_message(void *internal_context, window_handle win);
+    extern bool core_window_register_raw_mouse_input(void *internal_context) noexcept;
 } // namespace deep
 
 #endif

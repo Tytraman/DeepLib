@@ -12,12 +12,12 @@
 namespace deep
 {
     template <typename Type>
-    class list : public collection<Type>
+    class array_list : public collection<Type>
     {
       public:
-        list(const ref<ctx> &context, uint32 capacity_step = 10);
-        list(ctx *context, uint32 capacity_step = 10);
-        virtual ~list() override;
+        array_list(const ref<ctx> &context, uint32 capacity_step = 10);
+        array_list(ctx *context, uint32 capacity_step = 10);
+        virtual ~array_list() override;
 
         void init(uint32 capacity_step = 10);
 
@@ -72,19 +72,19 @@ namespace deep
     };
 
     template <typename Type>
-    inline list<Type>::list(const ref<ctx> &context, uint32 capacity_step)
+    inline array_list<Type>::array_list(const ref<ctx> &context, uint32 capacity_step)
             : collection<Type>(), m_buffer(context.get(), nullptr, 0), m_capacity(0), m_capacity_step(capacity_step)
     {
     }
 
     template <typename Type>
-    list<Type>::list(ctx *context, uint32 capacity_step)
+    array_list<Type>::array_list(ctx *context, uint32 capacity_step)
             : collection<Type>(), m_buffer(context, nullptr, 0), m_capacity(0), m_capacity_step(capacity_step)
     {
     }
 
     template <typename Type>
-    list<Type>::~list()
+    array_list<Type>::~array_list()
     {
         if (m_buffer.is_valid())
         {
@@ -104,7 +104,7 @@ namespace deep
     }
 
     template <typename Type>
-    void list<Type>::init(uint32 capacity_step)
+    void array_list<Type>::init(uint32 capacity_step)
     {
         this->m_buffer.set(nullptr);
         this->m_capacity           = 0;
@@ -113,7 +113,7 @@ namespace deep
     }
 
     template <typename Type>
-    bool list<Type>::add()
+    bool array_list<Type>::add()
     {
         if (!grow_if_needed())
         {
@@ -126,7 +126,7 @@ namespace deep
     }
 
     template <typename Type>
-    bool list<Type>::add(const Type &element)
+    bool array_list<Type>::add(const Type &element)
     {
         // Augmente la taille du buffer si nécessaire.
         if (!grow_if_needed())
@@ -142,7 +142,7 @@ namespace deep
     }
 
     template <typename Type>
-    bool list<Type>::add(Type &&element)
+    bool array_list<Type>::add(Type &&element)
     {
         // Augmente la taille du buffer si nécessaire.
         if (!grow_if_needed())
@@ -158,7 +158,7 @@ namespace deep
     }
 
     template <typename Type>
-    bool list<Type>::set(const Type *buffer, usize index, usize count)
+    bool array_list<Type>::set(const Type *buffer, usize index, usize count)
     {
         if (!grow_if_needed(index, count))
         {
@@ -171,7 +171,7 @@ namespace deep
     }
 
     template <typename Type>
-    bool list<Type>::set(const Type &value, usize index, usize count)
+    bool array_list<Type>::set(const Type &value, usize index, usize count)
     {
         usize i;
 
@@ -189,7 +189,7 @@ namespace deep
     }
 
     template <typename Type>
-    bool list<Type>::remove(usize index)
+    bool array_list<Type>::remove(usize index)
     {
         usize diff;
         usize size;
@@ -214,7 +214,7 @@ namespace deep
     }
 
     template <typename Type>
-    size_t list<Type>::find(const Type &to_search) const
+    size_t array_list<Type>::find(const Type &to_search) const
     {
         // Pointeur vers le tableau des éléments de la liste.
         uint8 *ptr               = (uint8 *) m_buffer.get();
@@ -225,7 +225,7 @@ namespace deep
 
         if (ptr == nullptr)
         {
-            return list::nothing;
+            return array_list::nothing;
         }
 
         // Vérifie pour chaque élément de la liste si la donnée est la même que celle recherchée.
@@ -240,11 +240,11 @@ namespace deep
             index++;
         }
 
-        return list::nothing;
+        return array_list::nothing;
     }
 
     template <typename Type>
-    bool list<Type>::reserve(usize number_of_elements)
+    bool array_list<Type>::reserve(usize number_of_elements)
     {
         if (number_of_elements == this->m_number_of_elements)
         {
@@ -265,13 +265,13 @@ namespace deep
     }
 
     template <typename Type>
-    void list<Type>::fill_with_byte(uint8 value)
+    void array_list<Type>::fill_with_byte(uint8 value)
     {
         memset(this->m_buffer.get(), value, this->m_number_of_elements * sizeof(Type));
     }
 
     template <typename Type>
-    void list<Type>::empty()
+    void array_list<Type>::empty()
     {
         this->m_buffer.set(nullptr, 0);
         this->m_number_of_elements = 0;
@@ -279,7 +279,7 @@ namespace deep
     }
 
     template <typename Type>
-    bool list<Type>::free()
+    bool array_list<Type>::free()
     {
         this->m_buffer.destroy();
 
@@ -290,19 +290,19 @@ namespace deep
     }
 
     template <typename Type>
-    inline bool list<Type>::is_empty() const
+    inline bool array_list<Type>::is_empty() const
     {
         return this->m_number_of_elements == 0;
     }
 
     template <typename Type>
-    Type &list<Type>::get_first() const
+    Type &array_list<Type>::get_first() const
     {
         return operator[](DEEP_U64(0));
     }
 
     template <typename Type>
-    Type &list<Type>::get_last() const
+    Type &array_list<Type>::get_last() const
     {
         usize index = this->m_number_of_elements > 0 ? this->m_number_of_elements - 1 : 0;
 
@@ -310,25 +310,25 @@ namespace deep
     }
 
     template <typename Type>
-    usize list<Type>::get_capacity() const
+    usize array_list<Type>::get_capacity() const
     {
         return this->m_capacity;
     }
 
     template <typename Type>
-    usize list<Type>::get_capacity_step() const
+    usize array_list<Type>::get_capacity_step() const
     {
         return this->m_capacity_step;
     }
 
     template <typename Type>
-    Type &list<Type>::operator[](usize index) const
+    Type &array_list<Type>::operator[](usize index) const
     {
         return this->m_buffer.get()[index];
     }
 
     template <typename Type>
-    bool list<Type>::grow_if_needed()
+    bool array_list<Type>::grow_if_needed()
     {
         // Si le nombre d'éléments présents dans la liste est supérieur à la capacité,
         // on augmente celle-ci du pas attribué.
@@ -351,7 +351,7 @@ namespace deep
     }
 
     template <typename Type>
-    bool list<Type>::grow_if_needed(usize index, usize count)
+    bool array_list<Type>::grow_if_needed(usize index, usize count)
     {
         if (index >= this->m_number_of_elements)
         {
@@ -372,25 +372,25 @@ namespace deep
     }
 
     template <typename Type>
-    inline Type *list<Type>::get_data()
+    inline Type *array_list<Type>::get_data()
     {
         return this->m_buffer.get();
     }
 
     template <typename Type>
-    inline Type *list<Type>::get_data() const
+    inline Type *array_list<Type>::get_data() const
     {
         return this->m_buffer.get();
     }
 
     template <typename Type>
-    inline void list<Type>::set_count(usize count)
+    inline void array_list<Type>::set_count(usize count)
     {
         this->m_number_of_elements = count;
     }
 
     template <typename Type>
-    inline void list<Type>::set_capacity_step(usize size)
+    inline void array_list<Type>::set_capacity_step(usize size)
     {
         this->m_capacity_step = size;
     }

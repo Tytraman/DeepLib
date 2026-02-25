@@ -3,7 +3,7 @@
 
 #include "DeepCore/types.hpp"
 #include "DeepLib/context.hpp"
-#include "DeepLib/collection/list.hpp"
+#include "DeepLib/collection/array_list.hpp"
 
 #include <queue>
 
@@ -31,7 +31,7 @@ namespace deep
         usize count() const;
 
       protected:
-        list<Type> m_data;
+        array_list<Type> m_data;
     };
 
     template <typename Type>

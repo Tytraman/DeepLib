@@ -1,4 +1,4 @@
-﻿#ifndef DEEP_CORE_MEMORY_HPP
+#ifndef DEEP_CORE_MEMORY_HPP
 #define DEEP_CORE_MEMORY_HPP
 
 #include "DeepCore/deep_core_export.h"
@@ -23,6 +23,21 @@ namespace deep
     extern void *core_alloc(void *internal_context, usize size);
     extern void *core_realloc(void *internal_context, void *address, usize size);
     extern bool core_dealloc(void *internal_context, void *address);
+
+    class DEEP_CORE_API core_buffer_ptr
+    {
+      public:
+        core_buffer_ptr() noexcept;
+
+        bool grow(usize new_size) noexcept;
+
+        void *get() noexcept;
+        const void *get() const noexcept;
+
+      private:
+        void *m_ptr;
+        usize m_size;
+    };
 } // namespace deep
 
 #endif

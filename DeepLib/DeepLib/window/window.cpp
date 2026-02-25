@@ -120,12 +120,24 @@ namespace deep
         return true;
     }
 
+    bool window::mouse_raw_delta_callback(int32 x, int32 y, void *data) noexcept
+    {
+        window *win = static_cast<window *>(data);
+
+        if (win != nullptr)
+        {
+            return win->m_mouse.on_raw_delta(x, y, win);
+        }
+
+        return true;
+    }
+
     window::window(const ref<ctx> &context) noexcept
             : object(context),
               m_handle(invalid_window_handle),
               m_callbacks(),
               m_keyboard(context),
-              m_mouse(context),
+              m_mouse(),
               m_x(0),
               m_y(0),
               m_width(0),
@@ -160,6 +172,7 @@ namespace deep
         win->m_callbacks.mouse_button_down = mouse_button_down_callback;
         win->m_callbacks.mouse_button_up   = mouse_button_up_callback;
         win->m_callbacks.mouse_wheel_delta = mouse_wheel_delta_callback;
+        win->m_callbacks.mouse_raw_delta   = mouse_raw_delta_callback;
         win->m_callbacks.lose_focus        = lose_focus_callback;
         win->m_callbacks.data              = win.get();
 

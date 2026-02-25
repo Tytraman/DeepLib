@@ -3,8 +3,10 @@
 
 #include "DeepLib/deep_lib_export.h"
 #include "DeepCore/types.hpp"
-#include "DeepLib/collection/queue.hpp"
+#include "DeepLib/context.hpp"
 #include "DeepLib/maths/vec.hpp"
+
+#include <queue>
 
 namespace deep
 {
@@ -53,6 +55,12 @@ namespace deep
         bool m_is_middle_pressed;
     };
 
+    struct raw_mouse_delta
+    {
+        int32 x;
+        int32 y;
+    };
+
     class DEEP_LIB_API mouse
     {
       public:
@@ -62,14 +70,16 @@ namespace deep
         friend event;
 
       public:
-        mouse() = delete;
-        mouse(const ref<ctx> &context) noexcept;
+        mouse() noexcept;
 
         mouse(const mouse &)            = delete;
         mouse &operator=(const mouse &) = delete;
 
         event read() noexcept;
         bool is_empty() const noexcept;
+
+        raw_mouse_delta read_raw_delta() noexcept;
+        bool is_raw_delta_empty() const noexcept;
 
         ivec2 get_position() const noexcept;
         int32 get_position_x() const noexcept;
@@ -91,11 +101,12 @@ namespace deep
         bool on_wheel_up(int32 x, int32 y, window *win) noexcept;
         bool on_wheel_down(int32 x, int32 y, window *win) noexcept;
         bool on_wheel_delta(int32 x, int32 y, int32 delta, window *win) noexcept;
+        bool on_raw_delta(int32 x, int32 y, window *win) noexcept;
         bool on_leave(window *win) noexcept;
         bool on_enter(window *win) noexcept;
 
         template <typename Type>
-        static void trim_buffer(queue<Type> &buffer) noexcept;
+        static void trim_buffer(std::queue<Type> &buffer) noexcept;
 
       private:
         static constexpr uint8 BufferSize = 16;
@@ -107,19 +118,16 @@ namespace deep
         bool m_is_middle_pressed;
         bool m_is_in_window;
         int32 m_wheel_delta_carry;
-        queue<event> m_event_buffer;
+        std::queue<event> m_event_buffer;
+        std::queue<raw_mouse_delta> m_raw_delta;
     };
 
     template <typename Type>
-    inline void mouse::trim_buffer(queue<Type> &buffer) noexcept
+    inline void mouse::trim_buffer(std::queue<Type> &buffer) noexcept
     {
-        while (buffer.count() > BufferSize)
+        while (buffer.size() > BufferSize)
         {
-            if (!buffer.pop())
-            {
-                // Sécurité pour éviter une boucle infinie.
-                break;
-            }
+            buffer.pop();
         }
     }
 } // namespace deep
