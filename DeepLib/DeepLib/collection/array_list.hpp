@@ -1,5 +1,5 @@
-#ifndef DEEP_LIB_LIST_HPP
-#define DEEP_LIB_LIST_HPP
+#ifndef DEEP_LIB_ARRAY_LIST_HPP
+#define DEEP_LIB_ARRAY_LIST_HPP
 
 #include "DeepCore/types.hpp"
 #include "DeepLib/context.hpp"

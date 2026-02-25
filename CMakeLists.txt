@@ -37,6 +37,10 @@ deep_create_test(NAME List
     SOURCES collection/test_list.cpp
     LIBRARIES Deep::Lib)
 
+deep_create_test(NAME LinkedList
+    SOURCES collection/test_linked_list.cpp
+    LIBRARIES Deep::Lib)
+
 deep_create_test(NAME RefCounted
     SOURCES test_ref_counted.cpp
     LIBRARIES Deep::Lib)
